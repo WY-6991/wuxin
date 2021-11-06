@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.sun.javafx.runtime.eula.Eula;
+import com.wuxin.blog.controller.user.LoginController;
 import com.wuxin.blog.pojo.ExceptionLog;
 import com.wuxin.blog.service.ExceptionService;
 import com.wuxin.blog.util.ExceptionLogUtil;
@@ -12,6 +13,7 @@ import com.wuxin.blog.util.LogUtil;
 import com.wuxin.blog.util.result.R;
 import com.wuxin.blog.util.result.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authc.AuthenticationException;
 import org.aspectj.lang.JoinPoint;
 import org.mybatis.logging.Logger;
 import org.mybatis.logging.LoggerFactory;
@@ -48,7 +50,9 @@ public class GlobalException {
     @ExceptionHandler(NotFoundException.class)
     public Result notFoundExceptionHandler(HttpServletRequest request, NotFoundException e) {
         log.error("异常信息 Request URL : {}, Exception:{} ",request.getRequestURL(),e.getMessage());
-        return R.error(e.getMessage());
+        ExceptionLog exceptionLog = new ExceptionLogUtil().addException(request, e.getMessage(), new ExceptionLog());
+        exceptionService.addException(exceptionLog);
+        return R.create(500, "异常错误");
     }
 
     /**
@@ -61,21 +65,38 @@ public class GlobalException {
     @ExceptionHandler(PersistenceException.class)
     public Result persistenceExceptionHandler(HttpServletRequest request, PersistenceException e) {
         log.error("异常信息 Request URL : {}, Exception :{} :", request.getRequestURL(), e.getMessage());
-        return R.error(e.getMessage());
+        ExceptionLog exceptionLog = new ExceptionLogUtil().addException(request, e.getMessage(), new ExceptionLog());
+        exceptionService.addException(exceptionLog);
+        return R.create(500, "异常错误");
     }
 
     /**
      * 捕获自定义的登录失败异常
      *
      * @param request 请求
-     * @param e       自定义抛出的异常信息
      * @return
      */
-    // @ExceptionHandler(UsernameNotFoundException.class)
-    // public Result usernameNotFoundExceptionHandler(HttpServletRequest request, UsernameNotFoundException e) {
-    //     log.error("Request URL : {}, Exception={} :", request.getRequestURL(), e);
-    //     return R.create(401, "用户名或密码错误！");
-    // }
+    @ExceptionHandler(AuthenticationException.class)
+    public Result usernameNotFoundExceptionHandler(HttpServletRequest request) {
+        ExceptionLog exceptionLog = new ExceptionLogUtil().addException(request, "用户名或密码错误", new ExceptionLog());
+        exceptionService.addException(exceptionLog);
+        return R.create(401, "用户名或密码错误！");
+    }
+
+
+    /**
+     * 捕获其它异常
+     *
+     * @param request 请求
+     * @param e       异常信息
+     * @return error message
+     */
+    @ExceptionHandler(NullPointerException.class)
+    public Result NullPointerException(HttpServletRequest request, Exception e) {
+        ExceptionLog exceptionLog = new ExceptionLogUtil().addException(request, "java.lang.NullPointerException", new ExceptionLog());
+        exceptionService.addException(exceptionLog);
+        return R.create(500, "异常错误");
+    }
 
     /**
      * 捕获其它异常
@@ -87,10 +108,10 @@ public class GlobalException {
     @ExceptionHandler(Exception.class)
     public Result exceptionHandler(HttpServletRequest request, Exception e) {
         log.error("异常信息 Request URL : {}, Exception:{} ", request.getRequestURI(), e.getMessage());
-        log.error("异常信息1 getCause:{} ", e.getCause());
-        log.error("异常信息2 Exception:{} ", e);
         ExceptionLog exceptionLog = new ExceptionLogUtil().addException(request, e.getMessage(), new ExceptionLog());
         exceptionService.addException(exceptionLog);
         return R.create(500, "异常错误");
     }
+
+
 }

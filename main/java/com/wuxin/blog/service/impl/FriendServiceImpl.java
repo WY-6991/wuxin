@@ -1,5 +1,7 @@
 package com.wuxin.blog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
@@ -9,6 +11,8 @@ import com.wuxin.blog.pojo.Friend;
 import com.wuxin.blog.service.FriendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @Author: wuxin001
@@ -46,4 +50,8 @@ public class FriendServiceImpl implements FriendService {
     }
 
 
+    @Override
+    public List<Friend> findAllFriendList() {
+        return friendMapper.selectList(null);
+    }
 }

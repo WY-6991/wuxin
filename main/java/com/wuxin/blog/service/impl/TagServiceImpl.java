@@ -41,6 +41,8 @@ public class TagServiceImpl implements TagService {
 
     @Autowired
     private BlogService blogService;
+
+
     @Autowired
     private CategoryMapper categoryMapper;
 
@@ -150,6 +152,27 @@ public class TagServiceImpl implements TagService {
         LambdaQueryChainWrapper<Tag> chainWrapper = new LambdaQueryChainWrapper<>(tagMapper);
         Page<Tag> tagPage = new Page<>(current,limit);
         return chainWrapper.like(!keywords.isEmpty(),Tag::getName,keywords).page(tagPage);
+    }
+
+    public Blog getBlogInfo(Blog blog){
+
+        // blog.setUsername(userMapper.selectById(blog.getUserId()).getNickname());
+        // 获取分类
+        blog.setCategory(categoryMapper.selectById(blog.getCid()));
+        // 返回所有标签
+        LambdaQueryChainWrapper<BlogTag> bt = new LambdaQueryChainWrapper<>(blogTagMapper);
+        List<BlogTag> list = bt.eq(BlogTag::getBlogId, blog.getBlogId()).list();
+        List<Tag> tags = new ArrayList<>();
+        for (BlogTag blogTag : list) {
+            // 获取标签名
+            if (blogTag.getTagId() != null) {
+                tags.add(tagMapper.selectById(blogTag.getTagId()));
+            }
+
+        }
+        //添加标签名
+        blog.setTags(tags);
+        return blog;
     }
 }
 

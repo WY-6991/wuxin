@@ -53,7 +53,7 @@ public interface CategoryService {
      * @param categoryName categoryName
      * @return list
      */
-    List<Blog> findBlogByCategoryName(Integer current, Integer size, String categoryName);
+    IPage<Blog> findBlogByCategoryName(Integer current, Integer size, String categoryName);
 
     /**
      * 分类分页

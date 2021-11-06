@@ -1,6 +1,7 @@
 package com.wuxin.blog.service.impl;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,7 +10,9 @@ import com.wuxin.blog.pojo.CommentUser;
 import com.wuxin.blog.service.CommentUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 public class CommentUserServiceImpl implements CommentUserService {
 
@@ -40,13 +43,10 @@ public class CommentUserServiceImpl implements CommentUserService {
     }
 
     @Override
-    public CommentUser findCommentUserByUsernameAndEmail(String username, String email) {
-        LambdaQueryChainWrapper<CommentUser> wrapper = new LambdaQueryChainWrapper<>(commentUserMapper);
-        return wrapper
-                .eq(CommentUser::getUsername, username)
-                .or()
-                .eq(CommentUser::getEmail, email)
-                .one();
+    public CommentUser findCommentUserByUsernameOrEmail(String username, String email) {
+        LambdaQueryChainWrapper<CommentUser> wrapper = new LambdaQueryChainWrapper<CommentUser>(commentUserMapper);
+        return wrapper.eq(CommentUser::getUsername, username).or().eq(CommentUser::getEmail, email).one();
+
     }
 
 
@@ -57,7 +57,37 @@ public class CommentUserServiceImpl implements CommentUserService {
     }
 
     @Override
+    public Long getUserId(String username, String email) {
+        CommentUser commentUserByUsernameAndEmail = findCommentUserByUsernameOrEmail(username, email);
+        Long userId = null;
+        // 判断用户是否存在
+        if (commentUserByUsernameAndEmail == null) {
+            CommentUser commentUser = new CommentUser();
+            commentUser.setUsername(username);
+            commentUser.setEmail(email);
+            commentUser.setAvatar("https://cdn.jsdelivr.net/gh/WY-6991/wuxin/img/202110/20211011221540.png");
+            // 随机获取头像
+
+            // 获取userId
+            userId = addUser(commentUser);
+
+        } else {
+            // 判断用户名和邮箱是否输入正确
+            CommentUser checkUsernameAndEmail = checkUsernameAndEmail(username, email);
+            if (checkUsernameAndEmail != null) {
+                userId = checkUsernameAndEmail.getUserId();
+            }
+        }
+
+        System.out.println("userId=>"+userId);
+
+        return userId;
+    }
+
+    @Override
     public CommentUser findUserById(Long userId) {
+
+
         return commentUserMapper.selectById(userId);
     }
 }

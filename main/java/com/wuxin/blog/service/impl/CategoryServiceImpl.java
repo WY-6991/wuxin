@@ -7,9 +7,13 @@ import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWra
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wuxin.blog.mapper.BlogMapper;
 import com.wuxin.blog.mapper.CategoryMapper;
+import com.wuxin.blog.mapper.TagMapper;
 import com.wuxin.blog.mapper.UserMapper;
+import com.wuxin.blog.mapper.vo.BlogTagMapper;
 import com.wuxin.blog.pojo.Blog;
 import com.wuxin.blog.pojo.Category;
+import com.wuxin.blog.pojo.Tag;
+import com.wuxin.blog.pojo.vo.BlogTag;
 import com.wuxin.blog.service.BlogService;
 import com.wuxin.blog.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Autowired
     private BlogMapper blogMapper;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private BlogTagMapper blogTagMapper;
+
+    @Autowired
+    private TagMapper tagMapper;
 
 
     @Override
@@ -59,15 +72,24 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
+    // @Override
+    // public IPage<Blog> findBlogByCategoryName(Integer current, Integer size, String categoryName) {
+    //     Long cid = new LambdaQueryChainWrapper<Category>(categoryMapper).eq(Category::getName, categoryName).one().getCid();
+    //     Page<Blog> blogPage = new Page<>(current,size);
+    //     return new LambdaQueryChainWrapper<Blog>(blogMapper).eq(Blog::getCid, cid).page(blogPage);
+    // }
+    //
     @Override
-    public List<Blog> findBlogByCategoryName(Integer current, Integer size, String categoryName) {
-        List<Blog> blogList = new ArrayList<>();
+    public IPage<Blog> findBlogByCategoryName(Integer current, Integer size, String categoryName) {
         Long cid = new LambdaQueryChainWrapper<Category>(categoryMapper).eq(Category::getName, categoryName).one().getCid();
-        List<Blog> blogCateList = new LambdaQueryChainWrapper<Blog>(blogMapper).eq(Blog::getCid, cid).list();
-        for (Blog blog : blogCateList) {
-            blogList.add(blogService.findBlogByBlogId(blog.getBlogId()));
-        }
-        return blogList;
+        Page<Blog> blogPage = new Page<>(current,size);
+        Page<Blog> ipage = new LambdaQueryChainWrapper<Blog>(blogMapper).eq(Blog::getCid, cid).page(blogPage);
+        ipage.getRecords().forEach(blog -> {
+
+        });
+
+        return ipage;
+
     }
 
 
@@ -76,5 +98,26 @@ public class CategoryServiceImpl implements CategoryService {
         return new LambdaQueryChainWrapper<Category>(categoryMapper)
                 .like(!keywords.isEmpty(),Category::getName,keywords)
                 .page(new Page<Category>(current,limit));
+    }
+
+    public Blog getBlogInfo(Blog blog){
+
+        blog.setUsername(userMapper.selectById(blog.getUserId()).getNickname());
+        // 获取分类
+        blog.setCategory(categoryMapper.selectById(blog.getCid()));
+        // 返回所有标签
+        LambdaQueryChainWrapper<BlogTag> bt = new LambdaQueryChainWrapper<>(blogTagMapper);
+        List<BlogTag> list = bt.eq(BlogTag::getBlogId, blog.getBlogId()).list();
+        List<Tag> tags = new ArrayList<>();
+        for (BlogTag blogTag : list) {
+            // 获取标签名
+            if (blogTag.getTagId() != null) {
+                tags.add(tagMapper.selectById(blogTag.getTagId()));
+            }
+
+        }
+        //添加标签名
+        blog.setTags(tags);
+        return blog;
     }
 }

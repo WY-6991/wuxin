@@ -29,7 +29,7 @@ public class LoginLogAop {
     /**
      * 指定切入登录方法
      */
-    @Pointcut("execution(* com.wuxin.blog.controller.LoginController.userLogin(..))")
+    @Pointcut("execution(* com.wuxin.blog.controller.user.LoginController.userLogin(..))")
     public void log() {
         log.info("登录中....");
     }

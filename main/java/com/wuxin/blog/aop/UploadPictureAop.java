@@ -25,7 +25,7 @@ public class UploadPictureAop {
     private UploadPictureService uploadPictureService;
 
     // 指定切入点
-    @Pointcut("execution(* com.wuxin.blog.controller.admin.GitHubController.uploadBlogImg(..))")
+    @Pointcut("execution(* com.wuxin.blog.controller.admin.common.GitHubController.uploadBlogImg(..))")
     public void log() {
         log.info("图片上传中....");
     }

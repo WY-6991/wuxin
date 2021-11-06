@@ -4,7 +4,10 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wuxin.blog.pojo.*;
+import com.wuxin.blog.pojo.vo.BlogComment;
 import com.wuxin.blog.service.*;
+import com.wuxin.blog.service.impl.CommentUserServiceImpl;
+import com.wuxin.blog.util.CommentUtil;
 import com.wuxin.blog.util.IpUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +33,7 @@ class DemoApplicationTests {
     private BlogService blogService;
 
     @Autowired
-    private CommentService commentService;
+    private BlogCommentService blogCommentService;
 
     @Autowired
     private CommentUserService commentUserService;
@@ -84,11 +87,11 @@ class DemoApplicationTests {
     @Test
     void contentLoads06() {
 
-        Comment comment = new Comment();
-        comment.setBlogId(1L); //评论
-        comment.setContent("自定义ID生成测试");
-        comment.setCommentUserId(1L);
-        int i = commentService.addComment(comment);
+        BlogComment blogComment = new BlogComment();
+        blogComment.setBlogId(1L); //评论
+        blogComment.setContent("自定义ID生成测试");
+        blogComment.setCommentUserId(1L);
+        int i = blogCommentService.addComment(blogComment);
         if (i > 0) System.out.println("添加成功");
         System.out.println("添加失败");
 
@@ -238,13 +241,22 @@ class DemoApplicationTests {
 
     @Test
     void testCheckUsernameAndEmail() {
-        CommentUser user = commentUserService.findCommentUserByUsernameAndEmail("水落", "21913777519@qq.com");
+        CommentUser user = commentUserService.findCommentUserByUsernameOrEmail("水落", "21913777519@qq.com");
         System.out.println(user);
 
         CommentUser ch = commentUserService.checkUsernameAndEmail("水落", "21913777519@qq.com");
         System.out.println(ch);
 
     }
+
+
+    @Test
+    void testCheckUsernameAndEmail2() {
+        Long userid = CommentUtil.getUserId("水落石出", "2191377759@qq.com");
+        System.out.println(userid);
+    }
+
+
 
 
 

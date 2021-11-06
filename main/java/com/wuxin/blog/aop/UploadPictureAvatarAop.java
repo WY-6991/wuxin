@@ -20,7 +20,7 @@ public class UploadPictureAvatarAop {
     private UploadPictureService uploadPictureService;
 
     // 指定切入点
-    @Pointcut("execution(* com.wuxin.blog.controller.admin.GitHubController.uploadImg(..))")
+    @Pointcut("execution(* com.wuxin.blog.controller.admin.common.GitHubController.uploadImg(..))")
     public void log() {
         log.info("图片上传中....");
     }

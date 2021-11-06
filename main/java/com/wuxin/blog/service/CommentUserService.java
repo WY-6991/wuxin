@@ -15,9 +15,11 @@ public interface CommentUserService {
 
     void delUser(Long userId);
 
-    CommentUser findCommentUserByUsernameAndEmail(String username, String email);
+    CommentUser findCommentUserByUsernameOrEmail(String username, String email);
 
     IPage<CommentUser> findCommentUser(int current,int limit,String keywords);
 
     CommentUser checkUsernameAndEmail(String replyNickName, String replyEmail);
+
+    Long getUserId(String usernme,String email);
 }
