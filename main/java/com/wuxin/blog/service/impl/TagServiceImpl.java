@@ -1,30 +1,41 @@
 package com.wuxin.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wuxin.blog.exception.CustomException;
 import com.wuxin.blog.mapper.BlogMapper;
 import com.wuxin.blog.mapper.CategoryMapper;
 import com.wuxin.blog.mapper.TagMapper;
 import com.wuxin.blog.mapper.UserMapper;
 import com.wuxin.blog.mapper.vo.BlogTagMapper;
-import com.wuxin.blog.pojo.Blog;
-import com.wuxin.blog.pojo.Tag;
-import com.wuxin.blog.pojo.vo.BlogTag;
+import com.wuxin.blog.pojo.blog.Blog;
+import com.wuxin.blog.pojo.blog.Tag;
+import com.wuxin.blog.pojo.blog.BlogTag;
+import com.wuxin.blog.redis.RedisKey;
+import com.wuxin.blog.redis.RedisService;
 import com.wuxin.blog.service.BlogService;
 import com.wuxin.blog.service.TagService;
+import com.wuxin.blog.utils.ThrowUtils;
+import com.wuxin.blog.utils.mapper.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/11:08
+ * @Description:
+ */
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class TagServiceImpl implements TagService {
 
     @Autowired
@@ -42,28 +53,27 @@ public class TagServiceImpl implements TagService {
     @Autowired
     private BlogService blogService;
 
+    @Autowired
+    private RedisService redisService;
+
 
     @Autowired
     private CategoryMapper categoryMapper;
 
     @Override
-    public int addTag(Tag tag) {
-        return tagMapper.insert(tag);
+    public void add(Tag tag) {
+        ThrowUtils.ops(tagMapper.insert(tag),"标签添加失败！");
     }
 
     @Override
-    public int delTag(Long id) {
-        return tagMapper.deleteById(id);
+    public void delete(Long id) {
+        ThrowUtils.ops(tagMapper.deleteById(id),"删除失败！标签不存在");
     }
 
     @Override
-    public boolean updateTag(Tag tag) {
-        return new LambdaUpdateChainWrapper<Tag>(tagMapper)
-                .eq(Tag::getTagId, tag.getTagId()).update(tag);
+    public void update(Tag tag) {
+        ThrowUtils.ops(tagMapper.updateById(tag),"修改失败！标签不存在");
     }
-
-
-
 
     @Override
     public Tag findTagByName(String tagName) {
@@ -72,8 +82,22 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> findTag() {
-        return tagMapper.selectList(null);
+    public List<Tag> list() {
+        // 将tagLit存入redis中
+        String redisKey = RedisKey.TAG_LIST;
+        boolean b = redisService.hHasKey(redisKey,redisKey);
+        if(b){
+            List<Tag> list = (List<Tag>) redisService.hget(redisKey,redisKey);
+            if(list.size()!=0){
+                return list;
+            }
+        }
+        // 从数据库中获取tagList
+        List<Tag> tags = tagMapper.selectList(null);
+        System.out.println("======================List<Tag> redis==================");
+        // 将taglist出入redis中
+        redisService.hset(redisKey,redisKey,tags);
+        return tags;
     }
 
     @Override
@@ -88,37 +112,44 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public int addBlogTag(Long blogId, List<Long> tagIds) {
+    public Tag find(Long id) {
+        return tagMapper.selectById(id);
+    }
+
+    @Override
+    public IPage<Tag> selectListByPage(Integer current, Integer limit) {
+        return null;
+    }
+
+    @Override
+    public IPage<Tag> selectListByPage(Integer current, Integer limit, String keywords) {
+        Page<Tag> tagPage = new Page<>(current,limit);
+        return MapperUtils.lambdaQueryWrapper(tagMapper).like(!keywords.isEmpty(),Tag::getName,keywords).orderByDesc(Tag::getTagId).page(tagPage);
+    }
+
+
+
+    @Override
+    public void addBlogTag(Long blogId, List<Long> tagIds) {
         tagIds.forEach(tagId->{
             BlogTag blogTag = new BlogTag();
             blogTag.setBlogId(blogId);
             blogTag.setTagId(tagId);
             blogTagMapper.insert(blogTag);
         });
-        return 1;
 
     }
 
     @Override
-    public int delBlogTagByBlogId(Long blogId) {
-        // LambdaQueryChainWrapper<BlogTag> chainWrapper = new LambdaQueryChainWrapper<BlogTag>(blogTagMapper);
-        // chainWrapper.eq(BlogTag::getBlogId,blogId);
-        // return blogTagMapper.delete(chainWrapper);
-
+    public void delBlogTagByBlogId(Long blogId) {
         LambdaQueryWrapper<BlogTag> objectLambdaQueryWrapper = new LambdaQueryWrapper<BlogTag>();
         objectLambdaQueryWrapper.eq(BlogTag::getBlogId,blogId);
-        return blogTagMapper.delete(objectLambdaQueryWrapper);
+        ThrowUtils.ops( blogTagMapper.delete(objectLambdaQueryWrapper),"删除失败！标签不存在");
     }
-
-
-
-
-
     // 标签名->找到标签id->从blogTag中找出blogId->根据blogId找出blog和用户名
     @Override
     public List<Blog> findBlogByTagName(Integer current, Integer size, String tagName) {
 
-        // Page<Blog> blogPage = new Page<>(current,size);
         List<Blog> blogList = new ArrayList<>();
         // 获取对应tagId
         LambdaQueryChainWrapper<Tag> tagLambdaQueryChainWrapper = new LambdaQueryChainWrapper<>(tagMapper);
@@ -129,13 +160,14 @@ public class TagServiceImpl implements TagService {
         Page<BlogTag> blogTagPage = new Page<>(current, size);
         List<BlogTag> list = blogTagLambdaQueryChainWrapper.eq(BlogTag::getTagId, tagId).page(blogTagPage).getRecords();
         // 判断标签中是否含有内容
-        if (list.size() == 0) return null;
-        for (BlogTag blogTag : list) {
-            //  获取一篇blog信息
-            Blog blog = blogService.findBlogByBlogId(blogTag.getBlogId());
-            //将blog信息添加到BlogList
-            blogList.add(blog);
+        if (list.size() == 0) {
+            throw new CustomException("该文章没有任何标签！");
         }
+        list.forEach(blogTag->{
+            // 获取blog
+            Blog blogInfo = getBlogInfo(blogMapper.selectById(blogTag.getBlogId()));
+            blogList.add(blogInfo);
+        });
 
         return blogList;
     }
@@ -146,17 +178,25 @@ public class TagServiceImpl implements TagService {
         return tagMapper.selectCount(null);
     }
 
-
     @Override
-    public IPage<Tag> findTagByPage(Integer current, Integer limit, String keywords) {
-        LambdaQueryChainWrapper<Tag> chainWrapper = new LambdaQueryChainWrapper<>(tagMapper);
-        Page<Tag> tagPage = new Page<>(current,limit);
-        return chainWrapper.like(!keywords.isEmpty(),Tag::getName,keywords).page(tagPage);
+    public List<Object> blogCountByTagName() {
+        List<Tag> list = list();
+        // 得到tagList
+        List<Object> arrayList = new ArrayList<>();
+        list.forEach(tag -> {
+            // 从blogTag中查找符合 blogTag.getTagId() == tag.getTagId()的文章数量
+            Integer count = MapperUtils.lambdaQueryWrapper(blogTagMapper).eq(BlogTag::getTagId, tag.getTagId()).count();
+            Map<String, Object> map = new HashMap<>();
+            map.put("name",tag.getName());
+            map.put("value",count);
+            arrayList.add(map);
+        });
+        return arrayList;
     }
 
     public Blog getBlogInfo(Blog blog){
 
-        // blog.setUsername(userMapper.selectById(blog.getUserId()).getNickname());
+        blog.setUsername(userMapper.selectById(blog.getUserId()).getNickname());
         // 获取分类
         blog.setCategory(categoryMapper.selectById(blog.getCid()));
         // 返回所有标签
@@ -165,10 +205,9 @@ public class TagServiceImpl implements TagService {
         List<Tag> tags = new ArrayList<>();
         for (BlogTag blogTag : list) {
             // 获取标签名
-            if (blogTag.getTagId() != null) {
-                tags.add(tagMapper.selectById(blogTag.getTagId()));
-            }
-
+            Tag tag = tagMapper.selectById(blogTag.getTagId());
+            ThrowUtils.isNull(tag,"该标签不存在！");
+            tags.add(tag);
         }
         //添加标签名
         blog.setTags(tags);

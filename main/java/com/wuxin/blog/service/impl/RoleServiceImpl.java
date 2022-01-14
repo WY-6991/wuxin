@@ -1,53 +1,77 @@
 package com.wuxin.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wuxin.blog.mapper.RoleMapper;
-import com.wuxin.blog.pojo.Role;
+import com.wuxin.blog.pojo.blog.Role;
 import com.wuxin.blog.service.RoleService;
+import com.wuxin.blog.utils.ThrowUtils;
+import com.wuxin.blog.utils.mapper.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/11:08
+ * @Description:
+ */
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class RoleServiceImpl implements RoleService {
 
     @Autowired
     private RoleMapper roleMapper;
 
     @Override
-    public int addRole(Role role) {
-        return roleMapper.insert(role);
+    public void add(Role role) {
+        ThrowUtils.ops(roleMapper.insert(role),"添加失败");
     }
 
     @Override
-    public int delRole(Long id) {
-        return roleMapper.deleteById(id);
+    public void delete(Long id) {
+        ThrowUtils.ops(roleMapper.deleteById(id),"角色不存在");
     }
 
     @Override
-    public boolean updateRole(Role role) {
-        return new LambdaUpdateChainWrapper<Role>(roleMapper).eq(Role::getRoleId, role.getRoleId()).update();
+    public void update(Role role) {
+        ThrowUtils.ops(roleMapper.updateById(role),"角色不存在");
     }
 
     @Override
-    public IPage<Role> findRole(int current,int limit) {
-        LambdaQueryChainWrapper<Role> roleLambdaQueryChainWrapper = new LambdaQueryChainWrapper<>(roleMapper);
+    public IPage<Role> selectListByPage(Integer current,Integer limit) {
         Page<Role> rolePage = new Page<>(current,limit);
-        return roleLambdaQueryChainWrapper.page(rolePage);
+        return MapperUtils.lambdaQueryWrapper(roleMapper).page(rolePage);
     }
+
+
+    @Override
+    public Role find(Long id) {
+        return roleMapper.selectById(id);
+    }
+
+
 
     @Override
     public Role findRoleByName(String roleName) {
-        return new LambdaQueryChainWrapper<Role>(roleMapper).eq(Role::getRoleName,roleName).one();
+        return MapperUtils.lambdaQueryWrapper(roleMapper).eq(Role::getRoleName,roleName).one();
     }
 
     @Override
-    public Role findRoleById(Long roleId) {
-        return roleMapper.selectById(roleId);
+    public List<Role> list() {
+        ThrowUtils.ops(0, "该功能还未实现哦");
+        return null;
     }
+
+
+    @Override
+    public IPage<Role> selectListByPage(Integer current, Integer limit, String keywords) {
+        ThrowUtils.ops(0, "该功能还未实现哦");
+        return null;
+    }
+
+
 }

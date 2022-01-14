@@ -1,38 +1,16 @@
 package com.wuxin.blog.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.wuxin.blog.pojo.Role;
+import com.wuxin.blog.pojo.blog.Role;
+import com.wuxin.blog.mode.Base.PageService;
 
-import java.util.List;
 
-public interface RoleService {
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/9:24
+ * @Description:
+ */
+public interface RoleService extends PageService<Role> {
 
-    /**
-     * 添加角色
-     * @param role roleDTO
-     * @return int
-     */
-    int addRole(Role role);
-
-    /**
-     * 删除roleDTO
-     * @param id roleId
-     * @return int
-     */
-    int delRole(Long id);
-
-    /**
-     * 修改角色信息
-     * @param role roleDTO
-     * @return true
-     */
-    boolean updateRole(Role role);
-
-    /**
-     * 返回roleList
-     * @return list
-     */
-    IPage<Role> findRole(int current,int limit);
 
     /**
      * 查找roleName
@@ -41,10 +19,5 @@ public interface RoleService {
      */
     Role findRoleByName(String roleName);
 
-    /**
-     * 显示role roleId
-     * @param roleId roleId
-     * @return DTO
-     */
-    Role findRoleById(Long roleId);
+
 }

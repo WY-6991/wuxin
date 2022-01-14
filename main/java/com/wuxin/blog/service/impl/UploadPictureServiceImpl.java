@@ -1,35 +1,46 @@
 package com.wuxin.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wuxin.blog.mapper.UploadPictureMapper;
-import com.wuxin.blog.pojo.UploadPicture;
+import com.wuxin.blog.pojo.blog.UploadPicture;
 import com.wuxin.blog.service.UploadPictureService;
+import com.wuxin.blog.utils.ThrowUtils;
+import com.wuxin.blog.utils.mapper.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/11:08
+ * @Description:
+ */
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class UploadPictureServiceImpl implements UploadPictureService {
 
     @Autowired
     private UploadPictureMapper uploadPictureMapper;
 
+
+
     @Override
-    public void addUploadPicture(UploadPicture uploadPicture) {
-        uploadPictureMapper.insert(uploadPicture);
+    public void add(UploadPicture uploadPicture) {
+        ThrowUtils.ops(uploadPictureMapper.insert(uploadPicture),"图片记录添加失败");
+    }
+
+
+    @Override
+    public void delete(Long id) {
+        ThrowUtils.ops(uploadPictureMapper.deleteById(id),"仓库记录不存在！");
     }
 
     @Override
-    public void deleteUploadPicture(Long id) {
-        uploadPictureMapper.deleteById(id);
-    }
-
-    @Override
-    public IPage<UploadPicture> findUploadPictureList(int current, int limit) {
-        LambdaQueryChainWrapper<UploadPicture> chainWrapper = new LambdaQueryChainWrapper<>(uploadPictureMapper);
+    public IPage<UploadPicture> selectListByPage(Integer current, Integer limit) {
         Page<UploadPicture> uploadPicturePage = new Page<>(current,limit);
-        return chainWrapper.orderByDesc(UploadPicture::getCreateTime).page(uploadPicturePage);
+        return MapperUtils.lambdaQueryWrapper(uploadPictureMapper).orderByDesc(UploadPicture::getCreateTime).page(uploadPicturePage);
     }
+
 }

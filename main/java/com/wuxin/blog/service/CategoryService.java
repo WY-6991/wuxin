@@ -1,42 +1,19 @@
 package com.wuxin.blog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.wuxin.blog.pojo.Blog;
-import com.wuxin.blog.pojo.Category;
-import org.springframework.stereotype.Service;
+import com.wuxin.blog.pojo.blog.Blog;
+import com.wuxin.blog.pojo.blog.Category;
+import com.wuxin.blog.mode.Base.PageService;
 
 import java.util.List;
 
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/9:24
+ * @Description:
+ */
+public interface CategoryService extends PageService<Category> {
 
-public interface CategoryService {
-
-    /**
-     * 添加分类
-     * @param category categoryDTO
-     * @return int
-     */
-    int addCategory(Category category);
-
-    /**
-     * 删除
-     * @param id id
-     * @return int
-     */
-    int delCategory(Long id);
-
-    /**
-     * 修改category
-     * @param category categoryDTO
-     * @return true
-     */
-    boolean updateCategory(Category category);
-
-    /**
-     * categoryList
-     * @return list
-     */
-
-    List<Category> findCategory();
 
     /**
      * 根据categoryName查找category
@@ -55,11 +32,10 @@ public interface CategoryService {
      */
     IPage<Blog> findBlogByCategoryName(Integer current, Integer size, String categoryName);
 
+
     /**
-     * 分类分页
-     * @param current current
-     * @param limit limit
-     * @return record
+     * 返回统计数据
+     * @return list
      */
-    IPage<Category> findCategoryList(Integer current, Integer limit,String keywords);
+    List<Object> blogCountByCategoryName();
 }

@@ -1,24 +1,17 @@
 package com.wuxin.blog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.wuxin.blog.pojo.Friend;
-
-import java.util.List;
+import com.wuxin.blog.pojo.blog.Friend;
+import com.wuxin.blog.mode.Base.PageService;
 
 /**
  * @Author: wuxin001
  * @Date: 2021/10/01/10:57
  * @Description:
  */
-public interface FriendService {
+public interface FriendService extends PageService<Friend> {
 
-    void addFriend(Friend friend);
+    IPage<Friend> selectListByPage(Integer current, Integer limit,String keywords, String start, String end);
 
-    void updateFriend(Friend friend);
 
-    void delFriend(int friendId);
-
-    IPage<Friend> findFriend(Integer current,Integer limit,String keywords);
-
-    List<Friend> findAllFriendList();
 }

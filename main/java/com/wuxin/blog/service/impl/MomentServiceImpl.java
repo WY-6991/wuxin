@@ -1,19 +1,23 @@
 package com.wuxin.blog.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wuxin.blog.mapper.MomentMapper;
-import com.wuxin.blog.mapper.UserMapper;
-import com.wuxin.blog.pojo.Moment;
-import com.wuxin.blog.pojo.User;
+import com.wuxin.blog.pojo.blog.Moment;
+import com.wuxin.blog.pojo.blog.User;
+import com.wuxin.blog.redis.RedisKey;
+import com.wuxin.blog.redis.RedisService;
 import com.wuxin.blog.service.MomentService;
 import com.wuxin.blog.service.UserService;
+import com.wuxin.blog.utils.ThrowUtils;
+import com.wuxin.blog.utils.mapper.MapperUtils;
+import com.wuxin.blog.utils.string.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @Author: wuxin001
@@ -21,8 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
  * @Description:
  */
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class MomentServiceImpl implements MomentService {
 
+    private static final String MESSAGE = "操作失败！该动态不存在";
 
     @Autowired
     private MomentMapper momentMapper;
@@ -30,44 +36,96 @@ public class MomentServiceImpl implements MomentService {
     @Autowired
     private UserService userService;
 
-    @Transactional
+
+    @Autowired
+    private RedisService redisService;
+
+
     @Override
-    public int addMoment(Moment moment) {
+    public void add(Moment moment) {
         moment.setLikes(0);
-        return momentMapper.insert(moment);
+        ThrowUtils.ops(momentMapper.insert(moment), "动态添加失败！");
+
     }
 
-    @Transactional
+
     @Override
-    public int updateMoment(Moment moment) {
-        return momentMapper.updateById(moment);
+    public void update(Moment moment) {
+        ThrowUtils.ops(momentMapper.updateById(moment), MESSAGE);
     }
 
-    @Transactional
     @Override
-    public int delMoment(Long momentId) {
-        return momentMapper.deleteById(momentId);
+    public void delete(Long momentId) {
+        ThrowUtils.ops(momentMapper.deleteById(momentId), MESSAGE);
     }
 
-    @Transactional
     @Override
-    public IPage<Moment> findMoment(int current, int limit) {
+    public IPage<Moment> selectListByPage(Integer current, Integer limit) {
+        boolean b = redisService.hHasKey(RedisKey.MOMENT_LIST, current + "");
+        if(b){
+            IPage<Moment> page = (IPage<Moment>) redisService.hget(RedisKey.MOMENT_LIST, current + "");
+            if(StringUtils.isNotNull(page)&&page.getRecords().size()!=0){
+                return page;
+            }
+        }
+        // 从数据库获取动态信息同时存入到redis中
         LambdaQueryChainWrapper<Moment> wrapper = new LambdaQueryChainWrapper<>(momentMapper);
-        Page<Moment> momentPage = new Page<>(current,limit);
-        Page<Moment> page = wrapper.orderByDesc(Moment::getCreateTime).page(momentPage);
+        Page<Moment> page = new Page<>(current, limit);
+        Page<Moment> momentPage = wrapper.orderByDesc(Moment::getCreateTime).page(page);
         // 获取用户名 用户头像等信息
-        page.getRecords().forEach(moment->{
-            User user = userService.finUserById(moment.getUserId());
-            moment.setUsername(user.getNickname());
-            moment.setAvatar(user.getAvatar());
-        });
+        getUserNameAndAvatar(momentPage);
+        // 存入redis
+        redisService.hset(RedisKey.MOMENT_LIST,current,page);
         return page;
     }
 
 
-    @Transactional
     @Override
-    public Moment momentDetail(Long momentId) {
-        return momentMapper.selectById(momentId);
+    public Moment find(Long momentId) {
+        Moment moment = momentMapper.selectById(momentId);
+        ThrowUtils.isNull(moment, "该动态不存在！");
+        redisService.hdel(RedisKey.MOMENT_LIST,1);
+        return moment;
     }
+
+    @Override
+    public List<Moment> list() {
+        ThrowUtils.ops(0, "该功能还未实现哦");
+        return null;
+    }
+
+
+    @Override
+    public IPage<Moment> selectListByPage(Integer current, Integer limit, String keywords) {
+        ThrowUtils.ops(0, "该功能还未实现哦");
+        return null;
+    }
+
+
+    @Override
+    public IPage<Moment> selectListByPage(Integer current, Integer limit, String keywords, String start, String end) {
+        Page<Moment> page = new Page<>(current, limit);
+        Page<Moment> momentPage = MapperUtils.lambdaQueryWrapper(momentMapper)
+                .orderByDesc(Moment::getCreateTime)
+                .like(StringUtils.isNotNull(keywords), Moment::getContent, keywords)
+                .le(StringUtils.isNotNull(end), Moment::getCreateTime, end)
+                .ge(StringUtils.isNotNull(start), Moment::getCreateTime, start).page(page);
+        getUserNameAndAvatar(momentPage);
+        return momentPage;
+    }
+
+
+    /**
+     * 获取用户信息
+     * @param page momentPage
+     */
+    public void getUserNameAndAvatar(Page<Moment> page) {
+        page.getRecords().forEach(moment -> {
+            User user = userService.finUserById(moment.getUserId());
+            ThrowUtils.userNull(user);
+            moment.setUsername(user.getNickname());
+            moment.setAvatar(user.getAvatar());
+        });
+    }
+
 }

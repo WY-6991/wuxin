@@ -1,15 +1,17 @@
 package com.wuxin.blog.controller.admin.blog;
 
-import com.wuxin.blog.pojo.Blog;
-import com.wuxin.blog.pojo.User;
-import com.wuxin.blog.pojo.vo.PageVo;
+import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.pojo.blog.Blog;
+import com.wuxin.blog.pojo.blog.User;
+import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.BlogService;
-import com.wuxin.blog.service.BlogCommentService;
+import com.wuxin.blog.service.CommentService;
 import com.wuxin.blog.service.TagService;
-import com.wuxin.blog.util.result.R;
-import com.wuxin.blog.util.result.Result;
+import com.wuxin.blog.enums.Message;
+import com.wuxin.blog.utils.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,103 +34,105 @@ public class AdminBlogController {
     private TagService tagService;
 
     @Autowired
-    private BlogCommentService blogCommentService;
+    private CommentService blogCommentService;
 
-    // @GetMapping("/list/{current}/{size}")
-    // public Result findAllBlog(@PathVariable("current") Integer current,
-    //                        @PathVariable("size") Integer size) {
-    //     log.info("blogList信息 current = {},size = {}", current, size);
-    //     return R.ok(blogService.findAllBlog(current, size));
-    //
-    // }
 
+    @OperationLogger("获取文章列表")
     @PostMapping("/list")
     public Result findBlogPage(@RequestBody PageVo pageVo) {
-        log.info("blogList信息 current = {},limit = {},keywords={}", pageVo.getCurrent(),pageVo.getLimit(),pageVo.getKeywords());
-        return R.ok(blogService.findBlogPage(pageVo.getCurrent(),pageVo.getLimit(),pageVo.getKeywords()));
+
+        return Result.ok(blogService.findBlogPage
+                (
+                        pageVo.getCurrent(),
+                        pageVo.getLimit(),
+                        pageVo.getKeywords(),
+                        pageVo.getStart(),
+                        pageVo.getEnd())
+                );
     }
 
 
-
-    // @CrossOrigin(origins = "http://localhost:2768")
+    /**
+     * 添加blog
+     *
+     * @param blog DTO
+     * @return 成功消息
+     */
+    @OperationLogger("添加文章")
     @PostMapping("/add")
     public Result addBlog(@RequestBody Blog blog) {
-        log.info("添加的blog信息 blog={}",blog);
         Subject subject = SecurityUtils.getSubject();
         User user = (User) subject.getPrincipal();
-        log.info("添加的blog信息 session 中用户信息add blog ={}",user);
-        if (user == null) return R.error("未登录");
+        log.info("添加的blog信息 session 中用户信息add blog ={}", user);
+        if (user == null) {
+            return Result.error("添加失败，你还未登录！");
+        }
+        if ("".equals(blog.getTitle())) {
+            return Result.error("添加失败，标题不能空！");
+        }
+        if ("".equals(blog.getContent())) {
+            return Result.error("添加失败，内容不能为空！");
+        }
+        if (blog.getCid() == null) {
+            return Result.error("添加失败，获取不到分类！");
+        }
         blog.setUserId(user.getUserId());
         // 将得到的blogID返回给blogTag，将tagId添加进去
         Long blogId = blogService.addBlog(blog);
-        if(tagService.addBlogTag(blogId,blog.getTagIds())==1){
-            return R.ok("添加成功！");
-        }
-        return R.error("添加失败！");
+        tagService.addBlogTag(blogId, blog.getTagIds());
+        return Result.ok(Message.ADD_SUCCESS.getMessage());
 
     }
 
 
     /**
      * 修改blog
+     *
      * @param blog blogDTO
      * @return success
      */
-    @PostMapping("/update")
+    @OperationLogger("修改文章")
+    @PutMapping("/update")
     public Result blogUpdate(@RequestBody Blog blog) {
-        log.info("修改blog操作....blogId={}",blog.getBlogId());
-        if (blogService.updateBlog(blog)) return R.ok("success");
-        return R.error("error");
+        blogService.updateBlog(blog);
+        return Result.ok("文章修改成功！");
     }
 
 
     /**
      * 删除blog
+     *
      * @param blogId blogId
      * @return success
      */
-    @GetMapping("/del/{blogId}")
-    public Result blogDel(@PathVariable("blogId") Long blogId) {
-        if (blogService.delBlog(blogId) == 1){
-            tagService.delBlogTagByBlogId(blogId); // 删除回复
-            blogCommentService.delCommentByBlogId(blogId); // 删除评论
-            blogCommentService.delCommentReplyByBlogId(blogId); // 删除回复
-            return R.ok("success");
-        }
-        return R.error("error");
+    @OperationLogger("删除文章")
+    @RequiresRoles("root")
+    @DeleteMapping("/del")
+    public Result blogDel(@RequestParam("blogId") Long blogId) {
+        blogService.delBlog(blogId);
+        tagService.delBlogTagByBlogId(blogId);
+        blogCommentService.delCommentByBlogId(blogId);
+        blogCommentService.delCommentReplyByBlogId(blogId);
+        return Result.ok(Message.DEL_SUCCESS.getMessage());
+
     }
 
     /**
      * 根据用户id删除blog
+     *
      * @param userId userid
-     * @return  success
+     * @return success
      */
-    @GetMapping("/del/userId/{userId}")
-    public Result blogDelByUserId(@PathVariable("userId") Long userId) {
-        if (blogService.delBlogByUserId(userId) == 1) {
-            blogCommentService.delCommentByUserId(userId);
-            blogCommentService.delReplyByUserId(userId);
-            return R.ok("删除成功！");
-        }
-        return R.error("error");
+    @OperationLogger("根据用户id删除文章")
+    @RequiresRoles("root")
+    @DeleteMapping("/del/userId")
+    public Result blogDelByUserId(@RequestParam("userId") Long userId) {
+        blogService.delBlogByUserId(userId);
+        blogCommentService.delCommentByUserId(userId);
+        blogCommentService.delReplyByUserId(userId);
+        return Result.ok(Message.DEL_SUCCESS.getMessage());
     }
 
-
-    /**
-     *  统计所有已经发布blog点击量
-     */
-    @GetMapping("/count/views")
-    public Result countAllBlogViews(){
-       return R.ok(blogService.countAllBlogViews());
-    }
-
-    /**
-     *  统计所有已经发布blog点击量
-     */
-    @GetMapping("/count/blog")
-    public Result countAllBlog(){
-        return R.ok(blogService.countAllBlog());
-    }
 
 
 }

@@ -1,7 +1,7 @@
 package com.wuxin.blog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wuxin.blog.pojo.Role;
+import com.wuxin.blog.pojo.blog.Role;
 import org.springframework.stereotype.Repository;
 
 

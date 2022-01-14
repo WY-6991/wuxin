@@ -1,12 +1,13 @@
 package com.wuxin.blog.controller.admin.friend;
 
-import com.wuxin.blog.pojo.Friend;
-import com.wuxin.blog.pojo.vo.PageVo;
+import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.pojo.blog.Friend;
+import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.FriendService;
-import com.wuxin.blog.util.result.R;
-import com.wuxin.blog.util.result.Result;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.wuxin.blog.utils.result.Result;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * @Author: wuxin001
@@ -17,32 +18,34 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/friend")
 public class AdminFriendController {
 
-    @Autowired
+    @Resource
     private FriendService friendService;
 
+
+    @OperationLogger("添加友情链接")
     @PostMapping("/add")
     public Result addFriend(@RequestBody Friend friend){
-        friendService.addFriend(friend);
-        return R.ok("添加成功!");
+        friendService.add(friend);
+        return Result.ok("添加成功!");
     }
 
-
+    @OperationLogger("修改友情链接")
     @PostMapping("/update")
     public Result updateFriend(@RequestBody Friend friend){
-        friendService.updateFriend(friend);
-        return R.ok("修改成功!");
+        friendService.update(friend);
+        return Result.ok("修改成功!");
     }
 
-
+    @OperationLogger("删除友情链接")
     @GetMapping("/del")
-    public Result delFriend(@RequestParam("friendId") int friendId){
-        friendService.delFriend(friendId);
-        return R.ok("删除成功!");
+    public Result delFriend(@RequestParam("friendId") Long friendId){
+        friendService.delete(friendId);
+        return Result.ok("删除成功!");
     }
 
-
+    @OperationLogger("查看友情链接列表")
     @PostMapping("/list")
     public Result findFriend(@RequestBody PageVo pageVo){
-        return R.ok(friendService.findFriend(pageVo.getCurrent(),pageVo.getLimit(),pageVo.getKeywords()));
+        return Result.ok(friendService.selectListByPage(pageVo.getCurrent(),pageVo.getLimit(),pageVo.getKeywords()));
     }
 }

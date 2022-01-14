@@ -1,10 +1,16 @@
 package com.wuxin.blog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.wuxin.blog.pojo.User;
+import com.wuxin.blog.pojo.blog.User;
 
 import java.util.List;
 
+
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/9:24
+ * @Description:
+ */
 public interface UserService {
 
 
@@ -12,9 +18,9 @@ public interface UserService {
     /**
      * 用户添加 注册
      * @param user DAO
-     * @return 1
+     * @return 返回用户id
      */
-    int addUser(User user);
+    Long addUser(User user);
 
 
     /**
@@ -22,14 +28,14 @@ public interface UserService {
      * @param id DAO
      * @return 1
      */
-    int delUser(Long id);
+    void delUser(Long id);
 
     /**
      * 修改用户信息
      * @param user DTO
      * @return 1
      */
-    int updateUser(User user);
+    void updateUser(User user);
 
     /**
      * 检查邮箱
@@ -87,30 +93,70 @@ public interface UserService {
 
 
 
-    IPage<User> selectUser2(String username);
-
 
     /**
      * 分页显示用户 搜索条件
-     * @param current
-     * @param limit
-     * @param keywords 内容
-     * @return
+     * @param current 页码
+     * @param limit 大小
+     * @param keywords 关键字
+     * @return page
      */
     IPage<User> finUserByKeywords(Integer current, Integer limit, String keywords);
 
 
     /**
      * 修改密码
-     * @param username
-     * @param password
+     * @param username 用户名
+     * @param newUsername 新的用户名
+     * @param password 密码
+     * @return 成功信息
+     */
+    boolean updatePass(Long userId,String username,String newUsername, String password);
+
+    /**
+     * 密码修改,邮箱方式修改
+     * @param username 用户名
+     * @param password 密码
+     * @return 成功信息
      */
     boolean updatePass(String username, String password,User user);
 
     /**
-     * 获取我的信息
-     * @param adminUserId
-     * @return
+     * 获取博主信息
+     * @param adminUserId 我的id
+     * @return DTO
      */
     User findAdminUserInfo(Long adminUserId);
+
+    /**
+     * 二者根据一个条件查询
+     * @param username 用户名
+     * @param email 邮箱
+     * @return list
+     */
+    List<User> findCommentUserByUsernameOrEmail(String username, String email);
+
+    /**
+     * 同时查询
+     * @param username 用户名
+     * @param email 邮箱
+     * @return DTO
+     */
+    User checkUsernameAndEmail(String username, String email);
+
+    /**
+     * 获取用户Id
+     * @param username 用户名
+     * @param email 邮箱
+     * @return userID
+     */
+    Long getUserId(String username, String email);
+
+
+    /**
+     * 获取用户详情信息
+     * @param userId
+     * @return
+     */
+    User findUserDetail(Long userId);
 }

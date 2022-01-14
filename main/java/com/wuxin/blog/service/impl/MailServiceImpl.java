@@ -1,7 +1,9 @@
 package com.wuxin.blog.service.impl;
 
+import com.wuxin.blog.constant.GlobalConstant;
+import com.wuxin.blog.exception.CustomException;
 import com.wuxin.blog.service.MailService;
-import com.wuxin.blog.util.KeyUtil;
+import com.wuxin.blog.utils.KeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -11,6 +13,11 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
 
 
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/11:08
+ * @Description:
+ */
 @Service
 public class MailServiceImpl implements MailService {
 
@@ -18,7 +25,6 @@ public class MailServiceImpl implements MailService {
     @Autowired
     JavaMailSender mailSender;
 
-    //application.properties中已配置的值
     @Value("${spring.mail.username}")
     private String from;
 
@@ -26,33 +32,28 @@ public class MailServiceImpl implements MailService {
     private String time;
 
     @Override
-    public boolean sendMimeMail(String email, HttpSession session) {
+    public void sendMimeMail(String email, HttpSession session) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-
-            mailMessage.setSubject("验证码邮件");//主题
-            //生成随机数
             String code = KeyUtil.keyUtils();
             System.out.println("code=>" + code);
-
+            //主题
+            mailMessage.setSubject("验证码邮件");
             //将随机数放置到session中
-            session.setAttribute("email", email);
-            session.setAttribute("code", code);
-
+            session.setAttribute(GlobalConstant.USER_VALID_EMAIL, email);
+            session.setAttribute(GlobalConstant.USER_VALID_CODE, code);
             // 设置这个session有效时间 设置有效时间为10分钟
             session.setMaxInactiveInterval(Integer.parseInt(time));
-
-            mailMessage.setText("您收到的验证码是: " + code + " ,有效时间为10分钟,如果非本人操作,请忽略!");//内容
-
-            mailMessage.setTo(email);//发给谁
-
-            mailMessage.setFrom(from);//你自己的邮箱
-
-            mailSender.send(mailMessage);//发送
-            return true;
+            mailMessage.setText("您收到的验证码是: " + code + " ,有效时间为10分钟,如果非本人操作,请忽略!");
+                //发给谁
+            mailMessage.setTo(email);
+                //你自己的邮箱
+            mailMessage.setFrom(from);
+                //发送
+            mailSender.send(mailMessage);
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            throw new CustomException("邮箱发送失败~请重新尝试！");
         }
     }
 }

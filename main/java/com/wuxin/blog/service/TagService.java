@@ -1,88 +1,72 @@
 package com.wuxin.blog.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.wuxin.blog.pojo.Blog;
-import com.wuxin.blog.pojo.Tag;
+import com.wuxin.blog.pojo.blog.Blog;
+import com.wuxin.blog.pojo.blog.Tag;
+import com.wuxin.blog.mode.Base.PageService;
 
 import java.util.List;
 
-public interface TagService {
+
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/9:24
+ * @Description:
+ */
+public interface TagService extends PageService<Tag> {
+
 
     /**
-     * 添加标签
-     *
-     * @param tag tagDTO
-     * @return int
-     */
-    int addTag(Tag tag);
-
-    /**
-     * @param id tagID
-     * @return
-     */
-    int delTag(Long id);
-
-    /**
-     * @param tag
-     * @return
-     */
-    boolean updateTag(Tag tag);
-
-    /**
-     * @param tagName
-     * @return
+     * 查询 tag
+     * @param tagName name
+     * @return DTO
      */
     Tag findTagByName(String tagName);
 
-    /**
-     * @return
-     */
-    List<Tag> findTag();
 
 
     /**
-     * 返回blogtag
+     * 获取blogTag
+     * @param blogId id
+     * @return list
      */
     List<Tag> selectBlogTag(Long blogId);
 
     /**
+     * 添加blog 标签
      * @param blogId blogId
      * @param tagIds  tagId
-     * @return int
+     * @return 成功消息
      */
-    int addBlogTag(Long blogId, List<Long> tagIds);
+    void addBlogTag(Long blogId, List<Long> tagIds);
 
     /**
-     * @param blogId blogId
-     * @return 1
+     * 删除blogTag
+     * @param blogId id
      */
-    int delBlogTagByBlogId(Long blogId);
+    void delBlogTagByBlogId(Long blogId);
 
 
     /**
      * 根据标签名显示blog
-     *
      * @param current current
      * @param size    size
      * @param tagName 标签名
-     * @return records
+     * @return page
      */
     List<Blog> findBlogByTagName(Integer current, Integer size, String tagName);
 
     /**
      * 统计标签信息
-     *
      * @return count
      */
     Integer findTagCount();
 
 
     /**
-     * 分页搜索tag
-     * @param current curr
-     * @param limit limit
-     * @param keywords 内容
-     * @return 返回结果
+     * 后台首页实现tag文章种类分页
+     * @return
      */
-    IPage<Tag> findTagByPage(Integer current, Integer limit, String keywords);
+    List<Object> blogCountByTagName();
+
+
 }

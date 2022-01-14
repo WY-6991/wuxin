@@ -1,12 +1,15 @@
 package com.wuxin.blog.controller.admin.user;
 
-import com.wuxin.blog.pojo.Role;
-import com.wuxin.blog.pojo.vo.PageVo;
+import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.pojo.blog.Role;
+import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.RoleService;
-import com.wuxin.blog.util.result.R;
-import com.wuxin.blog.util.result.Result;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.wuxin.blog.enums.Message;
+import com.wuxin.blog.utils.result.Result;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * @Author: wuxin001
@@ -17,16 +20,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/role")
 public class AdminRoleController {
 
-    @Autowired
+    @Resource
     private RoleService roleService;
 
     /**
      * 角色列表
-     * @return
+     * @param pageVo Page
+     * @return page
      */
+    @OperationLogger("查看角色列表")
     @PostMapping("/list")
-    public Result roleList(@RequestBody PageVo pageVo){
-        return R.ok(roleService.findRole(pageVo.getCurrent(),pageVo.getLimit()));
+    public Result findRole(@RequestBody PageVo pageVo) {
+        return Result.ok(roleService.selectListByPage(pageVo.getCurrent(), pageVo.getLimit()));
     }
 
     /**
@@ -34,12 +39,16 @@ public class AdminRoleController {
      * @param role roleDTO
      * @return success
      */
+    @OperationLogger("添加角色")
+    @RequiresRoles("root")
     @PostMapping("/add")
-    public Result roleAdd(@RequestBody Role role){
+    public Result roleAdd(@RequestBody Role role) {
         Role roleByName = roleService.findRoleByName(role.getRoleName());
-        if(roleByName !=null) return R.error("该角色已存在");
-        if(roleService.addRole(role) == 1) return R.ok("添加成功");
-        return R.ok("添加失败");
+        if (roleByName != null) {
+            return Result.error("该角色已存在");
+        }
+        roleService.add(role);
+        return Result.ok(Message.ADD_SUCCESS.getMessage());
     }
 
     /**
@@ -47,12 +56,16 @@ public class AdminRoleController {
      * @param role roleDTO
      * @return success
      */
+    @OperationLogger("修改角色")
+    @RequiresRoles("root")
     @GetMapping("/update")
-    public Result roleUpdate(@RequestBody Role role){
+    public Result roleUpdate(@RequestBody Role role) {
         Role roleByName = roleService.findRoleByName(role.getRoleName());
-        if(roleByName !=null) return R.error("该角色已存在");
-        if(roleService.updateRole(role)) return R.ok("修改成功");
-        return R.ok("修改失败");
+        if (roleByName != null) {
+            return Result.error("该角色已存在");
+        }
+        roleService.update(role);
+        return Result.ok(Message.UPDATE_SUCCESS.getMessage());
     }
 
     /**
@@ -60,9 +73,11 @@ public class AdminRoleController {
      * @param roleId roleID
      * @return success
      */
+    @OperationLogger("删除角色")
+    @RequiresRoles("root")
     @GetMapping("/del/{roleId}")
-    public Result roleDel(@PathVariable("roleId") Long roleId){
-        if(roleService.delRole(roleId) == 1) return R.ok("删除成功！");
-        return R.ok("删除失败！");
+    public Result roleDel(@PathVariable("roleId") Long roleId) {
+        roleService.delete(roleId);
+        return Result.ok(Message.DEL_SUCCESS.getMessage());
     }
 }

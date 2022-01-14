@@ -1,29 +1,15 @@
 package com.wuxin.blog.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.wuxin.blog.pojo.ExceptionLog;
+import com.wuxin.blog.pojo.log.ExceptionLog;
+import com.wuxin.blog.mode.Base.LogService;
 
-public interface ExceptionService {
 
-    /**
-     * 添加异常
-     * @param exceptionLog
-     * @return
-     */
-    int addException(ExceptionLog exceptionLog);
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/9:24
+ * @Description:
+ */
+public interface ExceptionService extends LogService<ExceptionLog> {
 
-    /**
-     * 删除
-     * @param id
-     * @return
-     */
-    int delException(Long id);
 
-    /**
-     * 显示日志
-     * @param current
-     * @param limit
-     * @return
-     */
-    IPage<ExceptionLog> findExceptionLog(int current,int limit);
 }

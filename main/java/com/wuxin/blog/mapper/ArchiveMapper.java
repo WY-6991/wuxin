@@ -1,7 +1,7 @@
 package com.wuxin.blog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wuxin.blog.pojo.Archive;
+import com.wuxin.blog.pojo.blog.Archive;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -12,3 +12,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ArchiveMapper extends BaseMapper<Archive> {
 }
+

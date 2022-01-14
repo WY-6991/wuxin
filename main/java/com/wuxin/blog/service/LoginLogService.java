@@ -1,28 +1,22 @@
 package com.wuxin.blog.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.wuxin.blog.pojo.LoginLog;
+import com.wuxin.blog.pojo.log.LoginLog;
+import com.wuxin.blog.mode.Base.LogService;
 
-public interface LoginLogService {
-
-    /**
-     * 显示登录信息
-     * @param current
-     * @param limit
-     * @return
-     */
-    IPage<LoginLog> findLoginList(Integer current, Integer limit);
-
-    /**
-     * 添加登录信息
-     */
-    int addLoginLog(LoginLog loginLog);
+/**
+ * @Author: wuxin001
+ * @Date: 2022/01/06/21:48
+ * @Description:
+ */
+public interface LoginLogService extends LogService<LoginLog> {
 
 
     /**
-     * 删除
-     * @param loginLogId
-     * @return
+     * 统计今日访客
+     * @return int
      */
-    int delLoginLog(Long loginLogId);
+    public Integer selectTodayLoginLog();
+
+
+
 }

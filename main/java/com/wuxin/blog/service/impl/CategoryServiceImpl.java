@@ -2,28 +2,38 @@ package com.wuxin.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wuxin.blog.mapper.BlogMapper;
 import com.wuxin.blog.mapper.CategoryMapper;
 import com.wuxin.blog.mapper.TagMapper;
 import com.wuxin.blog.mapper.UserMapper;
 import com.wuxin.blog.mapper.vo.BlogTagMapper;
-import com.wuxin.blog.pojo.Blog;
-import com.wuxin.blog.pojo.Category;
-import com.wuxin.blog.pojo.Tag;
-import com.wuxin.blog.pojo.vo.BlogTag;
+import com.wuxin.blog.pojo.blog.Blog;
+import com.wuxin.blog.pojo.blog.Category;
+import com.wuxin.blog.pojo.blog.Tag;
+import com.wuxin.blog.pojo.blog.BlogTag;
+import com.wuxin.blog.redis.RedisKey;
+import com.wuxin.blog.redis.RedisService;
 import com.wuxin.blog.service.BlogService;
 import com.wuxin.blog.service.CategoryService;
+import com.wuxin.blog.utils.ThrowUtils;
+import com.wuxin.blog.utils.mapper.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/11:08
+ * @Description:
+ */
 @Service
+@Transactional(rollbackFor = {Exception.class})
 public class CategoryServiceImpl implements CategoryService {
 
 
@@ -46,66 +56,94 @@ public class CategoryServiceImpl implements CategoryService {
     private TagMapper tagMapper;
 
 
+    @Autowired
+    private RedisService redisService;
+
+
     @Override
-    public int addCategory(Category category) {
-        return categoryMapper.insert(category);
+    public void add(Category category) {
+        ThrowUtils.ops(categoryMapper.insert(category),"操作失败");
+        List<Category> list = list();
+        list.add(category);
+        // 添加到redis中
+        redisService.set(RedisKey.CATEGORY_LIST,list);
     }
 
     @Override
-    public int delCategory(Long id) {
-        return categoryMapper.deleteById(id);
+    public void delete(Long id) {
+        ThrowUtils.ops(categoryMapper.deleteById(id), "分类标签不存在！");
+        List<Category> list = list();
+        for (int i = 0; i < list.size(); i++) {
+            if(list.get(i).getCid().equals(id)){
+                list.remove(i);
+                redisService.set(RedisKey.CATEGORY_LIST,list);
+            }
+        }
     }
 
     @Override
-    public boolean updateCategory(Category category) {
-        return new LambdaUpdateChainWrapper<Category>(categoryMapper).eq(Category::getCid, category.getCid()).update(category);
+    public void update(Category category) {
+        ThrowUtils.ops(categoryMapper.updateById(category), "操作失败！标签不存在");
+        redisService.del(RedisKey.CATEGORY_LIST);
     }
 
     @Override
-    public List<Category> findCategory() {
-        return categoryMapper.selectList(null);
+    public List<Category> list() {
+        // 获取所有category
+        String redisKey = RedisKey.CATEGORY_LIST;
+        // 判断key是否存在
+        boolean b = redisService.hasKey(redisKey);
+        if (b) {
+            List<Category> list = (List<Category>) redisService.get(redisKey);
+            if (list.size() != 0) {
+                return list;
+            }
+        }
+        // redis 中获取不到categoryList 从数据库中获取并且添加到redis中
+        List<Category> categories = categoryMapper.selectList(null);
+        // 存入redis
+        redisService.set(redisKey, categories);
+        return categories;
     }
 
     @Override
     public Category findCategoryByName(String name) {
-        return new LambdaQueryChainWrapper<Category>(categoryMapper).eq(Category::getName, name).one();
+        Category one = MapperUtils.lambdaQueryWrapper(categoryMapper).eq(Category::getName, name).one();
+        ThrowUtils.isNull(one, "标签不存在");
+        return one;
     }
 
-
-    // @Override
-    // public IPage<Blog> findBlogByCategoryName(Integer current, Integer size, String categoryName) {
-    //     Long cid = new LambdaQueryChainWrapper<Category>(categoryMapper).eq(Category::getName, categoryName).one().getCid();
-    //     Page<Blog> blogPage = new Page<>(current,size);
-    //     return new LambdaQueryChainWrapper<Blog>(blogMapper).eq(Blog::getCid, cid).page(blogPage);
-    // }
-    //
     @Override
     public IPage<Blog> findBlogByCategoryName(Integer current, Integer size, String categoryName) {
         Long cid = new LambdaQueryChainWrapper<Category>(categoryMapper).eq(Category::getName, categoryName).one().getCid();
-        Page<Blog> blogPage = new Page<>(current,size);
-        Page<Blog> ipage = new LambdaQueryChainWrapper<Blog>(blogMapper).eq(Blog::getCid, cid).page(blogPage);
+        Page<Blog> blogPage = new Page<>(current, size);
+        Page<Blog> ipage = new LambdaQueryChainWrapper<Blog>(blogMapper).eq(Blog::getCid, cid).orderByDesc(Blog::getTop).orderByDesc(Blog::getCreateTime).page(blogPage);
         ipage.getRecords().forEach(blog -> {
-
+            getBlogInfo(blog);
         });
-
         return ipage;
 
     }
 
-
     @Override
-    public IPage<Category> findCategoryList(Integer current, Integer limit,String keywords) {
-        return new LambdaQueryChainWrapper<Category>(categoryMapper)
-                .like(!keywords.isEmpty(),Category::getName,keywords)
-                .page(new Page<Category>(current,limit));
+    public Category find(Long id) {
+        return null;
     }
 
-    public Blog getBlogInfo(Blog blog){
+    @Override
+    public IPage<Category> selectListByPage(Integer current, Integer limit, String keywords) {
+        return new LambdaQueryChainWrapper<Category>(categoryMapper)
+                .like(!keywords.isEmpty(), Category::getName, keywords)
+                .page(new Page<Category>(current, limit));
+    }
 
-        blog.setUsername(userMapper.selectById(blog.getUserId()).getNickname());
-        // 获取分类
-        blog.setCategory(categoryMapper.selectById(blog.getCid()));
-        // 返回所有标签
+    public Blog getBlogInfo(Blog blog) {
+        String nickname = userMapper.selectById(blog.getUserId()).getNickname();
+        ThrowUtils.isNull(nickname, "用户名不存在！");
+        blog.setUsername(nickname);
+        Category category = categoryMapper.selectById(blog.getCid());
+        ThrowUtils.isNull(category, "用户名不存在！");
+        blog.setCategory(category);
         LambdaQueryChainWrapper<BlogTag> bt = new LambdaQueryChainWrapper<>(blogTagMapper);
         List<BlogTag> list = bt.eq(BlogTag::getBlogId, blog.getBlogId()).list();
         List<Tag> tags = new ArrayList<>();
@@ -120,4 +158,39 @@ public class CategoryServiceImpl implements CategoryService {
         blog.setTags(tags);
         return blog;
     }
+
+    @Override
+    public List<Object> blogCountByCategoryName() {
+        String redisKey = RedisKey.CATEGORY_COUNT;
+        // 判断是否存在？
+        boolean b = redisService.hasKey(redisKey);
+        if (b) {
+            List<Object> arrayList = (List<Object>) redisService.get( redisKey);
+            // 判断是否含有值
+            if (arrayList.size() != 0) {
+                return arrayList;
+            }
+        }
+        // 从数据库中获取同时存入到redis中
+        List<Category> list = new LambdaQueryChainWrapper<Category>(categoryMapper).list();
+        List<Object> arrayList = new ArrayList<>();
+        list.forEach(category -> {
+            // 获取blogCount根据categoryName
+            Map<String, Object> map = new HashMap<>();
+            int count = new LambdaQueryChainWrapper<Blog>(blogMapper).eq(Blog::getCid, category.getCid()).count();
+            map.put("name", category.getName());
+            map.put("value", count);
+            arrayList.add(map);
+        });
+        // 将数据统计如数据库中
+        redisService.set(redisKey, arrayList);
+        return arrayList;
+    }
+
+    @Override
+    public IPage<Category> selectListByPage(Integer current, Integer limit) {
+        return null;
+    }
+
+
 }

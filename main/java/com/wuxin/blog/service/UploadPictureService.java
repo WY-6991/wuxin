@@ -1,12 +1,35 @@
 package com.wuxin.blog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.wuxin.blog.pojo.UploadPicture;
-
-public interface UploadPictureService {
+import com.wuxin.blog.pojo.blog.UploadPicture;
 
 
-    void addUploadPicture(UploadPicture uploadPicture);
-    void deleteUploadPicture(Long id);
-    IPage<UploadPicture> findUploadPictureList(int current,int limit);
+/**
+ * @Author: wuxin001
+ * @Date: 2021/10/01/9:24
+ * @Description:
+ */
+public interface UploadPictureService  {
+
+    /**
+     * 添加一条记录
+     * @param uploadPicture DTO
+     */
+    void add(UploadPicture uploadPicture);
+
+    /**
+     * 删除
+     * @param id id
+     */
+    void delete(Long id);
+
+
+    /**
+     * 分页记录
+     * @param current 页码
+     * @param limit 大小
+     * @return page
+     */
+    IPage<UploadPicture> selectListByPage(Integer current, Integer limit);
+
 }

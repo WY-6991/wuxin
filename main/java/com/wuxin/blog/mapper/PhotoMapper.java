@@ -1,7 +1,7 @@
 package com.wuxin.blog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wuxin.blog.pojo.Photo;
+import com.wuxin.blog.pojo.blog.Photo;
 
 /**
  * @Author: wuxin001

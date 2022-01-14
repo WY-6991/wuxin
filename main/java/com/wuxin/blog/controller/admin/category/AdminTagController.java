@@ -1,13 +1,16 @@
 package com.wuxin.blog.controller.admin.category;
 
-import com.wuxin.blog.pojo.Tag;
-import com.wuxin.blog.pojo.vo.PageVo;
+import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.pojo.blog.Tag;
+import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.TagService;
-import com.wuxin.blog.util.result.R;
-import com.wuxin.blog.util.result.Result;
+import com.wuxin.blog.enums.Message;
+import com.wuxin.blog.utils.result.Result;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 /**
  * @Author: wuxin001
@@ -19,20 +22,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/admin/tag")
 public class AdminTagController {
 
-    @Autowired
+    @Resource
     private TagService tagService;
 
 
     /**
      * 标签搜索
+     *
      * @return success
      */
+    @OperationLogger("查看文章标签")
     @PostMapping("/list")
     public Result selectTag(@RequestBody PageVo pageVo) {
-        log.info("默认执行搜索tag搜索内容：keywords={},current={},limit={}",pageVo.getKeywords(),pageVo.getCurrent(),pageVo.getLimit());
-        return R.ok( tagService.findTagByPage(pageVo.getCurrent(),pageVo.getLimit(), pageVo.getKeywords()));
+        return Result.ok(tagService.selectListByPage(pageVo.getCurrent(), pageVo.getLimit(), pageVo.getKeywords()));
     }
-
 
 
     /**
@@ -41,12 +44,16 @@ public class AdminTagController {
      * @param tag tagDTO
      * @return success
      */
+    @OperationLogger("添加文章标签")
+    @RequiresRoles("root")
     @PostMapping("/add")
     public Result addTag(@RequestBody Tag tag) {
         Tag tagByName = tagService.findTagByName(tag.getName());
-        if (tagByName != null) return R.error("该标签名已经存在");
-        if (tagService.addTag(tag) == 1) return R.ok("success");
-        return R.error("error");
+        if (tagByName != null) {
+            return Result.error("该标签名已经存在");
+        }
+        tagService.add(tag);
+        return Result.ok(Message.ADD_SUCCESS.getMessage());
     }
 
     /**
@@ -55,13 +62,16 @@ public class AdminTagController {
      * @param tag tagDTO
      * @return success
      */
+    @OperationLogger("修改文章标签")
+    @RequiresRoles("root")
     @PostMapping("/update")
     public Result updateTag(@RequestBody Tag tag) {
-        log.info("修改标签信息=>tag={},tagId=>{}", tag, tag.getTagId());
         Tag tagByName = tagService.findTagByName(tag.getName());
-        if (tagByName != null) return R.error("该标签名已经存在");
-        if (tagService.updateTag(tag)) return R.ok("success");
-        return R.error("修改数据失败！");
+        if (tagByName != null) {
+            return Result.error("该标签名已经存在");
+        }
+        tagService.update(tag);
+        return Result.ok(Message.UPDATE_SUCCESS.getMessage());
     }
 
 
@@ -71,11 +81,12 @@ public class AdminTagController {
      * @param tag tagDTO
      * @return success
      */
+    @OperationLogger("修改文章标签颜色")
+    @RequiresRoles("root")
     @PostMapping("/update/color")
     public Result updateTagColor(@RequestBody Tag tag) {
-        log.info("修改标签颜色=>tag={},tagId=>{}", tag, tag.getTagId());
-        if (tagService.updateTag(tag)) return R.ok("修改成功！");
-        return R.error("修改数据失败！");
+        tagService.update(tag);
+        return Result.ok(Message.UPDATE_SUCCESS.getMessage());
     }
 
     /**
@@ -84,13 +95,13 @@ public class AdminTagController {
      * @param tagId tagID
      * @return success
      */
+    @OperationLogger("删除文章标签")
+    @RequiresRoles("root")
     @GetMapping("/del/{tagId}")
     public Result delTag(@PathVariable("tagId") Long tagId) {
-        if (tagService.delTag(tagId) == 1) return R.ok("删除成功！");
-        return R.error("删除失败！");
+        tagService.delete(tagId);
+        return Result.ok(Message.DEL_SUCCESS.getMessage());
     }
-
-
 
 
 }
