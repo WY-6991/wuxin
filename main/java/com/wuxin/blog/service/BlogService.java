@@ -1,6 +1,7 @@
 package com.wuxin.blog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.wuxin.blog.mode.SearchBlog;
 import com.wuxin.blog.pojo.blog.Blog;
 
 import java.util.List;
@@ -21,6 +22,8 @@ public interface BlogService {
      * @return int id
      */
     Long addBlog(Blog blog);
+
+
 
 
     /**
@@ -55,7 +58,7 @@ public interface BlogService {
      * 获取最新blog
      * @return list
      */
-    List<Blog> newBlog();
+    List<SearchBlog> newBlog();
 
 
     /**
@@ -115,7 +118,7 @@ public interface BlogService {
      * @param blogId blogId
      * @return DTO
      */
-    Blog beforeBlog(Long blogId);
+    SearchBlog beforeBlog(Long blogId);
 
 
     /**
@@ -123,7 +126,29 @@ public interface BlogService {
      * @param blogId blogID
      * @return DTO
      */
-    Blog nextBlog(Long blogId);
+    SearchBlog nextBlog(Long blogId);
 
 
+
+
+    /**
+     * 获取评论文章title
+     * @param blogId 文章id
+     * @return blog
+     */
+    String findCommentBlogTitle(Long blogId);
+
+
+    /**
+     * 获取全部文章列表
+     * @return list
+     */
+    List<Blog> getAllBlogList();
+
+
+    /**
+     * 关键词搜索
+     * @return
+     */
+    List<SearchBlog> searchBlog(String keywords);
 }

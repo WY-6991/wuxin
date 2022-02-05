@@ -23,7 +23,7 @@ public class UploadPictureController {
 
     @PostMapping("/list")
     public Result findUploadPictureList(@RequestBody PageVo pageVo){
-        return Result.ok(uploadPictureService.selectListByPage(pageVo.getCurrent(), pageVo.getLimit()));
+        return Result.ok(uploadPictureService.selectListByPage(pageVo.getCurrent(), pageVo.getLimit(),pageVo.getStart(),pageVo.getEnd()));
     }
 
     @OperationLogger("删除一条文件上传记录")

@@ -4,47 +4,50 @@ package com.wuxin.blog.shiro;
 import com.wuxin.blog.pojo.blog.User;
 import com.wuxin.blog.service.UserService;
 import com.wuxin.blog.utils.security.ShiroUtil;
+import com.wuxin.blog.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authc.credential.SimpleCredentialsMatcher;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 认证匹配
- * @author Administrator
+ * 自定义 认证匹配
+ *
+ * @author wuxin001
  */
-@Slf4j
 public class MyCredentialsMatcher extends SimpleCredentialsMatcher {
 
-    @Autowired
-    private UserService userService;
 
     @Override
     public boolean doCredentialsMatch(AuthenticationToken authToken, AuthenticationInfo info) {
         UsernamePasswordToken token = (UsernamePasswordToken) authToken;
-        // 获取输入的密码
-        String password = (String) getCredentials(info);
-        // 加密方式
-        String pwdType = String.valueOf(token.getPassword());
-        // 判断是否加密过
-        if (pwdType.length() == 32) {
-            return equals(pwdType, password);
-        } else {
-            // 获取用户名
-            User user = userService.findUserByUsername(token.getUsername());
-            if (user == null) {
-                return false;
+        User user = null;
+        PrincipalCollection principals = info.getPrincipals();
+        if (principals.asList().size() == 1) {
+            for (Object principal : info.getPrincipals()) {
+                user = (User) principal;
             }
-            String salt = user.getSalt();
-            // 将用户输入后的密码同数据库比对
-            String saltPwd = ShiroUtil.salt(pwdType, salt);
-            log.info("密码校验结果......{}", equals(saltPwd, user.getPassword()));
-            return equals(saltPwd, user.getPassword());
+        }
+        String password = new String((char[]) token.getCredentials());
 
+        // 自定义校验规则 将用户输入的密码和数据用户salt 得到加密后密码同数据加密后密码对比
+        if (StringUtils.isNull(user)) {
+            return false;
+        }
+        // 判断是邮箱方式登录还是密码方式登录
+        if (password.length() > 15) {
+            return equals(password, user.getPassword());
+        } else {
+            String saltPwd = ShiroUtil.salt(password, user.getSalt());
+            return equals(saltPwd, user.getPassword());
         }
 
 
     }
+
+
 }

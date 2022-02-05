@@ -8,10 +8,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @author Administrator
  */
 @SpringBootApplication
-public class DemoApplication {
+public class StartApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApplication.class, args);
+        SpringApplication.run(StartApplication.class, args);
         System.out.println("=====================================加载完毕=========================");
     }
 

@@ -76,6 +76,12 @@ public class CommentReply extends CreateTime implements Serializable {
     private String replyUsername;
 
     /**
+     * 评论用户是否 订阅了消息
+     */
+    @TableField(exist = false)
+    private boolean subscription ;
+
+    /**
      * 头像
      */
     @TableField(exist = false)
@@ -91,13 +97,19 @@ public class CommentReply extends CreateTime implements Serializable {
      * 被评论的用户
      */
     @TableField(exist = false)
-    private String CommentUsername;
+    private String commentUsername;
 
     /**
      * 被评论用户的邮箱
      */
     @TableField(exist = false)
     private String commentAvatar;
+
+    /**
+     * 被回复的用户是否订阅了消息
+     */
+    @TableField(exist = false)
+    private boolean commentAvatarSubscription;
 
 
 }

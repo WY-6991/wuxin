@@ -13,7 +13,7 @@ import org.apache.shiro.cache.CacheManager;
 public class RedisShiroCacheManager implements CacheManager {
     @Override
     public <K, V> Cache<K, V> getCache(String cacheManagerName) throws CacheException {
-        System.out.println("redis cache manager==========>"+cacheManagerName);
+        System.out.println("redis 缓存启动中==========>"+cacheManagerName);
         return new RedisCache<>();
     }
 }

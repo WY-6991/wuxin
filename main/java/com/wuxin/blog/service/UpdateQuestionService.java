@@ -11,6 +11,6 @@ import com.wuxin.blog.mode.Base.PageService;
  */
 public interface UpdateQuestionService extends PageService<UpdateQuestion> {
 
-    IPage<UpdateQuestion> selectListByPage(Integer current, Integer limit,String start,String end);
+    IPage<UpdateQuestion> selectListByPage(Integer current, Integer limit,String keywords,String start,String end);
 
 }

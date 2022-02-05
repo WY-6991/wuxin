@@ -4,21 +4,26 @@ import java.lang.annotation.*;
 
 /**
  * @Author: wuxin001
- * @Date: 2022/01/13/10:14
- * @Description: 防止重复提交注解
+ * @Date: 2021/12/31/23:14
+ * @Description: 表单限流
  */
-@Inherited
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RepeatSubmit {
-    /**
-     * 间隔时间(ms)，小于此时间视为重复提交
-     */
-    public int interval() default 5000;
 
     /**
-     * 提示消息
+     * 限制周期(秒)
      */
-    public String message() default "不允许重复提交，请稍候再试";
+    int seconds() default 30;
+
+    /**
+     * 规定周期内限制次数
+     */
+    int limitCount() default 5;
+
+    /**
+     * 触发限制时的消息提示
+     */
+    String msg() default "操作频率过高";
 }

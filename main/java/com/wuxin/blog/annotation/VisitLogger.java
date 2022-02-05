@@ -12,5 +12,14 @@ import java.lang.annotation.*;
 @Documented
 public @interface VisitLogger {
 
+    /**
+     * 访问内容
+     */
     String value() default "";
+
+
+    /**
+     * 访问网页标题
+     */
+    String name() default "";
 }

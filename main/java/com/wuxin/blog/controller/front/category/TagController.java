@@ -1,6 +1,7 @@
 package com.wuxin.blog.controller.front.category;
 
 import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.TagService;
 import com.wuxin.blog.utils.result.Result;
@@ -24,11 +25,7 @@ public class TagController {
     private TagService tagService;
 
 
-    /**
-     * 显示所有taglist
-     * @return list
-     */
-    @OperationLogger("获取全部标签")
+
     @GetMapping("/list")
     public Result findTag() {
         log.info("当前正在执行查看 tagList操作 ；");
@@ -42,23 +39,14 @@ public class TagController {
      * @param pageVo
      * @return
      */
-    @OperationLogger("根据文章标签名获取文章列表")
+    @VisitLogger(value = "根据文章标签名获取文章列表",name = "标签页")
     @PostMapping("/blog/list")
     public Result findBlogByTagName(@RequestBody PageVo pageVo) {
         log.info("当前正在执行查看 博客根据tagName={} ；",pageVo.getKeywords());
         return Result.ok(tagService.findBlogByTagName(pageVo.getCurrent(), pageVo.getLimit(), pageVo.getKeywords()));
     }
 
-    /**
-     * 统计标签个数
-     * @return count
-     */
-    @OperationLogger("统计标签个数")
-    @GetMapping("/count")
-    public Result findTagCount() {
-        log.info("统计标签个数");
-        return Result.ok(tagService.findTagCount());
-    }
+
 
 
 

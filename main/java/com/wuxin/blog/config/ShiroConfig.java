@@ -1,6 +1,7 @@
 package com.wuxin.blog.config;
 
 
+import com.wuxin.blog.filter.CorsAuthenticationFilter;
 import com.wuxin.blog.shiro.MyCredentialsMatcher;
 import com.wuxin.blog.shiro.redis.RedisShiroCacheManager;
 import com.wuxin.blog.shiro.UserRealm;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 /**
  * shiro 配置
+ *
  * @author Administrator
  */
 
@@ -54,21 +56,19 @@ public class ShiroConfig {
     private Integer expire;
 
 
-
-
     /**
-     *
      * anon 无需认证就可以访问
      * authc 需要认证才可以访问
      * user 必须拥有记住我功能才可以使用
      * role 拥有某个角色权限才可以使用
      * perms 用验某个资源权限才可以访问
-     * @param securityManager  DefaultSecurityManager
+     *
+     * @param securityManager DefaultSecurityManager
      * @return ShiroFilterFactoryBean
      */
     @Bean(name = "shiroFilter")
     public ShiroFilterFactoryBean shiroFilterFactoryBean(@Qualifier("securityManager") DefaultSecurityManager securityManager) {
-        logger.info("=============================ShiroFilterFactoryBean======================================");
+        logger.info("===============================shiro过滤器启动===================================");
         ShiroFilterFactoryBean filter = new ShiroFilterFactoryBean();
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         // 设置过滤器 所有过滤器都需要经过自定义过滤器
@@ -78,13 +78,15 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/", "corsAuthenticationFilter");
         // 无需登录就可以访问
         filterChainDefinitionMap.put("/**", "anon");
+        // 拦截所哟/amdin下路径
         filterChainDefinitionMap.put("/admin/**", "authc");
-        // 需要登录才能访问的路径
-        // 没有权限
-        filter.setUnauthorizedUrl("/no/role");
+        // 需要登录
         filter.setLoginUrl("/to/login");
+        // 无权限
+        filter.setUnauthorizedUrl("/no/role");
         // 注册过滤路径
         filter.setFilters(filterMap);
+        // 注册过滤规则
         filter.setFilterChainDefinitionMap(filterChainDefinitionMap);
         // 注册shiro管理器到过滤器中
         filter.setSecurityManager(securityManager);
@@ -95,15 +97,16 @@ public class ShiroConfig {
 
     /**
      * 配置安全管理器
+     *
      * @param userRealm realm
-     * @return  DefaultSecurityManager
+     * @return DefaultSecurityManager
      */
     @Bean(name = "securityManager")
     public DefaultSecurityManager getDefaultSecurityManager(@Qualifier("userRealm") UserRealm userRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         // 注册自定义realm
         securityManager.setRealm(userRealm);
-        // 注册自定义密码认证规则管理器
+        // 用户登录密码校验使用自定义密码校验规则
         userRealm.setCredentialsMatcher(myCredentialsMatcher());
         return securityManager;
 
@@ -122,12 +125,13 @@ public class ShiroConfig {
 
     /**
      * shiro和自定义用户realm
+     *
      * @return UserRealm
      */
     @Bean
     public UserRealm userRealm() {
         UserRealm realm = new UserRealm();
-        // 注册自定义缓存管理器
+        // 注册自定义缓存管理器 配置shiro-redis管理
         realm.setCacheManager(new RedisShiroCacheManager());
         // 开启注册redis缓存管理
         realm.setCachingEnabled(true);
@@ -143,10 +147,11 @@ public class ShiroConfig {
 
     /**
      * 注册自定义过滤器
+     *
      * @return CorsAuthenticationFilter
      */
     @Bean
-    public CorsAuthenticationFilter corsAuthenticationFilter(){
+    public CorsAuthenticationFilter corsAuthenticationFilter() {
         return new CorsAuthenticationFilter();
     }
 
@@ -155,7 +160,8 @@ public class ShiroConfig {
      * shiro注解支持
      * 只有配置了这个类，
      * shiro的注解才会生效
-     * @param securityManager  securityManager
+     *
+     * @param securityManager securityManager
      * @return AuthorizationAttributeSourceAdvisor
      */
     @Bean
@@ -167,6 +173,7 @@ public class ShiroConfig {
 
     /**
      * shiro注解支持
+     *
      * @return DefaultAdvisorAutoProxyCreator
      */
     @Bean
@@ -178,17 +185,13 @@ public class ShiroConfig {
     }
 
 
-
     /**
-     *
      * Shiro生命周期处理器
      */
     @Bean
     public static LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
     }
-
-
 
 
 }

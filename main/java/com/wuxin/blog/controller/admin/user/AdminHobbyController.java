@@ -5,6 +5,7 @@ import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.pojo.blog.Hobby;
 import com.wuxin.blog.service.HobbyService;
 import com.wuxin.blog.utils.result.Result;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -18,6 +19,9 @@ public class AdminHobbyController {
 
     @Resource
     private HobbyService hobbyService;
+
+
+
 
     @OperationLogger("添加爱好")
     @PostMapping("/add")
@@ -33,6 +37,8 @@ public class AdminHobbyController {
         return Result.ok("添加成功");
     }
 
+
+    @RequiresRoles("root")
     @OperationLogger("删除爱好")
     @GetMapping("/del")
     public Result delHobby(@RequestParam(value = "id",required = false) Long id){

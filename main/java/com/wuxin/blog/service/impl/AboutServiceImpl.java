@@ -49,18 +49,14 @@ public class AboutServiceImpl implements AboutService {
 
     @Override
     public About find(Long id) {
-        // 存入redis中
         String redisKey = RedisKey.ABOUT;
-        // 是否含有key
         boolean b = redisService.hasKey(redisKey);
         if(b){
-            // 内容是否为空
             About o = (About) redisService.get(redisKey);
             if(StringUtils.isNotNull(o)){
                 return o;
             }
         }
-        System.out.println("=================从数据库中获取关于我的内容=======================");
         About about = aboutMapper.selectById(id);
         // 将about内容存入redis中
         redisService.set(redisKey,about);

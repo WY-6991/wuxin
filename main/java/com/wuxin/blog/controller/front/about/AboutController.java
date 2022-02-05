@@ -1,6 +1,7 @@
 package com.wuxin.blog.controller.front.about;
 
 import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.pojo.blog.About;
 import com.wuxin.blog.service.AboutService;
 import com.wuxin.blog.utils.result.Result;
@@ -28,7 +29,7 @@ public class AboutController {
      *
      * @return 关于我
      */
-    @OperationLogger("查看关于我的内容")
+    @VisitLogger(value = "访问了关于我的内容",name = "关于页")
     @GetMapping("/detail")
     public Result findAbout() {
         return Result.ok(aboutService.find(About.ABOUT_ID));

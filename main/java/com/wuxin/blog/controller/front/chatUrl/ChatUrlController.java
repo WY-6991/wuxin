@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
+/**
+ * @author Administrator
+ */
 @RestController
 @RequestMapping("/chat/url")
 public class ChatUrlController {
@@ -19,7 +22,6 @@ public class ChatUrlController {
     private ChatUrlService chatUrlService;
 
 
-    @OperationLogger("获取用户额外信息")
     @GetMapping("/find")
     public Result findChatUrlByUserId(@RequestParam(value = "userId") Long userId){
         return Result.ok(chatUrlService.findChatUrlByUserId(userId));

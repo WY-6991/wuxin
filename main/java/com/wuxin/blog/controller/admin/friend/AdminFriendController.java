@@ -5,6 +5,7 @@ import com.wuxin.blog.pojo.blog.Friend;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.FriendService;
 import com.wuxin.blog.utils.result.Result;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -23,6 +24,7 @@ public class AdminFriendController {
 
 
     @OperationLogger("添加友情链接")
+    @RequiresRoles("root")
     @PostMapping("/add")
     public Result addFriend(@RequestBody Friend friend){
         friendService.add(friend);
@@ -30,6 +32,7 @@ public class AdminFriendController {
     }
 
     @OperationLogger("修改友情链接")
+    @RequiresRoles("root")
     @PostMapping("/update")
     public Result updateFriend(@RequestBody Friend friend){
         friendService.update(friend);
@@ -37,6 +40,7 @@ public class AdminFriendController {
     }
 
     @OperationLogger("删除友情链接")
+    @RequiresRoles("root")
     @GetMapping("/del")
     public Result delFriend(@RequestParam("friendId") Long friendId){
         friendService.delete(friendId);
@@ -46,6 +50,6 @@ public class AdminFriendController {
     @OperationLogger("查看友情链接列表")
     @PostMapping("/list")
     public Result findFriend(@RequestBody PageVo pageVo){
-        return Result.ok(friendService.selectListByPage(pageVo.getCurrent(),pageVo.getLimit(),pageVo.getKeywords()));
+        return Result.ok(friendService.selectListByPage(pageVo.getCurrent(),pageVo.getLimit(),pageVo.getKeywords(),pageVo.getStart(),pageVo.getEnd()));
     }
 }

@@ -19,8 +19,9 @@ public class UserAccount implements Serializable {
     private static final long serialVersionUID = 1L;
     private String username;
     private String nickname;
-    private String password;
     private String newPassword;
     private String email;
+    private String token;
+    private Long expireTime;
 
 }

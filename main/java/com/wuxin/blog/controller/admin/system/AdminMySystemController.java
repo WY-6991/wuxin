@@ -5,7 +5,6 @@ import com.wuxin.blog.pojo.system.GithubSetting;
 import com.wuxin.blog.pojo.system.MySystem;
 import com.wuxin.blog.pojo.system.WebFooterLabel;
 import com.wuxin.blog.service.MySystemService;
-import com.wuxin.blog.enums.Message;
 import com.wuxin.blog.utils.result.Result;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +25,7 @@ public class AdminMySystemController {
     private MySystemService mySystemService;
 
 
+    @RequiresRoles("root")
     @OperationLogger("系统信息")
     @PutMapping("/update")
     public Result updateMySystem(@RequestBody MySystem mySystem)
@@ -40,6 +40,7 @@ public class AdminMySystemController {
      * @param webFooterLabel DTO
      * @return 成功消息
      */
+    @RequiresRoles("root")
     @OperationLogger("修改或者发布底部标签")
     @PutMapping("/update/footer/label")
     public Result updateWebFooterLabel(@RequestBody WebFooterLabel webFooterLabel)

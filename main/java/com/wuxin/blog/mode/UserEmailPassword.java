@@ -6,13 +6,14 @@ import lombok.NoArgsConstructor;
 
 /**
  * @Author: wuxin001
- * @Date: 2022/01/13/10:49
- * @Description: 通过邮箱方式登录
+ * @Date: 2022/02/01/11:45
+ * @Description:
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginEmail {
+public class UserEmailPassword {
     private String email;
     private String code;
+    private String password;
 }

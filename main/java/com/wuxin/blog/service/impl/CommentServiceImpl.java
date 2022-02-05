@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wuxin.blog.mapper.BlogMapper;
 import com.wuxin.blog.mapper.UserMapper;
 import com.wuxin.blog.mapper.vo.CommentMapper;
 import com.wuxin.blog.mapper.vo.CommentReplyMapper;
-import com.wuxin.blog.pojo.blog.Comment;
-import com.wuxin.blog.pojo.blog.CommentReply;
-import com.wuxin.blog.pojo.blog.User;
+import com.wuxin.blog.pojo.blog.*;
 import com.wuxin.blog.redis.RedisKey;
 import com.wuxin.blog.redis.RedisService;
 import com.wuxin.blog.service.CommentService;
@@ -21,7 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: wuxin001
@@ -33,7 +34,7 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 
     @Autowired
-    private CommentMapper commenMapper;
+    private CommentMapper commentMapper;
 
     @Autowired
     private CommentReplyMapper blogCommentReplyMapper;
@@ -42,55 +43,67 @@ public class CommentServiceImpl implements CommentService {
     private UserMapper userMapper;
 
     @Autowired
+    private BlogMapper blogMapper;
+
+    @Autowired
     private RedisService redisService;
 
     @Override
     public void addComment(Comment blogComment) {
-        ThrowUtils.ops(commenMapper.insert(blogComment), "评论添加失败");
-        redisService.hdel(RedisKey.COMMENT_LSIT);
+        ThrowUtils.ops(commentMapper.insert(blogComment), "评论添加失败");
+        // 添加评论删除原来缓存内容
+        // redisService.hdel(RedisKey.COMMENT_LSIT);
+        // 判断添加文章类型
+        // addCommenCache();
+    }
+
+    @Override
+    public Comment findCommentByCommentId(Long commentId) {
+        return commentMapper.selectById(commentId);
     }
 
     @Override
     public void delComment(Long commentId) {
-        ThrowUtils.ops(commenMapper.deleteById(commentId), "评论添加失败");
-        redisService.hdel(RedisKey.COMMENT_LSIT);
+        ThrowUtils.ops(commentMapper.deleteById(commentId), "评论添加失败");
+        // 添加评论删除原来缓存内容
+        // redisService.hdel(RedisKey.COMMENT_LSIT);
     }
 
     @Override
     public void delCommentByUserId(Long userId) {
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Comment::getCommentUserId, userId);
-        ThrowUtils.ops(commenMapper.delete(queryWrapper), "删除失败！用户不存在！");
-        redisService.hdel(RedisKey.COMMENT_LSIT);
+        ThrowUtils.ops(commentMapper.delete(queryWrapper), "删除失败！用户不存在！");
+        // 添加评论删除原来缓存内容
+        // redisService.hdel(RedisKey.COMMENT_LSIT);
     }
 
     @Override
     public void delCommentByBlogId(Long blogId) {
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Comment::getBlogId, blogId);
-        ThrowUtils.ops(commenMapper.delete(queryWrapper), "删除失败！文章不存在！");
-        redisService.hdel(RedisKey.COMMENT_LSIT);
+        ThrowUtils.ops(commentMapper.delete(queryWrapper), "删除失败！文章不存在！");
+        // redisService.hdel(RedisKey.COMMENT_LSIT);
     }
 
 
     @Override
     public void updateComment(Comment comment) {
-        ThrowUtils.ops(commenMapper.updateById(comment), "修改失败！评论不存在！");
-        redisService.hdel(RedisKey.COMMENT_LSIT);
+        ThrowUtils.ops(commentMapper.updateById(comment), "修改失败！评论不存在！");
     }
 
     @Override
     public IPage<Comment> findBlogCommentByBlogId(Integer current, Integer size, Long blogId) {
         // 根据blogId获取获取对应commentId list
         String key = RedisKey.COMMENT_LSIT;
-        boolean b = redisService.hHasKey(key, current+blogId);
-        if(b){
-            IPage<Comment> page = (IPage<Comment>) redisService.hget(key, current+blogId);
-            if(StringUtils.isNotNull(page) && page.getRecords().size()!=0){
+        boolean b = redisService.hHasKey(key, current + blogId);
+        if (b) {
+            IPage<Comment> page = (IPage<Comment>) redisService.hget(key, current + blogId);
+            if (StringUtils.isNotNull(page) && page.getRecords().size() != 0) {
                 return page;
             }
         }
-        Page<Comment> page = new LambdaQueryChainWrapper<Comment>(commenMapper)
+        Page<Comment> page = new LambdaQueryChainWrapper<Comment>(commentMapper)
                 .eq(Comment::getBlogId, blogId)
                 .orderByDesc(Comment::getCreateTime)
                 .page(new Page<>(current, size));
@@ -106,7 +119,7 @@ public class CommentServiceImpl implements CommentService {
             getReplyList(comment);
         });
         // 存入到redis
-        redisService.hset(key,current+blogId,page);
+        redisService.hset(key, current + blogId, page);
 
         // 获取blog
         return page;
@@ -119,7 +132,7 @@ public class CommentServiceImpl implements CommentService {
 
         // 判断blog是否为空
 
-        Page<Comment> page = new LambdaQueryChainWrapper<Comment>(commenMapper)
+        Page<Comment> page = new LambdaQueryChainWrapper<Comment>(commentMapper)
                 .eq(StringUtils.isNotNull(blogId), Comment::getBlogId, blogId)
                 .eq(StringUtils.isNotNull(type), Comment::getType, type)
                 .orderByDesc(Comment::getCreateTime)
@@ -183,25 +196,39 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Integer findCommentCount() {
-        int integer = commenMapper.selectCount(null);
+        int integer = commentMapper.selectCount(null);
         int integer1 = blogCommentReplyMapper.selectCount(null);
         return integer + integer1;
     }
 
     @Override
-    public IPage<Comment> findBlogCommentByPage(Integer current, Integer limit, Integer type, String keywords) {
-        LambdaQueryChainWrapper<Comment> queryChainWrapper = new LambdaQueryChainWrapper<>(commenMapper);
+    public IPage<Comment> findBlogCommentByPage(Integer current, Integer limit, Integer type, String keywords,Long blogId,String start,String end) {
+        LambdaQueryChainWrapper<Comment> queryChainWrapper = new LambdaQueryChainWrapper<>(commentMapper);
         queryChainWrapper.orderByDesc(Comment::getCreateTime);
         Page<Comment> commentPage = new Page<>(current, limit);
-        Page<Comment> page = queryChainWrapper.like(!keywords.isEmpty(), Comment::getContent, keywords).page(commentPage);
+        Page<Comment> page = queryChainWrapper
+                .like(StringUtils.isNotNull(keywords), Comment::getContent, keywords)
+                .eq(Comment::getType, type)
+                .eq(StringUtils.isNotNull(blogId),Comment::getBlogId,blogId)
+                .le(StringUtils.isNotNull(end), Comment::getCreateTime, end)
+                .ge(StringUtils.isNotNull(start), Comment::getCreateTime, start)
+                .page(commentPage);
+
         page.getRecords().forEach(comment -> {
+            if (type.equals(Comment.BLOG_COMMENT)) {
+                String title = MapperUtils.lambdaQueryWrapper(blogMapper).select(Blog::getBlogId, Blog::getTitle).eq(Blog::getBlogId, comment.getBlogId()).one().getTitle();
+                comment.setTitle(title);
+            }
+            if (type.equals(Comment.ABOUT_COMMENT)) {
+                comment.setTitle("关于我");
+            }
+            if (type.equals(Comment.FRIEND_COMMENT)) {
+                comment.setTitle("友情链接");
+            }
             // 获取评论用户名
             User commentUser = userMapper.selectById(comment.getCommentUserId());
-            ThrowUtils.userNull(commentUser);
-
             comment.setUsername(commentUser.getUsername());
             comment.setAvatar(commentUser.getAvatar());
-
             getReplyList(comment);
 
         });
@@ -225,7 +252,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> allBlogComment(Long blogId) {
-        LambdaQueryChainWrapper<Comment> queryChainWrapper = new LambdaQueryChainWrapper<>(commenMapper);
+        LambdaQueryChainWrapper<Comment> queryChainWrapper = new LambdaQueryChainWrapper<>(commentMapper);
         queryChainWrapper.orderByDesc(Comment::getCreateTime);
         List<Comment> blogCommentList = queryChainWrapper.eq(Comment::getBlogId, blogId).list();
         blogCommentList.forEach(comment -> {
@@ -240,6 +267,7 @@ public class CommentServiceImpl implements CommentService {
         return blogCommentList;
     }
 
+
     @Override
     public Integer commentCount() {
         // 当前时间
@@ -247,7 +275,7 @@ public class CommentServiceImpl implements CommentService {
         // 凌晨时间
         String todayStartTime = DateUtils.todayStartTime();
 
-        Integer commentCount = MapperUtils.lambdaQueryWrapper(commenMapper)
+        Integer commentCount = MapperUtils.lambdaQueryWrapper(commentMapper)
                 .le(Comment::getCreateTime, localTime)
                 .ge(Comment::getCreateTime, todayStartTime)
                 .count();
@@ -285,6 +313,68 @@ public class CommentServiceImpl implements CommentService {
 
         // 将reply list信息储存到comment中
         blogComment.setReplyList(replyList);
+    }
+
+
+    /**
+     * 删除评论缓存
+     *
+     * @param k
+     * @param hk
+     * @param type
+     */
+    void deleteCommentCache(String k, Object hk, String type) {
+
+    }
+
+
+    /**
+     * 添加文章缓存
+     */
+    void addCommentCache(String k, String type, Integer id, Integer current, Object content) {
+
+        boolean b = redisService.hHasKey(k, type);
+        if (b) {
+            Object hget = redisService.hget(k, type);
+        }
+
+
+        if (type.equals(Comment.BLOG_COMMENT)) {
+
+        }
+
+
+        if (type.equals(Comment.ABOUT_COMMENT)) {
+            // 判断id是否存在
+
+        }
+
+
+        if (type.equals(Comment.FRIEND_COMMENT)) {
+
+        }
+
+    }
+
+
+    /**
+     * 从redis缓存中获取评论内容共
+     */
+    void getCommentCache(String k, Integer type, Integer current, Integer blogId) {
+        Map<Integer, Object> map = new HashMap<>();
+        // 判断缓存类型
+        if (type.equals(Comment.BLOG_COMMENT)) {
+            // redisService.hset(k, type)
+            // 判断文章id
+        }
+
+        if (type.equals(Comment.ABOUT_COMMENT)) {
+            // redisService.hset(k, type)
+        }
+
+        if (type.equals(Comment.FRIEND_COMMENT)) {
+            // redisService.hset(k, type)
+        }
     }
 
 

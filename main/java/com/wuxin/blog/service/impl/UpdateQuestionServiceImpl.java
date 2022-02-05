@@ -100,8 +100,9 @@ public class UpdateQuestionServiceImpl implements UpdateQuestionService {
     }
 
     @Override
-    public IPage<UpdateQuestion> selectListByPage(Integer current, Integer limit, String start, String end) {
+    public IPage<UpdateQuestion> selectListByPage(Integer current, Integer limit,String keywords,String start, String end) {
         return MapperUtils.lambdaQueryWrapper(updateQuestionMapper).orderByDesc(UpdateQuestion::getCreateTime)
+                .like(StringUtils.isNotNull(keywords),UpdateQuestion::getContent,keywords)
                 .le(StringUtils.isNotNull(end), UpdateQuestion::getCreateTime, end)
                 .ge(StringUtils.isNotNull(start), UpdateQuestion::getCreateTime, start).page(new Page<>(current,limit));
     }

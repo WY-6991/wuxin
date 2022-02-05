@@ -3,6 +3,7 @@ package com.wuxin.blog.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wuxin.blog.exception.NotFoundException;
 import com.wuxin.blog.mapper.BlogMapper;
 import com.wuxin.blog.mapper.CategoryMapper;
 import com.wuxin.blog.mapper.TagMapper;
@@ -18,6 +19,7 @@ import com.wuxin.blog.service.BlogService;
 import com.wuxin.blog.service.CategoryService;
 import com.wuxin.blog.utils.ThrowUtils;
 import com.wuxin.blog.utils.mapper.MapperUtils;
+import com.wuxin.blog.utils.string.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,29 +64,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void add(Category category) {
-        ThrowUtils.ops(categoryMapper.insert(category),"操作失败");
-        List<Category> list = list();
-        list.add(category);
-        // 添加到redis中
-        redisService.set(RedisKey.CATEGORY_LIST,list);
+        ThrowUtils.ops(categoryMapper.insert(category), "操作失败");
+        addCategoryCache(category);
     }
 
     @Override
     public void delete(Long id) {
         ThrowUtils.ops(categoryMapper.deleteById(id), "分类标签不存在！");
-        List<Category> list = list();
-        for (int i = 0; i < list.size(); i++) {
-            if(list.get(i).getCid().equals(id)){
-                list.remove(i);
-                redisService.set(RedisKey.CATEGORY_LIST,list);
-            }
-        }
+        deleteCategoryCache(id);
     }
 
     @Override
     public void update(Category category) {
         ThrowUtils.ops(categoryMapper.updateById(category), "操作失败！标签不存在");
-        redisService.del(RedisKey.CATEGORY_LIST);
+        updateCategoryCache(category);
     }
 
     @Override
@@ -108,19 +101,19 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category findCategoryByName(String name) {
-        Category one = MapperUtils.lambdaQueryWrapper(categoryMapper).eq(Category::getName, name).one();
-        ThrowUtils.isNull(one, "标签不存在");
-        return one;
+        return MapperUtils.lambdaQueryWrapper(categoryMapper).eq(Category::getName, name).one();
     }
 
     @Override
     public IPage<Blog> findBlogByCategoryName(Integer current, Integer size, String categoryName) {
-        Long cid = new LambdaQueryChainWrapper<Category>(categoryMapper).eq(Category::getName, categoryName).one().getCid();
+        Long cid = MapperUtils.lambdaQueryWrapper(categoryMapper).eq(Category::getName, categoryName).one().getCid();
+        ThrowUtils.isNull(cid);
+        if (cid == 0) {
+            throw new NotFoundException("不存在该分类标签");
+        }
         Page<Blog> blogPage = new Page<>(current, size);
-        Page<Blog> ipage = new LambdaQueryChainWrapper<Blog>(blogMapper).eq(Blog::getCid, cid).orderByDesc(Blog::getTop).orderByDesc(Blog::getCreateTime).page(blogPage);
-        ipage.getRecords().forEach(blog -> {
-            getBlogInfo(blog);
-        });
+        Page<Blog> ipage = MapperUtils.lambdaQueryWrapper(blogMapper).eq(Blog::getCid, cid).orderByDesc(Blog::getTop).orderByDesc(Blog::getCreateTime).page(blogPage);
+        ipage.getRecords().forEach(this::getBlogInfo);
         return ipage;
 
     }
@@ -132,8 +125,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public IPage<Category> selectListByPage(Integer current, Integer limit, String keywords) {
-        return new LambdaQueryChainWrapper<Category>(categoryMapper)
-                .like(!keywords.isEmpty(), Category::getName, keywords)
+        return MapperUtils.lambdaQueryWrapper(categoryMapper)
+                .like(StringUtils.isNotNull(keywords), Category::getName, keywords)
                 .page(new Page<Category>(current, limit));
     }
 
@@ -162,16 +155,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<Object> blogCountByCategoryName() {
         String redisKey = RedisKey.CATEGORY_COUNT;
-        // 判断是否存在？
         boolean b = redisService.hasKey(redisKey);
         if (b) {
-            List<Object> arrayList = (List<Object>) redisService.get( redisKey);
-            // 判断是否含有值
+            List<Object> arrayList = (List<Object>) redisService.get(redisKey);
             if (arrayList.size() != 0) {
                 return arrayList;
             }
         }
-        // 从数据库中获取同时存入到redis中
         List<Category> list = new LambdaQueryChainWrapper<Category>(categoryMapper).list();
         List<Object> arrayList = new ArrayList<>();
         list.forEach(category -> {
@@ -192,5 +182,29 @@ public class CategoryServiceImpl implements CategoryService {
         return null;
     }
 
+
+    public void deleteCategoryCache(Long id) {
+        List<Category> list = list();
+        list.removeIf(value -> value.getCid().equals(id));
+        redisService.set(RedisKey.CATEGORY_LIST, list);
+    }
+
+    public void updateCategoryCache(Category category) {
+        List<Category> list = list();
+        for (Category value : list) {
+            if (value.getCid().equals(category.getCid())) {
+                // 修改tag
+                value.setColor(category.getColor());
+                value.setName(category.getName());
+            }
+        }
+        redisService.set(RedisKey.CATEGORY_LIST, list);
+    }
+
+    public void addCategoryCache(Category category) {
+        List<Category> list = list();
+        list.add(category);
+        redisService.set(RedisKey.CATEGORY_LIST, list);
+    }
 
 }

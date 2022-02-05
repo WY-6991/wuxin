@@ -24,7 +24,6 @@ public class MySystemController {
     private MySystemService mySystemService;
 
 
-    @OperationLogger("获取系统信息")
     @GetMapping("/info")
     public Result findMySystem()
     {
@@ -32,7 +31,6 @@ public class MySystemController {
     }
 
 
-    @OperationLogger("获取底部标签")
     @GetMapping("/find/footer/label")
     public Result findWebFooterLabel()
     {

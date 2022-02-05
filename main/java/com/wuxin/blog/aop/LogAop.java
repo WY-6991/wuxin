@@ -59,7 +59,7 @@ public class LogAop {
     private LoginLogService loginLogService;
 
     @Autowired
-    ExceptionService exceptionLogService;
+    private ExceptionService exceptionLogService;
 
     @Autowired
     private AccessLogService accessLogService;
@@ -74,98 +74,101 @@ public class LogAop {
      * @return result
      * @throws Throwable 异常
      */
-    // @Around(" execution(* com.wuxin.blog.controller.front.user.LoginController.userLogin(..))")
-    // public Object loginLogAopControllerMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-    //     // 获取请求用户基本参数 用户sessionID，请求参数，
-    //     try {
-    //         //获取参数
-    //         LoginLog loginLog = new LoginLog();
-    //         Object[] objects = proceedingJoinPoint.getArgs();
-    //         log.info("登录用户参数信息:{}", JSONUtil.toJsonStr(objects));
-    //         UserAccount user = (UserAccount) objects[0];
-    //         loginLog.setUsername(user.getUsername());
-    //         loginLog.setParams(user.getUsername());
-    //         getLogInfo(loginLog, proceedingJoinPoint);
-    //         handleLoginParams(loginLog, proceedingJoinPoint);
-    //         // 登录用户信息设的密码设置为null;
-    //         loginLogService.add(loginLog);
-    //
-    //     } catch (Throwable e) {
-    //         e.printStackTrace();
-    //         log.debug("登录日志处理异常 ");
-    //     }
-    //
-    //     return proceedingJoinPoint.proceed();
-    // }
+    @Around(" execution(* com.wuxin.blog.controller.front.user.LoginController.userLogin(..))")
+    public Object loginLogAopControllerMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        // 获取请求用户基本参数 用户sessionID，请求参数，
+        try {
+            //获取参数
+            // LoginLog loginLog = new LoginLog();
+            // Object[] objects = proceedingJoinPoint.getArgs();
+            // log.info("登录用户参数信息:{}", JSONUtil.toJsonStr(objects));
+            // UserAccount user = (UserAccount) objects[0];
+            // loginLog.setUsername(user.getUsername());
+            // loginLog.setParams(user.getUsername());
+            // getLogInfo(loginLog, proceedingJoinPoint);
+            // handleLoginParams(loginLog, proceedingJoinPoint);
+            // // 登录用户信息设的密码设置为null;
+            // loginLogService.add(loginLog);
+            log.info("登录日志捕获中...");
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+            log.debug("登录日志处理异常 ");
+        }
+
+        return proceedingJoinPoint.proceed();
+    }
 
     /**
      * 访问日志aop
      *
      */
-    // @Around("execution(* com.wuxin.blog.controller.front.*.*.*(..))")
-    // public Object accessLogAopControllerMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-    //     // 获取请求用户基本参数 用户sessionID，请求参数，
-    //     try {
-    //         AccessLog accessLog = new AccessLog();
-    //         getLogInfo(accessLog, proceedingJoinPoint);
-    //         log.info("访问信息:{}", JSONUtil.toJsonStr(accessLog));
-    //         // 处理访问日志参数
-    //         handleLoginParams(accessLog,proceedingJoinPoint);
-    //         accessLogService.add(accessLog);
-    //     } catch (Throwable e) {
-    //         e.printStackTrace();
-    //         log.debug("访问日志处理异常 ");
-    //     }
-    //     return proceedingJoinPoint.proceed();
-    // }
+    @Around("execution(* com.wuxin.blog.controller.front.*.*.*(..))")
+    public Object accessLogAopControllerMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        // 获取请求用户基本参数 用户sessionID，请求参数，
+        try {
+            // AccessLog accessLog = new AccessLog();
+            // getLogInfo(accessLog, proceedingJoinPoint);
+            // log.info("访问信息:{}", JSONUtil.toJsonStr(accessLog));
+            // // 处理访问日志参数
+            // handleLoginParams(accessLog,proceedingJoinPoint);
+            // accessLogService.add(accessLog);
+            log.info("访问日志捕获中...");
+        } catch (Throwable e) {
+            e.printStackTrace();
+            log.debug("访问日志处理异常 ");
+        }
+        return proceedingJoinPoint.proceed();
+    }
 
 
     /**
      * 操作日志aop
      */
-    // @Around("execution(* com.wuxin.blog.controller.admin.*.*.*(..))")
-    // public Object operationLogAopControllerMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-    //     // 获取请求用户基本参数 用户sessionID，请求参数，
-    //     try {
-    //         // 操作日志
-    //         OperationLog operationLog = new OperationLog();
-    //         getLogInfo(operationLog, proceedingJoinPoint);
-    //         // 获取用户名
-    //         User user = MySecurityUtils.getUser();
-    //         if (StringUtils.isNull(user)) {
-    //             throw new CustomException("获取不到用户信息,请登录之后再试");
-    //         }
-    //         operationLog.setUsername(user.getNickname());
-    //         // 处理操作日志参数
-    //         handleLoginParams(operationLog,proceedingJoinPoint);
-    //         operationLogService.add(operationLog);
-    //
-    //     } catch (Throwable e) {
-    //         e.printStackTrace();
-    //         log.debug("操作日志处理异常 ");
-    //     }
-    //     return proceedingJoinPoint.proceed();
-    // }
+    @Around("execution(* com.wuxin.blog.controller.admin.*.*.*(..))")
+    public Object operationLogAopControllerMethod(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        // 获取请求用户基本参数 用户sessionID，请求参数，
+        try {
+            // 操作日志
+            // OperationLog operationLog = new OperationLog();
+            // getLogInfo(operationLog, proceedingJoinPoint);
+            // // 获取用户名
+            // User user = MySecurityUtils.getUser();
+            // if (StringUtils.isNull(user)) {
+            //     throw new CustomException("获取不到用户信息,请登录之后再试");
+            // }
+            // operationLog.setUsername(user.getNickname());
+            // // 处理操作日志参数
+            // handleLoginParams(operationLog,proceedingJoinPoint);
+            // operationLogService.add(operationLog);
+            log.info("操作日志捕获中....");
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+            log.debug("操作日志处理异常 ");
+        }
+        return proceedingJoinPoint.proceed();
+    }
 
 
     /**
      * 捕获异常信息
      */
-    @AfterThrowing(pointcut = "execution(* com.wuxin.blog.controller..*.*.*(..))", throwing = "e")
-    public void logAfterThrowing(JoinPoint joinPoint, Exception e) throws Throwable {
-        try {
-            ExceptionLog exceptionLog = new ExceptionLog();
-            // 处理公共部分信息
-            getLogInfo(exceptionLog, (ProceedingJoinPoint) joinPoint);
-            // 处理参数
-            handleExceptionParams(joinPoint,exceptionLog,e);
-            // 添加
-            exceptionLogService.add(exceptionLog);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            log.debug("异常日志 =====>处理日志异常");
-        }
-    }
+    // @AfterThrowing(pointcut = "execution(* com.wuxin.blog.controller..*.*.*(..))", throwing = "e")
+    // public void logAfterThrowing(JoinPoint joinPoint, Exception e) throws Throwable {
+    //     try {
+    //         ExceptionLog exceptionLog = new ExceptionLog();
+    //         // 处理公共部分信息
+    //         getLogInfo(exceptionLog, (ProceedingJoinPoint) joinPoint);
+    //         // 处理参数
+    //         handleExceptionParams(joinPoint,exceptionLog,e);
+    //         // 添加
+    //         exceptionLogService.add(exceptionLog);
+    //     } catch (Exception ex) {
+    //         ex.printStackTrace();
+    //         log.debug("异常日志 =====>处理日志异常");
+    //     }
+    // }
 
     public void getLogInfo(Log log, ProceedingJoinPoint joinPoint) throws Throwable {
 
@@ -210,18 +213,18 @@ public class LogAop {
     }
 
 
-    /**
-     * 处理异常日志参数
-     * @param joinPoint 切面
-     * @param exceptionLog result
-     */
-    public void handleExceptionParams(JoinPoint joinPoint,ExceptionLog exceptionLog,Exception e){
-        String error = ExceptionLogUtil.getStackTrace(e);
-        Map<String, Object> requestParams = AopUtils.getRequestParams(joinPoint);
-        exceptionLog.setParams(ExceptionLogUtil.substring(JSONUtil.toJsonStr(requestParams), 0, 2000));
-        exceptionLog.setResult(ExceptionLogUtil.substring(error, 0, 2000));
-
-    }
+    // /**
+    //  * 处理异常日志参数
+    //  * @param joinPoint 切面
+    //  * @param exceptionLog result
+    //  */
+    // public void handleExceptionParams(JoinPoint joinPoint,ExceptionLog exceptionLog,Exception e){
+    //     String error = ExceptionLogUtil.getStackTrace(e);
+    //     Map<String, Object> requestParams = AopUtils.getRequestParams(joinPoint);
+    //     exceptionLog.setParams(ExceptionLogUtil.substring(JSONUtil.toJsonStr(requestParams), 0, 2000));
+    //     exceptionLog.setResult(ExceptionLogUtil.substring(error, 0, 2000));
+    //
+    // }
 
 
     // 处理登录参数信息

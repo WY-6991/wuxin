@@ -47,15 +47,10 @@ public class UserController {
     private RedisService redisService;
 
 
-    /**
-     * 我的信息
-     * @return userInfo
-     */
-    @OperationLogger("获取博主信息")
     @GetMapping("/blogger/info")
     public Result findAdminUserInfo(){
         String k = RedisKey.USER_INFO;
-        String hk = RedisKey.USER_INFO;
+        String hk = RedisKey.BLOGGER_INFO;
         // 从redis中获取博主信息
         boolean b = redisService.hHasKey(k, hk);
         if(b){
@@ -64,7 +59,6 @@ public class UserController {
                 return Result.ok(map);
             }
         }
-        System.out.println("===========================blogger info==========================");
         Map<String, Object> hashMap = new HashMap<>(Constants.HASH_MAP_INIT);
         hashMap.put("chatUrl",chatUrlService.findChatUrlByUserId(GlobalConstant.ADMIN_USER_ID));
         hashMap.put("info",userService.findAdminUserInfo(GlobalConstant.ADMIN_USER_ID));
@@ -73,11 +67,4 @@ public class UserController {
         redisService.hset(k,hk,hashMap);
         return Result.ok(hashMap);
     }
-
-
-
-
-
-
-
 }

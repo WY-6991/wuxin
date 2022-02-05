@@ -43,6 +43,7 @@ public class MomentServiceImpl implements MomentService {
 
     @Override
     public void add(Moment moment) {
+        deleteMomentCache();
         moment.setLikes(0);
         ThrowUtils.ops(momentMapper.insert(moment), "动态添加失败！");
 
@@ -51,20 +52,22 @@ public class MomentServiceImpl implements MomentService {
 
     @Override
     public void update(Moment moment) {
+        deleteMomentCache();
         ThrowUtils.ops(momentMapper.updateById(moment), MESSAGE);
     }
 
     @Override
     public void delete(Long momentId) {
+        deleteMomentCache();
         ThrowUtils.ops(momentMapper.deleteById(momentId), MESSAGE);
     }
 
     @Override
     public IPage<Moment> selectListByPage(Integer current, Integer limit) {
         boolean b = redisService.hHasKey(RedisKey.MOMENT_LIST, current + "");
-        if(b){
+        if (b) {
             IPage<Moment> page = (IPage<Moment>) redisService.hget(RedisKey.MOMENT_LIST, current + "");
-            if(StringUtils.isNotNull(page)&&page.getRecords().size()!=0){
+            if (StringUtils.isNotNull(page) && page.getRecords().size() != 0) {
                 return page;
             }
         }
@@ -75,7 +78,7 @@ public class MomentServiceImpl implements MomentService {
         // 获取用户名 用户头像等信息
         getUserNameAndAvatar(momentPage);
         // 存入redis
-        redisService.hset(RedisKey.MOMENT_LIST,current,page);
+        redisService.hset(RedisKey.MOMENT_LIST, current, page);
         return page;
     }
 
@@ -84,7 +87,7 @@ public class MomentServiceImpl implements MomentService {
     public Moment find(Long momentId) {
         Moment moment = momentMapper.selectById(momentId);
         ThrowUtils.isNull(moment, "该动态不存在！");
-        redisService.hdel(RedisKey.MOMENT_LIST,1);
+        redisService.hdel(RedisKey.MOMENT_LIST, 1);
         return moment;
     }
 
@@ -117,6 +120,7 @@ public class MomentServiceImpl implements MomentService {
 
     /**
      * 获取用户信息
+     *
      * @param page momentPage
      */
     public void getUserNameAndAvatar(Page<Moment> page) {
@@ -126,6 +130,21 @@ public class MomentServiceImpl implements MomentService {
             moment.setUsername(user.getNickname());
             moment.setAvatar(user.getAvatar());
         });
+    }
+
+    /**
+     * 删除动态缓存 todo 这个方法需要优化！
+     */
+    public void deleteMomentCache() {
+        Integer count = momentMapper.selectCount(null);
+        Integer size = 5;
+        int total = count / size + 1;
+        for (Integer i = 1; i < total; i++) {
+            boolean b = redisService.hHasKey(RedisKey.MOMENT_LIST, i);
+            if (b) {
+                redisService.hdel(RedisKey.MOMENT_LIST, i);
+            }
+        }
     }
 
 }

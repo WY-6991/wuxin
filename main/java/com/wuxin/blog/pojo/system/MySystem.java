@@ -30,14 +30,6 @@ public class MySystem implements Serializable {
     private Integer id;
 
 
-
-    /**
-     * 上传图片地址
-     */
-    @TableField(value = "admin_background_image")
-    private String adminBackgroundImage;
-
-
     /**
      * 后台登录图标
      */
@@ -59,20 +51,24 @@ public class MySystem implements Serializable {
     private String webUrl;
 
 
+    /**
+     * 博主评论标签名称
+     */
+    @TableField("comment_label_name")
+    private String commentLabelName;
+
 
     /**
-     * 上传头像地址
+     * 博主评论标签颜色
      */
-    @TableField("upload_avatar_url")
-    private String uploadAvatarUrl;
-
+    @TableField("comment_label_color")
+    private String commentLabelColor;
 
     /**
-     * 上传图片地址
+     * 域名备案
      */
-    @TableField("upload_image_url")
-    private String uploadImageUrl;
-
+    @TableField("web_record")
+    private String webRecord;
 
 
 }

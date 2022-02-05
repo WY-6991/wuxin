@@ -19,10 +19,10 @@ import java.util.UUID;
 
 public class ShiroUtil {
     /**
-     * 生成32的随机盐值
+     * 根据用户生成盐
      */
-    public static String createSalt(){
-        return UUID.randomUUID().toString().replaceAll("-", "");
+    public static String createSalt(String username){
+        return new Md5Hash(username).toHex();
     }
 
     /**
@@ -33,25 +33,6 @@ public class ShiroUtil {
     public static String salt(Object srcPwd, String saltValue){
         return new SimpleHash("MD5", srcPwd, saltValue, 1024).toString();
     }
-
-    /**
-     * 获取当前用户
-     */
-    public static User getUser(){
-        return (User) SecurityUtils.getSubject().getPrincipal();
-    }
-
-
-    /**
-     * 获取用户标识
-    //  */
-    // public static User getUserUUID(String username,String password){
-    //     return
-    // }
-
-    // JWTUtil
-
-    // HashUtil
 
 
 

@@ -1,6 +1,7 @@
 package com.wuxin.blog.controller.front.category;
 
 import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.CategoryService;
 import com.wuxin.blog.utils.result.Result;
@@ -23,11 +24,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
 
-    /**
-     * 显示分类列表
-     * @return result
-     */
-    @OperationLogger("获取分类下文章")
+
     @GetMapping("/list")
     public Result cateList() {
         return Result.ok(categoryService.list());
@@ -38,7 +35,7 @@ public class CategoryController {
      * 根据categoryName显示blog信息
      * @return result
      */
-    @OperationLogger("根据分类名称获取文章列表")
+    @VisitLogger(value = "获取分类下的文章列表",name = "分类页")
     @PostMapping("/blog/list")
     public Result findBlogByCategoryName(@RequestBody PageVo pageVo) {log.info("分类博客信息 categoryName={}",pageVo.getKeywords());
         return Result.ok(categoryService.findBlogByCategoryName(pageVo.getCurrent(), pageVo.getLimit(), pageVo.getKeywords()));

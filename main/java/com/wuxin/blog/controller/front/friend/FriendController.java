@@ -1,6 +1,7 @@
 package com.wuxin.blog.controller.front.friend;
 
 import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.service.FriendService;
 import com.wuxin.blog.utils.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class FriendController {
     private FriendService friendService;
 
 
-    @OperationLogger("查看友情链接")
+    @VisitLogger(value = "访问了友情连接",name = "友情连接")
     @GetMapping("list")
     public Result findAllFriendList(){
         return Result.ok(friendService.list());

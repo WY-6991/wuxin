@@ -2,6 +2,7 @@ package com.wuxin.blog.controller.admin.blog;
 
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.pojo.blog.Blog;
+import com.wuxin.blog.pojo.blog.Tag;
 import com.wuxin.blog.pojo.blog.User;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.BlogService;
@@ -15,6 +16,8 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @Author: wuxin001
@@ -48,7 +51,7 @@ public class AdminBlogController {
                         pageVo.getKeywords(),
                         pageVo.getStart(),
                         pageVo.getEnd())
-                );
+        );
     }
 
 
@@ -58,6 +61,7 @@ public class AdminBlogController {
      * @param blog DTO
      * @return 成功消息
      */
+    @RequiresRoles("root")
     @OperationLogger("添加文章")
     @PostMapping("/add")
     public Result addBlog(@RequestBody Blog blog) {
@@ -84,6 +88,15 @@ public class AdminBlogController {
 
     }
 
+    @OperationLogger("获取用户文章")
+    @GetMapping("/user/list")
+    public Result findBlogByUserId(
+            @RequestParam(value = "userId", required = true) Long userId,
+            @RequestParam(value = "current", defaultValue = "1") Integer current,
+            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return Result.ok(blogService.findBlogByUserId(userId, current, size));
+    }
+
 
     /**
      * 修改blog
@@ -92,9 +105,14 @@ public class AdminBlogController {
      * @return success
      */
     @OperationLogger("修改文章")
+    @RequiresRoles("root")
     @PutMapping("/update")
     public Result blogUpdate(@RequestBody Blog blog) {
         blogService.updateBlog(blog);
+        // 修改blog标签
+        log.info("blog tagIds：{}", blog.getTagIds());
+        tagService.updateBlogTag(blog.getBlogId(), blog.getTagIds());
+
         return Result.ok("文章修改成功！");
     }
 
@@ -133,6 +151,13 @@ public class AdminBlogController {
         return Result.ok(Message.DEL_SUCCESS.getMessage());
     }
 
+    /**
+     * 获取全部文章列表
+     */
+    @GetMapping("/all/list")
+    public Result getAllBlogList() {
+        return Result.ok(blogService.getAllBlogList());
+    }
 
 
 }

@@ -5,6 +5,7 @@ import com.wuxin.blog.pojo.blog.Category;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.CategoryService;
 import com.wuxin.blog.utils.result.Result;
+import com.wuxin.blog.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +53,7 @@ public class AdminCategoryController {
     public Result addCategory(@RequestBody Category category) {
         log.info("添加分类操作 category={}", category);
         Category categoryByName = categoryService.findCategoryByName(category.getName());
-        if (categoryByName != null) {
+        if (StringUtils.isNotNull(categoryByName)) {
             return Result.error("添加失败！该分类名已经存在！");
         }
         categoryService.add(category);
@@ -67,12 +68,12 @@ public class AdminCategoryController {
      */
     @OperationLogger("修改分类")
     @RequiresRoles("root")
-    @PostMapping("/update")
+    @PutMapping("/update")
     public Result updateCategory(@RequestBody Category category) {
         log.info("修改分类操作 category={}", category);
         Category categoryByName = categoryService.findCategoryByName(category.getName());
-        if (categoryByName != null) {
-            return Result.error("该标签名已经存在");
+        if (StringUtils.isNotNull(categoryByName)) {
+            return Result.error("添加失败！该分类名已经存在！");
         }
         categoryService.update(category);
         return Result.ok("修改成功");

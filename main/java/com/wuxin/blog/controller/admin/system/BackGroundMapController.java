@@ -5,6 +5,7 @@ import com.wuxin.blog.pojo.system.BackgroundMap;
 import com.wuxin.blog.service.BackgroundMapService;
 import com.wuxin.blog.utils.result.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +26,10 @@ public class BackGroundMapController {
     @OperationLogger("查看背景图")
     @GetMapping("/list")
     public Result findBackGroundMap(){
+
         return Result.ok(backgroundMapService.list());
     }
+    @RequiresRoles("root")
     @OperationLogger("删除背景图")
     @DeleteMapping("/del")
     public Result delBackgroundMapById(@RequestParam("id") Long id){
@@ -34,12 +37,15 @@ public class BackGroundMapController {
         return Result.ok("背景图删除成功！");
     }
 
+    @RequiresRoles("root")
     @OperationLogger("修改背景图")
     @PostMapping("/update")
     public Result updateBackGroundMap(@RequestBody BackgroundMap backgroundMap){
         backgroundMapService.update(backgroundMap);
         return Result.ok("背景图修改成功！");
     }
+
+    @RequiresRoles("root")
     @OperationLogger("添加背景图")
     @PostMapping("/add")
     public Result addBackGroundMap(@RequestBody BackgroundMap backgroundMap){

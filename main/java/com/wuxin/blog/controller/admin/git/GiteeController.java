@@ -11,6 +11,7 @@ import com.wuxin.blog.utils.GiteeImg.GiteeUserImg;
 import com.wuxin.blog.utils.KeyUtil;
 import com.wuxin.blog.utils.result.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,9 +34,9 @@ public class GiteeController {
      * @return
      * @throws Exception
      */
+    @RequiresRoles("root")
     @OperationLogger("上传一张gitee图片")
     @PostMapping("/upload/user/img")
-    @ResponseBody
     public Result uploadImg(@RequestParam("file") MultipartFile file) throws Exception {
         log.info("请求成功");
         String originaFileName = file.getOriginalFilename();
@@ -46,7 +47,7 @@ public class GiteeController {
 
         String suffix = originaFileName.substring(originaFileName.lastIndexOf("."));
         //设置图片名字
-        String fileName = "/user/"+KeyUtil.IdUtils() + "/" + KeyUtil.PicId() + suffix;
+        String fileName = "/user/"+KeyUtil.IdUtils() + "/" + KeyUtil.picId() + suffix;
 
         String paramImgFile = Base64.encode(file.getBytes());
         //设置转存到Gitee仓库参数
@@ -79,9 +80,9 @@ public class GiteeController {
      * @return
      * @throws Exception
      */
+    @RequiresRoles("root")
     @OperationLogger("删除gitee图床图片")
     @DeleteMapping("/del/img")
-    @ResponseBody
     public Result delImg(@RequestParam(value = "imgPath") String imgPath) throws Exception {
         //路径不存在不存在时
         if(imgPath == null || imgPath.trim().equals("")){
@@ -137,6 +138,7 @@ public class GiteeController {
      * @return
      * @throws Exception
      */
+    @RequiresRoles("root")
     @OperationLogger("根据blogId获取全部评论")
     @PostMapping("/upload/blog/img")
     @ResponseBody
@@ -150,7 +152,7 @@ public class GiteeController {
 
         String suffix = originaFileName.substring(originaFileName.lastIndexOf("."));
         //设置图片名字
-        String fileName = "/blog/"+KeyUtil.IdUtils() + "/" + KeyUtil.PicId() + suffix;
+        String fileName = "/blog/"+KeyUtil.IdUtils() + "/" + KeyUtil.picId() + suffix;
 
         String paramImgFile = Base64.encode(file.getBytes());
         //设置转存到Gitee仓库参数

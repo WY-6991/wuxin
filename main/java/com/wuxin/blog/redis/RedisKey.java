@@ -57,7 +57,6 @@ public class RedisKey {
     public static final String CATEGORY_COUNT = "category_count";
 
 
-
     /**
      * category 全部
      */
@@ -76,36 +75,50 @@ public class RedisKey {
     public static final String SYSTEM_FOOTER_LABEL = "system_footer_label";
 
 
+    /**
+     * 博主信息
+     */
+    public static final String USER_INFO = "user_info";
+
 
     /**
      * 博主信息
      */
-    public static final String USER_INFO= "user_info";
-
-
-    /**
-     * 博主信息
-     */
-    public static final String BLOGGER_INFO= "blogger_info";
-
-
+    public static final String BLOGGER_INFO = "blogger_info";
 
 
     /**
      * 网站更新修改内容
      */
-    public static final String UPDATE_INFO= "update_info";
+    public static final String UPDATE_INFO = "update_info";
 
 
     /**
      * 首页壁纸
      */
-    public static final String HOME_BACKGROUND_IMAGE= "home_background_image";
+    public static final String HOME_BACKGROUND_IMAGE = "home_background_image";
 
     /**
      * 动态
      */
-    public static final String MOMENT_LIST= "moment_list";
+    public static final String MOMENT_LIST = "moment_list";
+
+    /**
+     * 邮箱验证码接收
+     */
+    public static final String EMAIL_CODE = "email_code";
+
+
+    /**
+     * 归档列表一级标题
+     */
+    public static final String ARCHIVE_TITLE_LIST = "archive_title_list";
+
+
+    /**
+     * 归档列表二级标题
+     */
+    public static final String ARCHIVE_LIST = "archive_list";
 
 
 }

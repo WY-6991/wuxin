@@ -1,4 +1,4 @@
-package com.wuxin.blog.config;
+package com.wuxin.blog.filter;
 
 import cn.hutool.json.JSONUtil;
 import com.wuxin.blog.constant.HttpStatus;
@@ -29,6 +29,12 @@ public class CorsAuthenticationFilter extends FormAuthenticationFilter {
     @Override
     public boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         logger.info("========================经过自定义过滤器================================");
+        HttpServletResponse res = (HttpServletResponse) response;
+        res.setHeader("Access-Control-Allow-Methods", "*");
+        res.setHeader("Access-Control-Max-Age", "3600");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setStatus(HttpServletResponse.SC_OK);
+        res.setCharacterEncoding("UTF-8");
         if ("OPTIONS".equals(((HttpServletRequest) request).getMethod().toUpperCase())) {
             return true;
         }
@@ -40,6 +46,8 @@ public class CorsAuthenticationFilter extends FormAuthenticationFilter {
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletResponse res = (HttpServletResponse) response;
+        res.setHeader("Access-Control-Allow-Methods", "*");
+        res.setHeader("Access-Control-Max-Age", "3600");
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.setStatus(HttpServletResponse.SC_OK);
         res.setCharacterEncoding("UTF-8");

@@ -8,6 +8,7 @@ import com.wuxin.blog.service.MomentService;
 import com.wuxin.blog.utils.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -26,6 +27,7 @@ public class AdminMomentController {
     private MomentService momentService;
 
     @OperationLogger("发布一条动态")
+    @RequiresRoles("root")
     @PostMapping("/add")
     public Result addMoment(@RequestBody Moment moment) {
         log.info("add moment :{}", moment);
@@ -39,6 +41,7 @@ public class AdminMomentController {
     }
 
     @OperationLogger("修改动态")
+    @RequiresRoles("root")
     @PostMapping("/update")
     public Result updateMoment(@RequestBody Moment moment) {
         momentService.update(moment);
@@ -46,6 +49,7 @@ public class AdminMomentController {
     }
 
     @OperationLogger("删除动态")
+    @RequiresRoles("root")
     @GetMapping("/del")
     public Result delMoment(@RequestParam("momentId") Long momentId) {
         momentService.delete(momentId);
@@ -64,7 +68,7 @@ public class AdminMomentController {
         return Result.ok(
                 momentService.selectListByPage
                         (pageVo.getCurrent(),
-                                pageVo.getLimit(), pageVo.getKeywords(),pageVo.getStart(), pageVo.getEnd())
+                                pageVo.getLimit(), pageVo.getKeywords(), pageVo.getStart(), pageVo.getEnd())
         );
     }
 

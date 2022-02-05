@@ -15,7 +15,7 @@ import java.lang.annotation.*;
 /**
  * @Author: wuxin001
  * @Date: 2022/01/13/10:14
- * @Description: 限流注解
+ * @Description: 访问限流
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

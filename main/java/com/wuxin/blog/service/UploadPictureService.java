@@ -30,6 +30,6 @@ public interface UploadPictureService  {
      * @param limit 大小
      * @return page
      */
-    IPage<UploadPicture> selectListByPage(Integer current, Integer limit);
+    IPage<UploadPicture> selectListByPage(Integer current, Integer limit,String start,String end);
 
 }

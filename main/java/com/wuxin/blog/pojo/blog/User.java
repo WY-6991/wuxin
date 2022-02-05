@@ -1,13 +1,14 @@
 package com.wuxin.blog.pojo.blog;
 
 
-import com.baomidou.mybatisplus.annotation.*;
-import com.sun.istack.internal.NotNull;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.wuxin.blog.pojo.mode.CreateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -37,6 +38,8 @@ public class User extends CreateTime  implements Serializable {
     private Date updateTime;
     private String motto;
     private Integer status;
+    // 是否订阅消息回复
+    private boolean subscription ;
     @TableField(value = "role_id")
     private Long roleId;
 

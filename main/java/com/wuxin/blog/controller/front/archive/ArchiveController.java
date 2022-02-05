@@ -1,6 +1,7 @@
 package com.wuxin.blog.controller.front.archive;
 
 import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.service.ArchiveTitleService;
 import com.wuxin.blog.utils.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -24,16 +25,11 @@ public class ArchiveController {
     private ArchiveTitleService archiveTitleService;
 
 
-    @OperationLogger("归档")
-    @GetMapping("/all")
+    @VisitLogger(value = "访问我的归档",name = "归档页")
+    @GetMapping("/list")
     public Result findArchive(){
         return Result.ok(archiveTitleService.list());
     }
 
-
-    @GetMapping("/list/{current}/{limit}")
-    public Result findArchiveTitlePage(@PathVariable int current,@PathVariable int limit){
-        return Result.ok(archiveTitleService.selectListByPage(current,limit));
-    }
 
 }

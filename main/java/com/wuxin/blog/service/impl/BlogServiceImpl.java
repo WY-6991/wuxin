@@ -11,10 +11,9 @@ import com.wuxin.blog.mapper.CategoryMapper;
 import com.wuxin.blog.mapper.TagMapper;
 import com.wuxin.blog.mapper.UserMapper;
 import com.wuxin.blog.mapper.vo.BlogTagMapper;
-import com.wuxin.blog.pojo.blog.Blog;
-import com.wuxin.blog.pojo.blog.Category;
-import com.wuxin.blog.pojo.blog.Tag;
-import com.wuxin.blog.pojo.blog.BlogTag;
+import com.wuxin.blog.mapper.vo.CommentMapper;
+import com.wuxin.blog.mode.SearchBlog;
+import com.wuxin.blog.pojo.blog.*;
 import com.wuxin.blog.redis.RedisKey;
 import com.wuxin.blog.redis.RedisService;
 import com.wuxin.blog.service.BlogService;
@@ -22,7 +21,6 @@ import com.wuxin.blog.utils.ThrowUtils;
 import com.wuxin.blog.utils.mapper.MapperUtils;
 import com.wuxin.blog.utils.string.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,10 +36,6 @@ import java.util.List;
 @Transactional(rollbackFor = {Exception.class})
 public class BlogServiceImpl implements BlogService {
 
-    public static final Integer ONE = 1;
-
-    public static final Integer TWO = 2;
-
     @Autowired
     private BlogMapper blogMapper;
 
@@ -52,10 +46,10 @@ public class BlogServiceImpl implements BlogService {
     private TagMapper tagMapper;
 
     @Autowired
-    RedisTemplate redisTemplate;
+    private CategoryMapper categoryMapper;
 
     @Autowired
-    private CategoryMapper categoryMapper;
+    private CommentMapper commentMapper;
 
     @Autowired
     private BlogTagMapper blogTagMapper;
@@ -67,16 +61,29 @@ public class BlogServiceImpl implements BlogService {
     public Long addBlog(Blog blog) {
         blogMapper.insert(blog);
         // 删除redis中博客列表
-        redisService.hdel(RedisKey.BLOG_LIST);
+        deleteBlogListCache();
         return blog.getBlogId();
+    }
+
+    @Override
+    public String findCommentBlogTitle(Long blogId) {
+        return MapperUtils.lambdaQueryWrapper(blogMapper).eq(Blog::getBlogId, blogId).select(Blog::getBlogId, Blog::getTitle).one().getTitle();
+    }
+
+    @Override
+    public List<Blog> getAllBlogList() {
+        return MapperUtils.lambdaQueryWrapper(blogMapper).select(Blog::getBlogId, Blog::getTitle, Blog::getCreateTime).orderByDesc(Blog::getCreateTime).list();
+    }
+
+    @Override
+    public List<SearchBlog> searchBlog(String keywords) {
+        return blogMapper.searchBlog(keywords);
     }
 
     @Override
     public void delBlog(Long blogId) {
         // 删除redis中博客列表
-        redisService.hdel(RedisKey.BLOG_LIST);
-        // 设置 redis文章有效期
-        redisService.hdel(RedisKey.BLOG,blogId);
+        deleteBlogListCache();
         blogMapper.deleteById(blogId);
     }
 
@@ -84,28 +91,23 @@ public class BlogServiceImpl implements BlogService {
     public void delBlogByUserId(Long userId) {
         LambdaQueryWrapper<Blog> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Blog::getUserId, userId);
-        // 删除redis中博客列表
-        redisService.hdel(RedisKey.BLOG_LIST);
+        deleteBlogListCache();
         blogMapper.delete(queryWrapper);
     }
 
     @Override
     public void updateBlog(Blog blog) {
-        // 修改redis中文章
         String redisKey = RedisKey.BLOG;
-        // 存入redis中
-        System.out.println("==========================从数据库中修改文章======================");
-        redisService.hset(redisKey, blog.getBlogId(), blog);
-        // 数据库中修改
-        LambdaUpdateChainWrapper<Blog> uc = new LambdaUpdateChainWrapper<>(blogMapper);
-        uc.eq(Blog::getBlogId, blog.getBlogId()).update(blog);
+        // redisService.hset(redisKey, blog.getBlogId(), blog);
+        // System.out.println("redis blog=>"+redisService.hget(redisKey,blog.getBlogId()));
+        redisService.hdel(redisKey, blog.getBlogId());
+        MapperUtils.lambdaUpdateChainWrapper(blogMapper).eq(Blog::getBlogId, blog.getBlogId()).update(blog);
+        deleteBlogListCache();
     }
 
     @Override
     public IPage<Blog> findBlog(Integer current, Integer limit) {
-        // 先从redis中查找
         String redisKey = RedisKey.BLOG_LIST;
-        // 判断hashkey是否存在
         boolean b = redisService.hHasKey(redisKey, current);
         if (b) {
             IPage<Blog> redisPage = (IPage<Blog>) redisService.hget(redisKey, current);
@@ -113,32 +115,33 @@ public class BlogServiceImpl implements BlogService {
                 return redisPage;
             }
         }
+
         // 指定
         Page<Blog> page = MapperUtils.lambdaQueryWrapper(blogMapper).orderByDesc(Blog::getTop).orderByDesc(Blog::getCreateTime).page(new Page<>(current, limit));
         for (Blog blog : page.getRecords()) {
             getBlogInfo(blog);
         }
-        System.out.println("==========================从数据库中获取文章里列表======================");
-        // 如果没有将首页缓存起来
+        // 如果没有将缓存起来
         redisService.hset(redisKey, current, page);
+
         return page;
     }
 
     @Override
-    public List<Blog> newBlog() {
+    public List<SearchBlog> newBlog() {
         // 缓存查找
         String redisKey = RedisKey.NEW_BLOG_LSIT;
         // 判断key是否存在
         boolean b = redisService.hasKey(redisKey);
         if (b) {
             // 返回
-            List<Blog> list = (List<Blog>) redisService.get(redisKey);
+            List<SearchBlog> list = (List<SearchBlog>) redisService.get(redisKey);
             if (list.size() != 0) {
                 return list;
             }
         }
         // 从数据库中获取list
-        List<Blog> list = blogMapper.newBlog();
+        List<SearchBlog> list = blogMapper.newBlog();
         System.out.println("==========================从数据库中获取最新文章列表=====================");
         // 没有缓存起来
         redisService.set(redisKey, list);
@@ -204,22 +207,24 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public IPage<Blog> findBlogPage(Integer current, Integer limit, String keywords, String start, String end) {
-        LambdaQueryWrapper<Category> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        LambdaQueryWrapper<Category> eq = lambdaQueryWrapper.eq(Category::getName, keywords);
-        Category category = categoryMapper.selectOne(eq);
-        // 文章列表
-        Page<Blog> page = new Page<>(current, limit);
-        // 查找条件
+        Category category = null;
         Page<Blog> ipage;
+        if (StringUtils.isNotNull(keywords)) {
+            category = MapperUtils.lambdaQueryWrapper(categoryMapper)
+                    .eq( Category::getName, keywords).one();
+        }
+
+
         if (StringUtils.isNotNull(category)) {
             ipage = MapperUtils.lambdaQueryWrapper(blogMapper).orderByDesc(Blog::getCreateTime)
-                    .like(StringUtils.isNotNull(keywords), Blog::getTitle, keywords)
+
+                    .like(true, Blog::getTitle, keywords)
                     // 大于开始时间
                     .ge(StringUtils.isNotNull(start), Blog::getCreateTime, start)
                     // 小于结束时间
                     .le(StringUtils.isNotNull(end), Blog::getCreateTime, end)
-                    .or().eq(Blog::getCid, category.getCid()).page(page);
-            ;
+                    .or().eq(Blog::getCid, category.getCid())
+                    .page(new Page<>(current, limit));
 
         } else {
             ipage = MapperUtils.lambdaQueryWrapper(blogMapper).orderByDesc(Blog::getCreateTime)
@@ -228,25 +233,22 @@ public class BlogServiceImpl implements BlogService {
                     .ge(StringUtils.isNotNull(start), Blog::getCreateTime, start)
                     // 小于结束时间
                     .le(StringUtils.isNotNull(end), Blog::getCreateTime, end)
-                    .page(page);
+                    .page(new Page<>(current, limit));
         }
 
-
-        for (Blog blog : ipage.getRecords()) {
-            // 获取用户
-            getBlogInfo(blog);
-        }
+        // 获取文章基本信息
+        ipage.getRecords().forEach(this::getBlogInfo);
         return ipage;
     }
 
 
     @Override
-    public Blog beforeBlog(Long blogId) {
+    public SearchBlog beforeBlog(Long blogId) {
         return blogMapper.beforeBlog(blogId);
     }
 
     @Override
-    public Blog nextBlog(Long blogId) {
+    public SearchBlog nextBlog(Long blogId) {
         return blogMapper.nextBlog(blogId);
     }
 
@@ -254,20 +256,44 @@ public class BlogServiceImpl implements BlogService {
         blog.setUsername(userMapper.selectById(blog.getUserId()).getNickname());
         // 获取分类
         blog.setCategory(categoryMapper.selectById(blog.getCid()));
+        // 获取评论数量
+        Integer count = MapperUtils.lambdaQueryWrapper(commentMapper).eq(Comment::getType, Comment.BLOG_COMMENT).eq(StringUtils.isNotNull(blog.getBlogId()), Comment::getBlogId, blog.getBlogId()).count();
+        blog.setCommentNum(count);
         // 返回所有标签
-        LambdaQueryChainWrapper<BlogTag> bt = new LambdaQueryChainWrapper<>(blogTagMapper);
-        List<BlogTag> list = bt.eq(BlogTag::getBlogId, blog.getBlogId()).list();
+        List<BlogTag> list = MapperUtils.lambdaQueryWrapper(blogTagMapper)
+                .eq(BlogTag::getBlogId, blog.getBlogId()).list();
         List<Tag> tags = new ArrayList<>();
-        for (BlogTag blogTag : list) {
+        list.forEach(blogTag -> {
             // 获取标签名
-            ThrowUtils.isNull(blogTag.getTagId(), "标签id不能为空！");
             Tag tag = tagMapper.selectById(blogTag.getTagId());
-            ThrowUtils.isNull(tag, "标签不存在！");
             tags.add(tag);
-
-        }
+        });
         //添加标签名
         blog.setTags(tags);
         return blog;
+    }
+
+    /**
+     * 使用redis遍历删除blog-list
+     */
+    public void deleteBlogListCache() {
+        // 获取文章总数
+        Integer total = blogMapper.selectCount(null);
+        // 前台设置了页码大小为5
+        Integer size = 5;
+        // 获取页码总数
+        int i = (total / size) + 1;
+        for (int i1 = 1; i1 < i; i1++) {
+            boolean b = redisService.hHasKey(RedisKey.BLOG_LIST, i1);
+            if (b) {
+                redisService.hdel(RedisKey.BLOG_LIST, i1);
+            }
+        }
+
+    }
+
+
+    public void updateBlogListCache(Blog blog) {
+
     }
 }

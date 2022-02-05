@@ -6,6 +6,9 @@ import com.wuxin.blog.mapper.ArchiveMapper;
 import com.wuxin.blog.mapper.vo.ArchiveTitleMapper;
 import com.wuxin.blog.pojo.blog.Archive;
 import com.wuxin.blog.pojo.blog.ArchiveTitle;
+import com.wuxin.blog.pojo.blog.Category;
+import com.wuxin.blog.redis.RedisKey;
+import com.wuxin.blog.redis.RedisService;
 import com.wuxin.blog.service.ArchiveTitleService;
 import com.wuxin.blog.utils.ThrowUtils;
 import com.wuxin.blog.utils.mapper.MapperUtils;
@@ -24,35 +27,41 @@ import java.util.List;
 @Transactional(rollbackFor = {Exception.class})
 public class ArchiveTitleServiceImpl implements ArchiveTitleService {
 
+
+    private static final String ARCHIVE_TITLE_LIST = RedisKey.ARCHIVE_TITLE_LIST;
+
     @Autowired
     private ArchiveTitleMapper archiveTitleMapper;
 
     @Autowired
     private ArchiveMapper archiveMapper;
 
+    @Autowired
+    private RedisService redisService;
+
     @Override
     public void add(String title) {
         ArchiveTitle archiveTitle = new ArchiveTitle();
         archiveTitle.setArchiveTitle(title);
         ThrowUtils.ops(archiveTitleMapper.insert(archiveTitle),"添加失败");
+        addCache(archiveTitle);
     }
 
     @Override
     public void delete(Long id) {
         ThrowUtils.ops(archiveTitleMapper.deleteById(id),"内容不存在");
+        deleteCache(id);
     }
 
     @Override
     public void update(ArchiveTitle archiveTitle) {
         ThrowUtils.ops(archiveTitleMapper.updateById(archiveTitle),"内容不存在");
-
+        updateCache(archiveTitle);
     }
 
     @Override
     public ArchiveTitle selectArchiveTitle(String title) {
-        ArchiveTitle one = MapperUtils.lambdaQueryWrapper(archiveTitleMapper).eq(ArchiveTitle::getArchiveTitle, title).one();
-        ThrowUtils.isNull(one,"归档内容不存在！");
-        return one;
+        return MapperUtils.lambdaQueryWrapper(archiveTitleMapper).eq(ArchiveTitle::getArchiveTitle, title).one();
     }
 
 
@@ -70,12 +79,20 @@ public class ArchiveTitleServiceImpl implements ArchiveTitleService {
 
     @Override
     public List<ArchiveTitle> list() {
+        // redis
+        boolean b = redisService.hasKey(ARCHIVE_TITLE_LIST);
+        if(b){
+            List<ArchiveTitle> list = (List<ArchiveTitle>) redisService.get(ARCHIVE_TITLE_LIST);
+            if(list.size()!=0){
+                return list;
+            }
+        }
         List<ArchiveTitle> archiveTitleList = MapperUtils.lambdaQueryWrapper(archiveTitleMapper).orderByDesc(ArchiveTitle::getId).list();
         archiveTitleList.forEach(archiveTitle -> {
             List<Archive> list = MapperUtils.lambdaQueryWrapper(archiveMapper).orderByDesc(Archive::getCreateTime).eq(Archive::getArchiveTitle, archiveTitle.getArchiveTitle()).list();
             archiveTitle.setArchiveList(list);
         });
-
+        redisService.set(ARCHIVE_TITLE_LIST,archiveTitleList);
         return archiveTitleList;
     }
 
@@ -88,5 +105,26 @@ public class ArchiveTitleServiceImpl implements ArchiveTitleService {
     public ArchiveTitle find(Long id) {
         return null;
     }
+
+
+    public void deleteCache(Long id) {
+        List<ArchiveTitle> list = list();
+        list.removeIf(value -> value.getId().equals(id));
+        redisService.set(ARCHIVE_TITLE_LIST, list);
+    }
+
+    public void updateCache(ArchiveTitle archiveTitle) {
+        List<ArchiveTitle> list = list();
+        list.add(archiveTitle);
+        redisService.set(ARCHIVE_TITLE_LIST, list);
+    }
+
+
+    public void addCache(ArchiveTitle archiveTitle) {
+        List<ArchiveTitle> list = list();
+        list.add(archiveTitle);
+        redisService.set(ARCHIVE_TITLE_LIST, list);
+    }
+
 
 }

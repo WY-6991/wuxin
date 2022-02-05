@@ -18,6 +18,9 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName("wx_archive")
 public class Archive implements Serializable {
+
+
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -40,7 +43,13 @@ public class Archive implements Serializable {
     /**
      * 文章类型  原创 和 转载
      */
-    private String type;
+    private Integer type;
+
+
+    /**
+     * 为转载类型文章地址
+     */
+    private String url;
 
     /**
      * 归档时间 如 2021,2,23

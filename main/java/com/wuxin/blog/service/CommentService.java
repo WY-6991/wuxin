@@ -23,6 +23,13 @@ public interface CommentService {
 
 
     /**
+     * 添加评论
+     * @param commentId commentId
+     */
+    Comment findCommentByCommentId(Long commentId);
+
+
+    /**
      * 删除评论
      * @param  commentId id
      */
@@ -129,7 +136,7 @@ public interface CommentService {
      * @param keywords 搜索关键词
      * @return page
      */
-    IPage<Comment> findBlogCommentByPage(Integer current, Integer limit,Integer type, String keywords);
+    IPage<Comment> findBlogCommentByPage(Integer current, Integer limit,Integer type, String keywords,Long blogId,String start,String end);
 
 
     /**

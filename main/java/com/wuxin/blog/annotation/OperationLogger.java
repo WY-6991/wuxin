@@ -1,5 +1,6 @@
 package com.wuxin.blog.annotation;
 
+import com.wuxin.blog.enums.BusinessType;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
@@ -18,4 +19,10 @@ public @interface OperationLogger {
      * 操作描述
      */
     String value() default "";
+
+
+    /**
+     * 操作类型
+     */
+    BusinessType type() default BusinessType.OTHER;
 }

@@ -1,9 +1,15 @@
 package com.wuxin.blog.handle;
 
+import com.auth0.jwt.exceptions.AlgorithmMismatchException;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.SignatureGenerationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.wuxin.blog.constant.HttpStatus;
 import com.wuxin.blog.exception.CustomException;
+import com.wuxin.blog.exception.NotFoundException;
 import com.wuxin.blog.utils.result.Result;
+import com.wuxin.blog.utils.security.JWTUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -19,8 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * @Author: wuxin001
- * @Date: 2022/01/03/16:53
- * @Description: 捕获异常并且抛出异常
+ * @Date: 2022/01/03/19:53
+ * @Description: 全局异常处理器
  */
 @RestControllerAdvice
 public class ExceptionController {
@@ -35,12 +41,13 @@ public class ExceptionController {
      */
     @ExceptionHandler(UnauthorizedException.class)
     public Result unauthorizedException() {
-        log.error("===============未登录===============");
+        log.error("===============没有权限执行该操作===============");
         return Result.create(HttpStatus.FORBIDDEN, "没有权限执行该操作！");
     }
 
     /**
      * 没有权限执行操作
+     *
      * @return
      */
     @ExceptionHandler(UnauthenticatedException.class)
@@ -55,11 +62,40 @@ public class ExceptionController {
      * @return message
      */
     @ExceptionHandler(AuthenticationException.class)
-    public Result usernameNotFoundExceptionHandler() {
-        log.error("用户名或密码错误");
-        return Result.create(HttpStatus.ERROR, "用户名或密码错误！");
+    public Result usernameAndPasswodException() {
+        log.error("================用户名或密码错误================");
+        return Result.create(HttpStatus.CUSTOM, "用户名或密码错误！");
     }
 
+
+    /**
+     * 内容不存在
+     *
+     * @return error message
+     */
+    @ExceptionHandler(NotFoundException.class)
+    public Result notFoundException() {
+        log.error("==================请求资源不存在=============");
+        return Result.create(HttpStatus.NOT_FOUND, "请求资源不存在~");
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public Result tokenExpiredException() {
+        log.error("==================token过期=============");
+        return Result.create(HttpStatus.UNAUTHORIZED, "令牌已过期，请重新登录~");
+    }
+
+    @ExceptionHandler(AlgorithmMismatchException.class)
+    public Result algorithmMismatchException() {
+        log.error("==================签名算法错误=============");
+        return Result.create(HttpStatus.UNAUTHORIZED, "请重新登录~");
+    }
+
+    @ExceptionHandler(JWTCreationException.class)
+    public Result jwtCreationException() {
+        log.error("==================jwt异常错误=============");
+        return Result.create(HttpStatus.UNAUTHORIZED, "请重新登录~");
+    }
 
     /**
      * 空指针异常
@@ -68,10 +104,9 @@ public class ExceptionController {
      */
     @ExceptionHandler(NullPointerException.class)
     public Result nullPointerException() {
-        log.error("空指针异常");
+        log.error("=====================空指针异常====================");
         return Result.create(HttpStatus.ERROR, "空指针异常~");
     }
-
 
 
     /**
@@ -83,7 +118,7 @@ public class ExceptionController {
      */
     @ExceptionHandler(CustomException.class)
     public Result myCustomException(HttpServletRequest request, CustomException e) {
-        log.error("异常信息 Request URL : {}, Exception:{} ", request.getRequestURI(), e);
+        log.error("自定义异常信息 Request URL : {}, Exception:{} ", request.getRequestURI(), e);
         return Result.create(HttpStatus.CUSTOM, e.getMessage());
     }
 
@@ -102,6 +137,7 @@ public class ExceptionController {
 
     /**
      * 访问路径不存在
+     *
      * @return error message
      */
     @ExceptionHandler(value = NoHandlerFoundException.class)
@@ -114,6 +150,7 @@ public class ExceptionController {
 
     /**
      * 请求方法不支持
+     *
      * @return error message
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -124,7 +161,7 @@ public class ExceptionController {
     }
 
     /**
-     * 服务器异常
+     * 其他所有异常在这里捕获
      *
      * @param request 请求
      * @param e       异常信息
@@ -132,19 +169,7 @@ public class ExceptionController {
      */
     @ExceptionHandler(Exception.class)
     public Result exceptionHandler(HttpServletRequest request, Exception e) {
-        log.error("异常信息 Request URL : {}, Exception:{} ", request.getRequestURI(), e);
-        // if (e instanceof UnauthorizedException) {
-        //     return Result.create(HttpStatus.CUSTOM, "没有权限执行该操作~");
-        // }
-        // if (e instanceof SQLException) {
-        //     return Result.create(HttpStatus.CUSTOM, "sql语句异常~");
-        // }
-        // if (e instanceof MybatisPlusException) {
-        //     return Result.create(HttpStatus.CUSTOM, "数据库操作失败~");
-        // }
-        // if (e instanceof NoHandlerFoundException) {
-        //     return Result.create(HttpStatus.NOT_FOUND, "访问路径不存在~");
-        // }
+        log.error("异常信息 Request URL : {}, Exception:{} ", request.getRequestURI(), e.getMessage());
         return Result.create(HttpStatus.ERROR, "抱歉,服务器开小差去了~");
     }
 

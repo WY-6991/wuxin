@@ -17,6 +17,7 @@ import com.wuxin.blog.utils.KeyUtil;
 import com.wuxin.blog.utils.result.Result;
 import com.wuxin.blog.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -79,6 +80,7 @@ public class GitHubController {
         return uploadFileUtil(file, 2);
     }
 
+
     @OperationLogger("上传音频文件")
     @PostMapping("/upload/music")
     public Result uploadMusic(@RequestParam("file") MultipartFile file) throws Exception {
@@ -86,6 +88,7 @@ public class GitHubController {
 
     }
 
+    @RequiresRoles("root")
     @OperationLogger("删除github仓库文件指定文件")
     @DeleteMapping("/delete/file")
     public Result deleteGithubFile(@RequestBody UploadPicture uploadPicture) throws Exception {
@@ -119,6 +122,7 @@ public class GitHubController {
     }
 
 
+    @RequiresRoles("root")
     @OperationLogger("删除github文件")
     @PostMapping("/delete/records")
     public Result deleteFolder(@RequestBody Github github) throws Exception {
@@ -146,8 +150,6 @@ public class GitHubController {
         }
 
 
-
-
     }
 
 
@@ -159,22 +161,11 @@ public class GitHubController {
         try {
             // 判断github是否传入自定义url 如果url为null或者""
             if (StringUtils.isNull(url) || "".equals(url)) {
-                // 自定义默认url
                 url = this.url;
 
             }
-            log.info("访问地址：url=>{}",url);
-            // String body  = HttpRequest.get(url)
-            //         .header("Authorization", "token  " + this.token)
-            //         .header("Accept", "application/json")
-            //         .header("Content-Type", "application/json")
-            //         .timeout(10000)
-            //         .execute()
-            //         .body();
-
-
-            // JSONObject jsonObject = JSONUtil.parseObj(execute);
-            log.info("update jsonObject={}", HttpRequest.get(url).header("accept","application/vnd.github.v3+json").header("user-agent","Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Mobile Safari/537.36 Edg/97.0.1072.55").execute());
+            log.info("访问地址：url=>{}", url);
+            log.info("update jsonObject={}", HttpRequest.get(url).header("accept", "application/vnd.github.v3+json").header("user-agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Mobile Safari/537.36 Edg/97.0.1072.55").execute());
             return Result.ok("jsonObject");
         } catch (HttpException e) {
             e.printStackTrace();
@@ -201,7 +192,7 @@ public class GitHubController {
             return Result.error("上传失败！文件不存在！");
         }
         String suffix = originaFileName.substring(originaFileName.lastIndexOf("."));
-        String fileName = KeyUtil.PicId() + "/" + KeyUtil.IdUtils() + suffix;
+        String fileName = KeyUtil.picId() + "/" + KeyUtil.IdUtils() + suffix;
         String paramImgFile = Base64.encode(file.getBytes());
         // 设置body
         Map<String, Object> map = new HashMap<>(8);

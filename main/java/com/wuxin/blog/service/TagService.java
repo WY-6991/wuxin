@@ -23,7 +23,6 @@ public interface TagService extends PageService<Tag> {
     Tag findTagByName(String tagName);
 
 
-
     /**
      * 获取blogTag
      * @param blogId id
@@ -35,9 +34,16 @@ public interface TagService extends PageService<Tag> {
      * 添加blog 标签
      * @param blogId blogId
      * @param tagIds  tagId
-     * @return 成功消息
      */
     void addBlogTag(Long blogId, List<Long> tagIds);
+
+
+    /**
+     * 修改blogtagIds
+     * @param blogId blogId
+     * @param tagIds tagList
+     */
+    void updateBlogTag(Long blogId, List<Long> tagIds);
 
     /**
      * 删除blogTag
@@ -54,12 +60,6 @@ public interface TagService extends PageService<Tag> {
      * @return page
      */
     List<Blog> findBlogByTagName(Integer current, Integer size, String tagName);
-
-    /**
-     * 统计标签信息
-     * @return count
-     */
-    Integer findTagCount();
 
 
     /**

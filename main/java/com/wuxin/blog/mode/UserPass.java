@@ -6,14 +6,14 @@ import lombok.NoArgsConstructor;
 
 /**
  * @Author: wuxin001
- * @Date: 2022/01/13/10:41
+ * @Date: 2022/02/01/12:11
  * @Description:
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginUser {
+public class UserPass {
     private String username;
-    private String password;
-    private String token;
+    private String oldPassword;
+    private String newPassword;
 }

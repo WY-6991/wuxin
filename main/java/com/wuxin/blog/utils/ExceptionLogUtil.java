@@ -13,9 +13,6 @@ import java.io.StringWriter;
 @Slf4j
 public class ExceptionLogUtil {
 
-
-
-
     /**
      * 判断字符串是否为空
      *

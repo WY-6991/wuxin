@@ -1,6 +1,10 @@
 package com.wuxin.blog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.wuxin.blog.mode.PageVo;
+import com.wuxin.blog.mode.UserComment;
+import com.wuxin.blog.mode.UserPass;
+import com.wuxin.blog.pojo.blog.CommentReply;
 import com.wuxin.blog.pojo.blog.User;
 
 import java.util.List;
@@ -105,21 +109,29 @@ public interface UserService {
 
 
     /**
-     * 修改密码
-     * @param username 用户名
-     * @param newUsername 新的用户名
-     * @param password 密码
-     * @return 成功信息
+     * 分页
+     * @param pageVo
+     * @return
      */
-    boolean updatePass(Long userId,String username,String newUsername, String password);
+    IPage<User> finUserByKeywords(PageVo pageVo);
+
+
+
+
+
+
+
+
+
+    /**
+     * 密码修改 方式二
+     */
+    boolean updatePass(Long loginUserId, UserPass user);
 
     /**
      * 密码修改,邮箱方式修改
-     * @param username 用户名
-     * @param password 密码
-     * @return 成功信息
      */
-    boolean updatePass(String username, String password,User user);
+    boolean updatePasswordByEmail(String email, String newPassword);
 
     /**
      * 获取博主信息
@@ -144,13 +156,28 @@ public interface UserService {
      */
     User checkUsernameAndEmail(String username, String email);
 
+
+
     /**
      * 获取用户Id
      * @param username 用户名
      * @param email 邮箱
-     * @return userID
+     * @param subscription 是否订阅消息
+     * @return subscription
      */
-    Long getUserId(String username, String email);
+    Long getCommentUserId(String username, String email, boolean subscription);
+
+
+    /**
+     * 判断用户是否注册
+     * 如果注册了的用户需要用户名和邮箱方式登录
+     * @param username 用户名
+     * @param email 邮箱
+     * @param subscription 是否订阅消息
+     * @param type 类型
+     * @return
+     */
+    UserComment getReplyCommentUser(String username, String email, boolean subscription,boolean type);
 
 
     /**
@@ -159,4 +186,25 @@ public interface UserService {
      * @return
      */
     User findUserDetail(Long userId);
+
+
+    /**
+     * 消息订阅与发布处理
+     * @param commentUserId 获取被回复用户信息
+     * @return user
+     */
+    User selectCommentUserByUserId(Long commentUserId);
+
+
+    /**
+     * 用户角色表
+     */
+    IPage<User> selectUserRoleList(PageVo pageVo);
+
+
+    /**
+     * 用户角色修改
+     * @param user
+     */
+    void updateUserRole(User user);
 }

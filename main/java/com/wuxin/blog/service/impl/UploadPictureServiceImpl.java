@@ -3,10 +3,12 @@ package com.wuxin.blog.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wuxin.blog.mapper.UploadPictureMapper;
+import com.wuxin.blog.pojo.blog.Comment;
 import com.wuxin.blog.pojo.blog.UploadPicture;
 import com.wuxin.blog.service.UploadPictureService;
 import com.wuxin.blog.utils.ThrowUtils;
 import com.wuxin.blog.utils.mapper.MapperUtils;
+import com.wuxin.blog.utils.string.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,9 +40,12 @@ public class UploadPictureServiceImpl implements UploadPictureService {
     }
 
     @Override
-    public IPage<UploadPicture> selectListByPage(Integer current, Integer limit) {
-        Page<UploadPicture> uploadPicturePage = new Page<>(current,limit);
-        return MapperUtils.lambdaQueryWrapper(uploadPictureMapper).orderByDesc(UploadPicture::getCreateTime).page(uploadPicturePage);
+    public IPage<UploadPicture> selectListByPage(Integer current, Integer limit,String start,String end) {
+        return MapperUtils.lambdaQueryWrapper(uploadPictureMapper)
+                .orderByDesc(UploadPicture::getCreateTime)
+                .le(StringUtils.isNotNull(end), UploadPicture::getCreateTime, end)
+                .ge(StringUtils.isNotNull(start), UploadPicture::getCreateTime, start)
+                .page(new Page<>(current,limit));
     }
 
 }

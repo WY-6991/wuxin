@@ -12,6 +12,12 @@ public enum BusinessType {
      */
     OTHER,
 
+
+    /**
+     * 查看
+     */
+    SELECT,
+
     /**
      * 新增
      */

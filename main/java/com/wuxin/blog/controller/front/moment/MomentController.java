@@ -1,12 +1,10 @@
 package com.wuxin.blog.controller.front.moment;
 
 import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.service.MomentService;
 import com.wuxin.blog.utils.result.Result;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -22,10 +20,10 @@ public class MomentController {
     @Resource
     private MomentService momentService;
 
-    @OperationLogger("获取动态信息")
-    @GetMapping("/list")
-    public Result findMoment(@RequestParam("current") int current,
-                             @RequestParam("limit") int limit){
+    @VisitLogger(value = "获取动态信息",name = "动态页")
+    @GetMapping("/list/{current}/{limit}")
+    public Result getMomentList(@PathVariable("current") int current,
+                             @PathVariable("limit") int limit){
         return Result.ok(momentService.selectListByPage(current,limit));
     }
 }

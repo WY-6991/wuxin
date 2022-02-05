@@ -79,7 +79,7 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public IPage<Friend> selectListByPage(Integer current, Integer limit, String keywords) {
         return MapperUtils.lambdaQueryWrapper(friendMapper)
-                .like(!keywords.isEmpty(), Friend::getUsername, keywords)
+                .like(StringUtils.isNotNull(keywords), Friend::getUsername, keywords)
                 .page(new Page<>(current, limit));
     }
 

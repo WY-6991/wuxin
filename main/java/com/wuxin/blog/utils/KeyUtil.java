@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,7 +77,7 @@ public class KeyUtil {
      * 根据当前时间生成Id
      * @return String
      */
-    public static Long PicId() {
+    public static Long picId() {
 
         return Long.parseLong(new SimpleDateFormat("yyyyMM").format(new Date()));
     }
@@ -89,4 +90,24 @@ public class KeyUtil {
     public static  String  getArchiveTitle() {
         return new SimpleDateFormat("yyyy-MM").format(new Date());
     }
+
+
+    /**
+     * 获取随机UUID
+     */
+    public static String fastUUID()
+    {
+        return UUID.randomUUID().toString();
+    }
+
+    /**
+     * 简化的UUID，去掉了横线
+     */
+    public static String simpleUUID()
+    {
+       return UUID.randomUUID().toString().replace("-","");
+    }
+
+
+
 }
