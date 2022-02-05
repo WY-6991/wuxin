@@ -1,0 +1,16 @@
+GET http://localhost:8888/about/comment/list/1/10
+
+<> 2021-11-24T123054.200.json
+
+###
+
+GET http://localhost:8888/about/comment/list/{{current}}/{{limit}}
+
+###
+
+GET http://localhost:8888/about/comment/all
+
+<> 2021-11-24T123005.200.json
+
+###
+

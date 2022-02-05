@@ -1,0 +1,57 @@
+{
+  "name": "blog-view",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@moefe/vue-aplayer": "^2.0.0-beta.5",
+    "animate.css": "^4.1.1",
+    "axios": "^0.21.1",
+    "babel-plugin-prismjs": "^2.1.0",
+    "core-js": "^3.6.5",
+    "element-ui": "^2.4.5",
+    "jinrishici": "^1.0.6",
+    "jquery": "^2.1.4",
+    "js-cookie": "^3.0.1",
+    "less-loader": "^4.1.0",
+    "node-sass": "^4.14.1",
+    "portal-vue": "^2.1.7",
+    "prismjs": "^1.25.0",
+    "qrcodejs2": "^0.0.2",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-vue": "^0.11.0",
+    "styles-loader": "^2.0.0",
+    "tocbot": "^4.13.4",
+    "v-emoji-v2": "0.0.8",
+    "v-viewer": "^1.6.4",
+    "vditor": "^3.8.7",
+    "vue": "^2.6.11",
+    "vue-qr": "^3.2.2",
+    "vue-router": "^3.2.0",
+    "vuex": "^3.4.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.5.13",
+    "@vue/cli-plugin-router": "^4.5.13",
+    "@vue/cli-plugin-vuex": "^4.5.13",
+    "@vue/cli-service": "~4.5.0",
+    "babel-plugin-prismjs": "^2.1.0",
+    "css-loader": "^2.1.0",
+    "deepmerge": "^4.2.2",
+    "element-ui": "^2.15.5",
+    "fibers": "^5.0.0",
+    "sass": "^1.43.4",
+    "sass-loader": "^10.0.0",
+    "vue-cli-plugin-element": "^1.0.1",
+    "vue-template-compiler": "^2.6.11"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

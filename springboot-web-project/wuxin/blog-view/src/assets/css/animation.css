@@ -1,0 +1,40 @@
+/*自定义动画样式*/
+@keyframes headerAnimation {
+    0% {
+        opacity: 0 !important;
+        filter: alpha(opacity=0) !important;
+        transform: translateY(-50px)!important;
+    }
+    100% {
+        opacity: 1!important;
+        -webkit-filter: none!important;
+        filter: none!important;
+        transform: translateY(0)!important;
+    }
+}
+
+@-webkit-keyframes headerAnimation {
+    0% {
+        opacity: 0 !important;
+        filter: alpha(opacity=0) !important;
+        transform: translateY(-50px) !important;
+    }
+    100% {
+        opacity: 1 !important;
+        -webkit-filter: none !important;
+        filter: none !important;
+        transform: translateY(0) !important;
+    }
+}
+
+
+.m-animation-header {
+    animation-duration: 1s !important;
+    -webkit-animation-duration: 1s!important;
+    animation-timing-function: ease!important;
+    animation-direction: normal!important;
+    animation-fill-mode: none!important;
+    animation-play-state: running!important;
+    animation-name: headerAnimation !important;
+}
+

@@ -1,0 +1,364 @@
+@import './variables.scss';
+@import './mixin.scss';
+@import './transition.scss';
+@import './element-ui.scss';
+@import './sidebar.scss';
+@import './btn.scss';
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+}
+
+label {
+  font-weight: 700;
+}
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+#app {
+  height: 100%;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+.no-padding {
+  padding: 0px !important;
+}
+
+.padding-content {
+  padding: 4px 0;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+div:focus {
+  outline: none;
+}
+
+.fr {
+  float: right;
+}
+
+.fl {
+  float: left;
+}
+
+.pr-5 {
+  padding-right: 5px;
+}
+
+.pl-5 {
+  padding-left: 5px;
+}
+
+.block {
+  display: block;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.inlineBlock {
+  display: block;
+}
+
+.clearfix {
+  &:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+  }
+}
+
+aside {
+  background: #eef1f6;
+  padding: 8px 24px;
+  margin-bottom: 20px;
+  border-radius: 2px;
+  display: block;
+  line-height: 32px;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  color: #2c3e50;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  a {
+    color: #337ab7;
+    cursor: pointer;
+
+    &:hover {
+      color: rgb(32, 160, 255);
+    }
+  }
+}
+
+//main-container全局样式
+.app-container {
+  padding: 20px;
+}
+
+.components-container {
+  margin: 30px 50px;
+  position: relative;
+}
+
+.pagination-container {
+  margin-top: 30px;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.m-cursor-pointer {
+  cursor: pointer !important;
+}
+
+
+.sub-navbar {
+  height: 50px;
+  line-height: 50px;
+  position: relative;
+  width: 100%;
+  text-align: right;
+  padding-right: 20px;
+  transition: 600ms ease position;
+  background: linear-gradient(90deg, rgba(32, 182, 249, 1) 0%, rgba(32, 182, 249, 1) 0%, rgba(33, 120, 241, 1) 100%, rgba(33, 120, 241, 1) 100%);
+
+  .subtitle {
+    font-size: 20px;
+    color: #fff;
+  }
+
+  &.draft {
+    background: #d0d0d0;
+  }
+
+  &.deleted {
+    background: #d0d0d0;
+  }
+}
+
+.link-type,
+.link-type:focus {
+  color: #337ab7;
+  cursor: pointer;
+
+  &:hover {
+    color: rgb(32, 160, 255);
+  }
+}
+
+.filter-container {
+  padding-bottom: 10px;
+
+  .filter-item {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 10px;
+  }
+
+  .m-message {
+    width: 200px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}
+
+//refine vue-multiselect plugin
+.multiselect {
+  line-height: 16px;
+}
+
+.multiselect--active {
+  z-index: 1000 !important;
+}
+
+
+.m-message {
+  width: 200px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.m-image-radius {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+//.m-margin-left-mini{
+//  margin-left: 10px!important;
+//}
+
+
+/*--------------------------------------------------------margin------------------------------------------------*/
+
+.m-margin-tb-mini {
+  margin-top: 0.2em !important;
+  margin-bottom: 0.2em !important;
+}
+
+.m-margin-tb-small {
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.m-margin-tb-big {
+  margin-top: 1em !important;
+  margin-bottom: 1em !important;
+}
+
+
+.m-margin-tb-large {
+  margin-top: 3em !important;
+  margin-bottom: 3em !important;
+}
+
+.m-text-align-center {
+  text-align: center !important;
+}
+
+.m-echarts-container {
+  width: 100% !important;
+  height: 400px !important;
+  position: relative !important;
+}
+
+
+.m-margin-left-mini {
+  margin-left: 0.2em !important;
+}
+
+.m-margin-left-small {
+  margin-left: 0.5em !important;
+}
+
+.m-margin-left-big {
+  margin-left: 1em !important;
+}
+
+.m-margin-left-large {
+  margin-left: 3em !important;
+}
+
+
+//----------------------------------------mtable---------------------------------
+
+.m-table {
+  width: 100% !important;
+}
+
+.m-search-input {
+  width: 200px !important;
+  min-width: 150px !important;
+}
+
+.m-search-header-w-700 {
+  //min-width: 400px;
+  width: 700px !important;
+}
+
+.m-search-header-w-600 {
+  width: 600px !important;
+  //min-width: 400px;
+}
+
+.m-search-header-w-500 {
+  width: 500px !important;
+  //min-width: 400px;
+}
+
+
+.m-float-right {
+  float: right !important;
+  right: 0 !important;
+}
+
+.m-float-right-10 {
+  right: 10px !important;
+}
+
+
+/*=====================================flex========================================*/
+
+.m-display-flex {
+  display: flex;
+}
+
+.m-flex-justify-around {
+  justify-content: space-around !important;
+}
+
+.m-flex-justify-around {
+  justify-content: center !important;
+}
+
+.m-flex-justify-between {
+  justify-content: space-between !important;
+}
+
+.m-flex-align-start {
+  align-items: start !important;
+}
+
+.m-flex-align-center {
+  align-items: center !important;
+}
+
+.m-flex-align-end {
+  align-items: end !important;
+}
+
+.m-display-flex-center {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.m-fixed-button {
+  position: fixed;
+  right: 10px;
+  top: 150px;
+  z-index: 100;
+}
+
+.m-flex-column-align{
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
