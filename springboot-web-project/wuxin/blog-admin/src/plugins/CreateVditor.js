@@ -1,12 +1,9 @@
-import Vditor from "vditor";
-import request from "@/utils/request";
-import {Message} from "element-ui";
-import store from "@/store";
+import Vditor from 'vditor'
+// import request from '@/utils/request'
+import { Message } from 'element-ui'
+import store from '@/store'
 
-const {token} = store.state.user.token
-
-
-console.log(JSON.stringify(request()))
+const { token } = store.state.user.token
 
 /**
  * 编辑器容器
@@ -18,18 +15,17 @@ console.log(JSON.stringify(request()))
  * @returns {Vditor|*} 编辑器
  */
 export function createVditor(element, height, cache) {
-
   let ready = false
   const vditorOptions = {
     height: height,
-    width: "100%",
+    width: '100%',
     toolbarConfig: {
       pin: true
     },
-    mode: "sv",
+    mode: 'sv',
     // mode: "wysiwyg",
     // theme: "dark",
-    theme: "classic",
+    theme: 'classic',
     cache: {
       enable: cache
     },
@@ -45,57 +41,57 @@ export function createVditor(element, height, cache) {
         // 'Content-Type': 'multipart/form-data',
         'Authentication': token
       },
+      // 是否支持多文件上传
       multiple: false,
-      max: 100000 * 1024 * 1024,  // 默认文10m 现在设置为10*10000m
+      // 默认文10m 设置为10*10000m
+      max: 100000 * 1024 * 1024,
       success(element, response) {
         let succFileText = ''
         const res = JSON.parse(response)
-        let name;
+        let name
         try {
           name = res.data.name
         } catch (e) {
           name = 'wxuin-image-error'
         }
         const path = res.data.url
-        const lastIndex = name.lastIndexOf(".");
-        let type = name.substr(lastIndex);
+        const lastIndex = name.lastIndexOf('.')
+        let type = name.substr(lastIndex)
 
-        type = type.toLowerCase();
-        if (type.indexOf(".wav") === 0 || type.indexOf(".mp3") === 0 || type.indexOf(".ogg") === 0) {
-          if (vditorName.getCurrentMode() === "wysiwyg") {
-            succFileText += `<p><audio controls="controls" src="${path}"></audio></p>`;
-          } else if (vditorName.getCurrentMode() === "ir") {
-            succFileText += `<p><audio controls="controls" src="${path}"></audio></p>`;
+        type = type.toLowerCase()
+        if (type.indexOf('.wav') === 0 || type.indexOf('.mp3') === 0 || type.indexOf('.ogg') === 0) {
+          if (vditorName.getCurrentMode() === 'wysiwyg') {
+            succFileText += `<p><audio controls="controls" src="${path}"></audio></p>`
+          } else if (vditorName.getCurrentMode() === 'ir') {
+            succFileText += `<p><audio controls="controls" src="${path}"></audio></p>`
           } else {
-            succFileText += `[${name}](${path})\n`;
+            succFileText += `[${name}](${path})\n`
           }
-
-        } else if (type.indexOf(".apng") === 0
-          || type.indexOf(".bmp") === 0
-          || type.indexOf(".gif") === 0
-          || type.indexOf(".ico") === 0 || type.indexOf(".cur") === 0
-          || type.indexOf(".jpg") === 0 || type.indexOf(".jpeg") === 0 || type.indexOf(".jfif") === 0 || type.indexOf(".pjp") === 0 || type.indexOf(".pjpeg") === 0
-          || type.indexOf(".png") === 0
-          || type.indexOf(".svg") === 0
-          || type.indexOf(".webp") === 0) {
-          if (vditorName.getCurrentMode() === "wysiwyg") {
-            succFileText += `<img alt="${name}" src="${path}" target="_blank">`;
+        } else if (type.indexOf('.apng') === 0 ||
+          type.indexOf('.bmp') === 0 ||
+          type.indexOf('.gif') === 0 ||
+          type.indexOf('.ico') === 0 || type.indexOf('.cur') === 0 ||
+          type.indexOf('.jpg') === 0 || type.indexOf('.jpeg') === 0 || type.indexOf('.jfif') === 0 || type.indexOf('.pjp') === 0 || type.indexOf('.pjpeg') === 0 ||
+          type.indexOf('.png') === 0 ||
+          type.indexOf('.svg') === 0 ||
+          type.indexOf('.webp') === 0) {
+          if (vditorName.getCurrentMode() === 'wysiwyg') {
+            succFileText += `<img alt="${name}" src="${path}" target="_blank">`
           } else {
-            succFileText += `![${name}](${path})\n`;
+            succFileText += `![${name}](${path})\n`
           }
         } else {
-          if (vditorName.getCurrentMode() === "wysiwyg") {
-            succFileText += `<a href="${path}" target="_blank">${name}</a>`;
+          if (vditorName.getCurrentMode() === 'wysiwyg') {
+            succFileText += `<a href="${path}" target="_blank">${name}</a>`
           } else {
-            succFileText += `![${name}](${path})\n`;
+            succFileText += `![${name}](${path})\n`
           }
         }
         vditorName.insertValue(`${succFileText}`)
-        Message.success("上传成功！")
-
+        Message.success('上传成功！')
       },
-      error(msg) {
-        Message.error("上传失败！")
+      error() {
+        Message.error('上传失败！')
       }
 
     },
@@ -103,17 +99,14 @@ export function createVditor(element, height, cache) {
     value: '',
     after: () => {
       if (!ready) {
-        ready = true //两个编辑器都加载完成后执行，避免重复请求
+        ready = true
       }
     }
   }
 
   const vditorName = new Vditor(element, vditorOptions)
 
-
   //  返回编辑器视图
-  return vditorName;
-
+  return vditorName
 }
-
 

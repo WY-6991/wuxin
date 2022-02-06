@@ -56,29 +56,29 @@ service.interceptors.response.use(
     } else if (code === 402) {
       Message({
         message: message,
-        type: 'error',
-        center: true
+        type: 'error'
+
       })
       return Promise.reject(new Error(message))
     } else if (code === 403) {
       Message({
         message: '操作失败！没有权限执行该操作',
-        type: 'error',
-        center: true
+        type: 'error'
+
       })
       return Promise.reject(new Error('操作失败！没有权限执行该操作'))
     } else if (code === 500) {
       Message({
         message: message || '服务器开小差去了',
-        type: 'error',
-        center: true
+        type: 'error'
+
       })
       return Promise.reject(new Error(message || '服务器开小差去了'))
     } else if (code !== 200) {
       Message.error({
         type: 'error',
-        title: message,
-        center: true
+        title: message
+
       })
       return Promise.reject('error')
     } else {
@@ -97,8 +97,8 @@ service.interceptors.response.use(
     Message({
       message: message,
       type: 'error',
-      duration: 5 * 1000,
-      center: true
+      duration: 5 * 1000
+
     })
     return Promise.reject(error)
   }
