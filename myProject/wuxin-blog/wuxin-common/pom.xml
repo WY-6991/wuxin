@@ -16,14 +16,5 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
-    <dependencies>
-        <!--aop-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-            <version>2.3.7.RELEASE</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
 
 </project>

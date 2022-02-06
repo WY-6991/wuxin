@@ -1,30 +1,27 @@
 <template>
   <div class="app-container">
-
     <MySearchHeader
       type="datetimerange"
       :show-create-button="false"
+      :query="query"
       @handleSearch="handleSearch"
     >
       <el-button icon="el-icon-delete" type="danger" size="mini" @click.native.prevent="deleteAll">全部清空</el-button>
     </MySearchHeader>
-
-    <!-- 表格数据 -->
     <el-table
       ref="multipleTable"
+      :key="tableKey"
       v-loading="listLoading"
       highlight-current-row
       max-height="350"
-      :key="tableKey"
       :data="list"
       size="mini"
       @selection-change="handleSelectionChange"
     >
-
       <el-table-column
         type="selection"
-        width="55">
-      </el-table-column>
+        width="55"
+      />
 
       <el-table-column label="序号" align="center" width="55" :fixed="fit?'':'left'">
         <template slot-scope="{ row,$index }">
@@ -32,65 +29,65 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="用户" align="center" :width="fit?'auto':100" v-if="showUsername">
-        <template slot-scope="{ row,$index }">
-          <MyUserLink :username="row.username ? row.username : '未知'"
-                      @click.prevent.native="handleFilterByUsername(row.username)" />
+      <el-table-column v-if="showUsername" label="用户" align="center" :width="fit?'auto':100">
+        <template slot-scope="{ row }">
+          <MyUserLink :username="row.username ? row.username : '未知'" />
         </template>
       </el-table-column>
 
-      <el-table-column label="标识" align="center" :width="fit?'auto':100" v-if="showByCreate">
+      <el-table-column v-if="showByCreate" label="标识" align="center" width="150">
         <template slot-scope="{ row }">
-          <el-tooltip :content="row.byCreate" v-if="row.byCreate">
-            <span class="m-message">{{ row.byCreate ? row.byCreate : '未知' }}</span>
+          <el-tooltip v-if="row.byCreate" :content="row.byCreate">
+            <span
+              class="m-message link-type m-cursor-pointer"
+              @click.prevent="keywordsSearch(row.byCreate)"
+            >{{ row.byCreate ? row.byCreate : '未知' }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
+      <!--      <el-table-column v-if="showMethod" label="请求方法" align="center" :width="fit?'auto':150">-->
+      <!--        <template slot-scope="{ row }">-->
+      <!--          <el-tooltip v-if="row.method" :content="row.method">-->
+      <!--            <span class="m-message">{{ row.method ? row.method : '未知' }}</span>-->
+      <!--          </el-tooltip>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
 
-      <el-table-column label="请求路径" align="center" :width="fit?'auto':200" v-if="showUrl">
-        <template slot-scope="{ row }">
-          <el-tooltip :content="row.url">
-            <span class="m-message">{{ row.url ? row.url : '未知' }}</span>
-          </el-tooltip>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="方法" align="center" :width="fit?'auto':150" v-if="showMethod">
-        <template slot-scope="{ row }">
-          <span>{{ row.method ? row.method : '未知' }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="type" align="center" :width="fit?'auto':60" v-if="showType">
-        <template slot-scope="{ row }">
-          <span>{{ row.type ? row.type : '未知' }}</span>
-        </template>
-      </el-table-column>
+      <!--      <el-table-column v-if="showType" label="type" align="center" :width="fit?'auto':60">-->
+      <!--        <template slot-scope="{ row }">-->
+      <!--          <span>{{ row.type ? row.type : '未知' }}</span>-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
 
       <el-table-column label="ip" align="center" :width="fit?'auto':120">
         <template slot-scope="{ row }">
-          <span>{{ row.ip ? row.ip : '未知' }}</span>
+          <span class="m-message">{{ row.ip ? row.ip : '未知' }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="来源" align="center" :width="fit?'auto':120">
         <template slot-scope="{ row }">
-          <span>{{ row.ipSource ? row.ipSource : '未知' }}</span>
+          <span class="m-message">{{ row.ipSource ? row.ipSource : '未知' }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="浏览器" align="center" :width="fit?'auto':100">
         <template slot-scope="{ row }">
-          <span>{{ row.browser ? row.browser : '未知' }}</span>
+          <span class="m-message">{{ row.browser ? row.browser : '未知' }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="os" align="center" :width="fit?'auto':100">
         <template slot-scope="{ row }">
-          <span>{{ row.os ? row.os : '未知' }}</span>
+          <span class="m-message">{{ row.os ? row.os : '未知' }}</span>
         </template>
       </el-table-column>
 
+      <el-table-column label="描述" align="center" :width="fit?'auto':100">
+        <template slot-scope="{ row }">
+          <span class="m-message">{{ row.description ? row.description : '未知' }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column label="日期" align="center" width="160">
         <template slot-scope="{ row }">
@@ -106,8 +103,13 @@
 
       <el-table-column label="操作" align="center" :width="fit?'auto':150" :fixed="fit?null:'right'">
         <template slot-scope="{ row,$index }">
-          <el-button type="primary" icon="el-icon-view" circle v-if="showMessage"
-                     @click.native.prevent="showDetail(row.params,row.result) " />
+          <el-button
+            v-if="showMessage"
+            type="primary"
+            icon="el-icon-view"
+            circle
+            @click.native.prevent="showDetail(row) "
+          />
           <el-button type="danger" icon="el-icon-delete" circle @click.native.prevent="delLogById(row.id,$index)" />
         </template>
       </el-table-column>
@@ -115,7 +117,7 @@
 
     <div style="margin-top: 20px">
       <el-button icon="el-icon-delete" plain type="primary" size="mini" @click.prevent="delLogByIds">删除所选择</el-button>
-      <el-button @click="toggleSelection()" size="mini">取消选择</el-button>
+      <el-button size="mini" @click="toggleSelection()">取消选择</el-button>
     </div>
 
     <!-- 分页-->
@@ -126,49 +128,39 @@
       :limit.sync="query.limit"
       @pagination="getList"
     />
-
-
-    <el-dialog width="800px" title="参数信息" :visible.sync="dialogVisible" v-if="showMessage">
-      <JsonCode :params="log.params" :result="log.result" />
-      <div slot="footer">
-        <el-button @click.native.prevent="cancel" type="info">关闭</el-button>
+    <el-dialog width="50%" title="参数信息" :visible.sync="dialogVisible">
+      <div slot="title">
+        请求详情
       </div>
-
+      <div>
+        <LogDetail :log="log" />
+      </div>
+      <div slot="footer">
+        <el-button type="info" @click="dialogVisible = false">关闭</el-button>
+      </div>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
 
-
-import Pagination from "@/components/Pagination";
-import MyUserLink from "@/components/MyComponents/MyUsernameLink";
-import JsonCode from "@/views/log/components/JsonFormat";
-import MySearchHeader from "@/components/MyComponents/MySearchHeader";
+import MyUserLink from '@/components/MyComponents/MyUsernameLink'
+import LogDetail from '@/views/log/components/LogDetail'
 
 export default {
-  name: "MyLog",
-  components: {JsonCode, MyUserLink},
-  data() {
-    return {
-      // 表格key
-      tableKey: 0,
-      log: {},
-      dialogVisible: false,
-      multipleSelection: [],
-      ids: []
-    };
-  },
+  name: 'MyLog',
+  components: { LogDetail, MyUserLink },
 
   props: {
     list: {
       type: Array,
+      // eslint-disable-next-line vue/require-valid-default-prop
       default: []
     },
     query: {
       type: Object,
-      default: {current: 1, limit: 10},
+      // eslint-disable-next-line vue/require-valid-default-prop
+      default: { current: 1, limit: 10 }
     },
     fit: {
       type: Boolean,
@@ -214,14 +206,26 @@ export default {
     },
     total: {
       type: Number,
-      default: 0,
+      default: 0
     }
 
-
+  },
+  data() {
+    return {
+      // 表格key
+      tableKey: 0,
+      log: {},
+      dialogVisible: false,
+      multipleSelection: [],
+      ids: []
+    }
   },
 
   mounted() {
     this.getList()
+    setTimeout(() => {
+      this.$prismjs.highlightAll()
+    }, 1000)
   },
   methods: {
 
@@ -230,63 +234,91 @@ export default {
       this.$emit('getList', this.query)
     },
 
-    handleFilterByUsername(username) {
-      this.query.keywords = username
-      this.handleSearch(this.query)
-    },
-
     delLogById(id, index) {
       if (!this.isRoot) {
         return this.$message.error('操作失败，无权限执行该操作！')
       }
-      this.$emit("delLogById", {'id': id, 'index': index})
-
+      this.$emit('delLogById', { 'id': id, 'index': index })
     },
 
     delLogByIds() {
       if (!this.isRoot) {
         return this.$message.error('操作失败，无权限执行该操作！')
       }
-      this.$message.warning("该功能暂实现哦")
-      // this.$emit("delLogByIds")
+      this.$message.warning('该功能暂实现哦')
     },
 
     deleteAll() {
       if (!this.isRoot) {
         return this.$message.error('操作失败，无权限执行该操作！')
       }
-      this.$emit("delAllLog")
+      this.$emit('delAllLog')
     },
 
-    showDetail(params, result) {
+    showDetail(log) {
+      this.log = log
       this.dialogVisible = true
-      this.log.params = params
-      this.log.result = result
-
-    },
-    // 取消
-    cancel() {
-      this.dialogVisible = false
     },
 
     toggleSelection() {
-      this.$refs.multipleTable.clearSelection();
+      this.$refs.multipleTable.clearSelection()
     },
-
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.multipleSelection = val
     },
-
     handleSearch(query) {
-      this.$message.success("query=>" + JSON.stringify(query))
       this.$emit('handleSearch', query)
+    },
+    keywordsSearch(keywords) {
+      this.query.keywords = keywords
+      this.$emit('handleSearch', this.query)
     }
-  },
+  }
 
-
-};
+}
 </script>
-<style>
+<style scoped>
 
+code.language-json,
+pre.language-json {
+  color: #f8cb06;
+  background: none;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 1em;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+pre.language-json {
+  padding: 1em;
+  margin: .5em 0;
+  overflow: auto;
+  border-radius: 0.3em;
+}
+
+:not(pre) > code.language-json,
+pre.language-json {
+  background: rgb(22, 22, 22);
+}
+
+:not(pre) > code.language-json {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+}
 </style>
 

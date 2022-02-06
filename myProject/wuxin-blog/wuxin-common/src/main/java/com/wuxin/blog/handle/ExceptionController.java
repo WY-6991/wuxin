@@ -8,7 +8,6 @@ import com.wuxin.blog.constant.HttpStatus;
 import com.wuxin.blog.exception.CustomException;
 import com.wuxin.blog.exception.NotFoundException;
 import com.wuxin.blog.utils.result.Result;
-import com.wuxin.blog.utils.security.JWTUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -46,8 +45,6 @@ public class ExceptionController {
 
     /**
      * 没有权限执行操作
-     *
-     * @return
      */
     @ExceptionHandler(UnauthenticatedException.class)
     public Result unauthenticatedException() {
@@ -57,8 +54,6 @@ public class ExceptionController {
 
     /**
      * 登录异常
-     *
-     * @return message
      */
     @ExceptionHandler(AuthenticationException.class)
     public Result usernameAndPasswodException() {

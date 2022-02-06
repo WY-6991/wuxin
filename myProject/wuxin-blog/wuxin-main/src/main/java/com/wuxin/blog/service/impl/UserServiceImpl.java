@@ -15,7 +15,7 @@ import com.wuxin.blog.service.UserService;
 import com.wuxin.blog.utils.KeyUtil;
 import com.wuxin.blog.utils.MapperUtils;
 import com.wuxin.blog.utils.ThrowUtils;
-import com.wuxin.blog.utils.security.ShiroUtil;
+import com.wuxin.blog.utils.ShiroUtil;
 import com.wuxin.blog.utils.string.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

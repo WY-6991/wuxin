@@ -15,6 +15,6 @@ public class TestController {
 
     @GetMapping("/hello")
     public String test01(){
-        return "hello controller 01";
+        return "hello wuxin001 root controller";
     }
 }

@@ -1,17 +1,18 @@
 package com.wuxin.blog.utils.string;
 
 import cn.hutool.core.text.StrFormatter;
-import com.wuxin.blog.constant.Constants;
 import org.springframework.util.AntPathMatcher;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: wuxin001
  * @Date: 2022/01/03/16:19
  * @Description:
  */
-public class StringUtils  extends org.apache.commons.lang3.StringUtils{
+public class StringUtils {
     /** 空字符串 */
     private static final String NULLSTR = "";
 
@@ -258,90 +259,10 @@ public class StringUtils  extends org.apache.commons.lang3.StringUtils{
         return StrFormatter.format(template, params);
     }
 
-    /**
-     * 是否为http(s)://开头
-     *
-     * @param link 链接
-     * @return 结果
-     */
-    public static boolean ishttp(String link)
-    {
-        return StringUtils.startsWithAny(link, Constants.HTTP, Constants.HTTPS);
-    }
 
-    /**
-     * 字符串转set
-     *
-     * @param str 字符串
-     * @param sep 分隔符
-     * @return set集合
-     */
-    public static final Set<String> str2Set(String str, String sep)
-    {
-        return new HashSet<String>(str2List(str, sep, true, false));
-    }
 
-    /**
-     * 字符串转list
-     *
-     * @param str 字符串
-     * @param sep 分隔符
-     * @param filterBlank 过滤纯空白
-     * @param trim 去掉首尾空白
-     * @return list集合
-     */
-    public static final List<String> str2List(String str, String sep, boolean filterBlank, boolean trim)
-    {
-        List<String> list = new ArrayList<String>();
-        if (StringUtils.isEmpty(str))
-        {
-            return list;
-        }
 
-        // 过滤空白字符串
-        if (filterBlank && StringUtils.isBlank(str))
-        {
-            return list;
-        }
-        String[] split = str.split(sep);
-        for (String string : split)
-        {
-            if (filterBlank && StringUtils.isBlank(string))
-            {
-                continue;
-            }
-            if (trim)
-            {
-                string = string.trim();
-            }
-            list.add(string);
-        }
 
-        return list;
-    }
-
-    /**
-     * 查找指定字符串是否包含指定字符串列表中的任意一个字符串同时串忽略大小写
-     *
-     * @param cs 指定字符串
-     * @param searchCharSequences 需要检查的字符串数组
-     * @return 是否包含任意一个字符串
-     */
-    public static boolean containsAnyIgnoreCase(CharSequence cs, CharSequence... searchCharSequences)
-    {
-        if (isEmpty(cs) || isEmpty(searchCharSequences))
-        {
-            return false;
-        }
-        for (CharSequence testStr : searchCharSequences)
-        {
-            if (containsIgnoreCase(cs, testStr))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * 驼峰转下划线命名

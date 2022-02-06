@@ -1,14 +1,12 @@
 package com.wuxin.blog.shiro;
 
 
-import cn.hutool.jwt.JWT;
+import com.wuxin.blog.constant.GlobalConstant;
 import com.wuxin.blog.pojo.blog.User;
 import com.wuxin.blog.service.RoleService;
 import com.wuxin.blog.service.UserService;
-import com.wuxin.blog.constant.GlobalConstant;
-import com.wuxin.blog.utils.security.MySecurityUtils;
+import com.wuxin.blog.utils.MySecurityUtils;
 import com.wuxin.blog.utils.string.StringUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -23,9 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 
 /**

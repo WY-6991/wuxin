@@ -2,37 +2,44 @@
   <div class="app-container">
     <MySearchHeader
       :show-create-button="false"
-      :show-search-input="false"
-      :show-search-button="false"
-      @handleSearch="handleSearch"
+      @handleSearch="handleFilter"
     >
-      <el-button class="m-margin-left-mini" icon="el-icon-delete" size="small" type="danger"
-                 @click.native.prevent="delAll">全部删除
+      <el-button
+        class="m-margin-left-mini"
+        icon="el-icon-delete"
+        size="small"
+        type="danger"
+        @click.native.prevent="delAll"
+      >全部删除
       </el-button>
     </MySearchHeader>
 
     <!-- 表格数据 -->
     <el-table
+      v-loading="listLoading"
       class="m-table"
       max-height="350"
-      v-loading="listLoading"
-      :data="exceptionList"
+      :data="list"
       highlight-current-row
       fit
       size="mini"
     >
 
-      <el-table-column type="selection" width="55"></el-table-column>
+      <el-table-column type="selection" width="55" />
       <el-table-column label="序号" prop="id" align="center" width="55" fixed>
         <template slot-scope="{ row,$index }">
           <span>{{ $index + 1 }}</span>
         </template>
       </el-table-column>
-
-
-      <el-table-column label="请求路径" align="center" width="200">
+      <el-table-column label="访问标识" align="center" width="200">
         <template slot-scope="{ row }">
-          <span>{{ row.url }}</span>
+          <span class="m-message link-type">{{ row.byCreate }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="请求方法" align="center" width="200">
+        <template slot-scope="{ row }">
+          <span class="m-message">{{ row.method }}</span>
         </template>
       </el-table-column>
 
@@ -56,7 +63,6 @@
           <span>{{ row.description }}</span>
         </template>
       </el-table-column>
-
 
       <el-table-column label="os" align="center" width="150">
         <template slot-scope="{ row}">
@@ -88,13 +94,16 @@
     />
 
     <el-dialog :visible.sync="dialogVisible" title="详情" width="700px">
-      <el-card>
-       <pre class="language-number">
-        <code class="language-java" v-text="message"></code>
+      <div slot="title">
+        详情
+      </div>
+      <div>
+        <pre class="language-number">
+        <code class="language-java" v-text="message" />
       </pre>
-      </el-card>
+      </div>
       <div slot="footer">
-        <el-button @click="dialogVisible = false" type="primary">关闭</el-button>
+        <el-button type="primary" @click="dialogVisible = false">关闭</el-button>
       </div>
     </el-dialog>
 
@@ -102,88 +111,69 @@
 </template>
 
 <script>
-
-
-import {getExceptionLogList, delExceptionLog, delAllExceptionLog} from "@/api/log";
+import { getExceptionLogList, delExceptionLog, delAllExceptionLog } from '@/api/log'
+import { query } from '@/mixin/query'
 
 export default {
-  name: "BlogList",
-  // 过滤数据
+  name: 'ExceptionLog',
   filters: {
     lowerCase(value) {
       return value.toLowerCase()
     }
   },
+  mixins: [query],
   data() {
     return {
       // 表格key
-      exceptionList: [],
-      total: 0, // 数据总数
-      listLoading: true,
-      query: {current: 1, limit: 10, keywords: null, start: null, end: null},
-      errorParams: [{"keywords": "", "current": 1, "limit": 10}],
       dialogVisible: false,
       message: {}
-    };
+    }
   },
-  created() {
+  mounted() {
     this.getList()
   },
   methods: {
 
-    getData(query) {
-      this.listLoading = false;
-      getExceptionLogList(query).then(res => {
-        this.exceptionList = res.result.records
-        this.total = res.result.total
-        this.listLoading = false
-
+    getList() {
+      this.listLoading = false
+      getExceptionLogList(this.query).then(res => {
+        if (res.code === 200) {
+          this.list = res.result.records
+          this.total = res.result.total
+          this.listLoading = false
+        }
       })
     },
 
-
-    // 获取blogList
-    getList() {
-      this.getData(this.query)
-    },
-
-    handleSearch(query) {
-      this.getData(query)
-    },
     removeData(id, index) {
       if (!this.isRoot) {
         this.$message.error('操作失败，不具备该权限！')
-        return;
+        return
       }
       delExceptionLog(id).then(res => {
-        this.$SuccessMessage(res, "删除成功", this.list, index)
+        this.$SuccessMessage(res, '删除成功', this.list, index)
       })
-
     },
 
     delAll() {
       if (!this.isRoot) {
         this.$message.error('操作失败，不具备该权限！')
-        return;
+        return
       }
       delAllExceptionLog().then(res => {
-        if (res.code !== 200) return false
-        this.$notify.success("删除成功！")
-        this.getList()
+        if (res.code === 200) {
+          this.$notify.success('删除成功！')
+          this.getList()
+        }
       })
     },
 
     showErrorMessage(e) {
       this.dialogVisible = true
       this.message = e
-      this.$nextTick(() => {
-        this.$prismjs.highlightAll()
-      })
     }
-  },
-
-
-};
+  }
+}
 </script>
 
 <style scoped>
@@ -212,7 +202,6 @@ pre.language-java {
   hyphens: none;
 }
 
-
 pre.language-java {
   padding: 1em;
   margin: .5em 0;
@@ -225,12 +214,9 @@ pre.language-java {
   background: rgb(22, 22, 22);
 }
 
-
 :not(pre) > code.language-java {
   padding: .1em;
   border-radius: .3em;
   white-space: normal;
 }
-
-
 </style>
