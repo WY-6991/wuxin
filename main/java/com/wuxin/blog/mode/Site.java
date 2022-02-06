@@ -31,11 +31,39 @@ public class Site {
     private String erCode;
 
 
+    /**
+     * 网站名称
+     */
+    private String webName;
+
+
+    /**
+     * 标签名称
+     */
+    private String commentLabelName;
+
+
+    /**
+     * 标签颜色
+     */
+    private String commentLabelColor;
+
+
+    /**
+     * 域名备案
+     */
+    private String webRecord;
+
+
     public static Site getSite(MySystem mySystem){
         Site site = new Site();
         site.setLoginUrl(mySystem.getLoginUrl());
-        site.setErCode(null);
+        site.setErCode(mySystem.getErCode());
         site.setWebUrl(mySystem.getWebUrl());
+        site.setCommentLabelColor(mySystem.getCommentLabelColor());
+        site.setCommentLabelName(mySystem.getCommentLabelName());
+        site.setWebRecord(mySystem.getWebRecord());
+        site.setWebName(mySystem.getWebName());
         return site;
     }
 }

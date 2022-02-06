@@ -11,6 +11,7 @@ import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.exception.CustomException;
 import com.wuxin.blog.mode.Github;
 import com.wuxin.blog.pojo.blog.UploadPicture;
+import com.wuxin.blog.pojo.system.GithubSetting;
 import com.wuxin.blog.service.MySystemService;
 import com.wuxin.blog.service.UploadPictureService;
 import com.wuxin.blog.utils.KeyUtil;
@@ -39,17 +40,8 @@ import java.util.Map;
 @RequestMapping("/github")
 public class GitHubController {
 
-    @Value("${github.bucket.access_token}")
-    private String token;
-
-    @Value("${github.bucket.api}")
-    private String url;
-
-    @Value("${github.bucket.jsdelivr.api}")
-    private String jsdelivrUrl;
-
-    @Resource
-    MySystemService mySystemService;
+    @Autowired
+    private MySystemService mySystemService;
 
     @Autowired
     private UploadPictureService uploadPictureService;
@@ -61,6 +53,7 @@ public class GitHubController {
      * @param file 上传文件
      * @return 文件地址
      */
+    @RequiresRoles("root")
     @OperationLogger("上传图像")
     @PostMapping("/upload/user/avatar")
     public Result uploadImg(@RequestParam("file") MultipartFile file) throws IOException {
@@ -81,6 +74,7 @@ public class GitHubController {
     }
 
 
+    @RequiresRoles("root")
     @OperationLogger("上传音频文件")
     @PostMapping("/upload/music")
     public Result uploadMusic(@RequestParam("file") MultipartFile file) throws Exception {
@@ -101,7 +95,7 @@ public class GitHubController {
             map.put("message", "删除了:" + uploadPicture.getName());
             String mapStr = JSONUtil.toJsonStr(map);
             String body = HttpRequest.delete(uploadPicture.getRealUrl())
-                    .header("Authorization", "token  " + this.token)
+                    .header("Authorization", "token  " + getGithubSetting().getAccessToken())
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .body(mapStr)
@@ -134,7 +128,7 @@ public class GitHubController {
             map.put("message", github.getMessage());
             String mapStr = JSONUtil.toJsonStr(map);
             body = HttpRequest.delete(github.getUrl())
-                    .header("Authorization", "token  " + this.token)
+                    .header("Authorization", "token  " + getGithubSetting().getAccessToken())
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .body(mapStr)
@@ -161,7 +155,7 @@ public class GitHubController {
         try {
             // 判断github是否传入自定义url 如果url为null或者""
             if (StringUtils.isNull(url) || "".equals(url)) {
-                url = this.url;
+                url = getGithubSetting().getApi();
 
             }
             log.info("访问地址：url=>{}", url);
@@ -202,9 +196,10 @@ public class GitHubController {
 
         try {
             // 上传图片到指定位置
-            String body = HttpRequest.put(this.url + fileName)
+            // String body = HttpRequest.put(this.url + fileName)
+            String body = HttpRequest.put(getGithubSetting().getApi() + fileName)
                     // token 这里一定要有空格，否则会报错
-                    .header("Authorization", "token  " + this.token)
+                    .header("Authorization", "token  " + getGithubSetting().getAccessToken())
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .body(mapStr)
@@ -216,8 +211,8 @@ public class GitHubController {
             // 处理文件上传结果
             handleUploadResult(body, fileName);
 
-            log.info("上传地址 url ={}", this.url + fileName);
-            log.info("文件加速之后的访问地址 url ={}", this.jsdelivrUrl + fileName);
+            log.info("上传地址 url ={}", getGithubSetting().getApi() + fileName);
+            log.info("文件加速之后的访问地址 url ={}", getGithubSetting().getAccessApi() + fileName);
 
         } catch (HttpException e) {
             e.printStackTrace();
@@ -225,7 +220,7 @@ public class GitHubController {
         }
 
         if (type.equals(1)) {
-            return Result.ok(this.jsdelivrUrl + fileName);
+            return Result.ok(getGithubSetting().getAccessApi() + fileName);
         }
 
         if (type.equals(2)) {
@@ -234,7 +229,7 @@ public class GitHubController {
             uploadMap.put("succMap", succMap);
             uploadMap.put("errFiles", "error");
             succMap.put("name", fileName);
-            succMap.put("url", this.jsdelivrUrl + fileName);
+            succMap.put("url",getGithubSetting().getAccessApi() + fileName);
             uploadMap.put("errFiles", "");
             return Result.ok().put("data", succMap);
         }
@@ -245,26 +240,40 @@ public class GitHubController {
 
     public void handleUploadResult(String body, String fileName) {
         // 将body转换为对象
-        JSONObject obj = JSONUtil.parseObj(body);
-        Object content = obj.get("content");
-        JSONObject con = JSONUtil.parseObj(content);
-        String sha = (String) con.get("sha");
-        Integer size = (Integer) con.get("size");
-        String gitUrl = (String) con.get("git_url");
+        try {
+            JSONObject obj = JSONUtil.parseObj(body);
+            Object content = obj.get("content");
+            JSONObject con = JSONUtil.parseObj(content);
+            String sha = (String) con.get("sha");
+            Integer size = (Integer) con.get("size");
+            String gitUrl = (String) con.get("git_url");
 
-        // 将文件上传记录存储起来
-        UploadPicture uploadPicture = new UploadPicture();
-        uploadPicture.setMessage("上传了" + fileName);
-        uploadPicture.setName(fileName);
-        uploadPicture.setGitUrl(fileName);
-        uploadPicture.setRealUrl(this.url + fileName);
-        uploadPicture.setSize(size);
-        uploadPicture.setSha(sha);
-        uploadPicture.setUrl(this.jsdelivrUrl + fileName);
-        uploadPicture.setGitUrl(gitUrl);
-        // uploadPicture.setRecords(JSONUtil.parseObj(obj));
-        uploadPictureService.add(uploadPicture);
+            // 将文件上传记录存储起来
+            UploadPicture uploadPicture = new UploadPicture();
+            uploadPicture.setMessage("上传了" + fileName);
+            uploadPicture.setName(fileName);
+            uploadPicture.setGitUrl(fileName);
+            uploadPicture.setRealUrl(getGithubSetting().getApi() + fileName);
+            uploadPicture.setSize(size);
+            uploadPicture.setSha(sha);
+            uploadPicture.setUrl(getGithubSetting().getAccessApi() + fileName);
+            uploadPicture.setGitUrl(gitUrl);
+            uploadPictureService.add(uploadPicture);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.debug("文件记录保存失败！");
+        }
     }
+
+
+    /**
+     * 读取github配置
+     */
+    public GithubSetting getGithubSetting(){
+        return mySystemService.findGithubSetting(GithubSetting.GITHUB_REPOSITORY_ID);
+    }
+
+
 
 
 }

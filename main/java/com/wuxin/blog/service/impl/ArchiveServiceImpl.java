@@ -58,7 +58,8 @@ public class ArchiveServiceImpl implements ArchiveService {
     @Override
     public void add(Archive archive) {
         archiveMapper.insert(archive);
-        addCache(archive);
+        // addCache(archive);
+        redisService.del(ARCHIVE_TITLE_LIST);
     }
 
     @Override
@@ -68,13 +69,14 @@ public class ArchiveServiceImpl implements ArchiveService {
         if (!update) {
             throw new CustomException("归档~修改失败！");
         }
-        updateCache(archive);
+        // updateCache(archive);
+        redisService.del(ARCHIVE_TITLE_LIST);
     }
 
     @Override
     public void delete(Long archiveId) {
         ThrowUtils.ops(archiveMapper.deleteById(archiveId), "删除失败！");
-        deleteCache(archiveId);
+        redisService.del(ARCHIVE_TITLE_LIST);
     }
 
     @Override
@@ -141,51 +143,56 @@ public class ArchiveServiceImpl implements ArchiveService {
 
     @Override
     public IPage<Archive> selectListByPage(Integer current, Integer limit, String keywords) {
-        return null;
+        return MapperUtils.lambdaQueryWrapper(archiveMapper).orderByDesc(Archive::getCreateTime).page(new Page<>(current,limit));
+    }
+
+    @Override
+    public Integer selectCount() {
+        return archiveMapper.selectCount(null);
     }
 
 
-    public void addCache(Archive archive) {
-        // 获取一级标题
-        List<ArchiveTitle> list = archiveTitleService.list();
-
-        list.forEach(archiveTitle -> {
-            archiveTitle.getArchiveList().forEach(value -> {
-                if (value.getArchiveTitle().equals(archive.getArchiveTitle())) {
-                    archiveTitle.getArchiveList().add(archive);
-                }
-            });
-        });
-
-
-        redisService.set(ARCHIVE_TITLE_LIST, list);
-
-    }
-
-    public void updateCache(Archive archive) {
-        List<ArchiveTitle> list = archiveTitleService.list();
-        list.forEach(archiveTitle -> {
-            archiveTitle.getArchiveList().forEach(value -> {
-                if (value.getArchiveTitle().equals(archive.getArchiveTitle())) {
-                    value.setTitle(archive.getTitle());
-                    value.setUrl(archive.getUrl());
-                    value.setType(archive.getType());
-                    value.setBlogId(archive.getBlogId());
-                }
-            });
-        });
-        redisService.set(ARCHIVE_TITLE_LIST, list);
-    }
-
-    public void deleteCache(Long id) {
-        List<ArchiveTitle> list = archiveTitleService.list();
-        // 遍历一级标题
-        list.forEach(archiveTitle -> {
-            archiveTitle.getArchiveList().removeIf(value -> value.getArchiveId().equals(id));
-        });
-
-        redisService.set(ARCHIVE_TITLE_LIST, list);
-    }
+    // public void addCache(Archive archive) {
+    //     // 获取一级标题
+    //     List<ArchiveTitle> list = archiveTitleService.list();
+    //
+    //     list.forEach(archiveTitle -> {
+    //         archiveTitle.getArchiveList().forEach(value -> {
+    //             if (value.getArchiveTitle().equals(archive.getArchiveTitle())) {
+    //                 archiveTitle.getArchiveList().add(archive);
+    //             }
+    //         });
+    //     });
+    //
+    //
+    //     redisService.set(ARCHIVE_TITLE_LIST, list);
+    //
+    // }
+    //
+    // public void updateCache(Archive archive) {
+    //     List<ArchiveTitle> list = archiveTitleService.list();
+    //     list.forEach(archiveTitle -> {
+    //         archiveTitle.getArchiveList().forEach(value -> {
+    //             if (value.getArchiveTitle().equals(archive.getArchiveTitle())) {
+    //                 value.setTitle(archive.getTitle());
+    //                 value.setUrl(archive.getUrl());
+    //                 value.setType(archive.getType());
+    //                 value.setBlogId(archive.getBlogId());
+    //             }
+    //         });
+    //     });
+    //     redisService.set(ARCHIVE_TITLE_LIST, list);
+    // }
+    //
+    // public void deleteCache(Long id) {
+    //     List<ArchiveTitle> list = archiveTitleService.list();
+    //     // 遍历一级标题
+    //     list.forEach(archiveTitle -> {
+    //         archiveTitle.getArchiveList().removeIf(value -> value.getArchiveId().equals(id));
+    //     });
+    //
+    //     redisService.set(ARCHIVE_TITLE_LIST, list);
+    // }
 
 
 }

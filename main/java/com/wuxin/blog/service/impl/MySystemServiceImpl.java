@@ -1,6 +1,7 @@
 package com.wuxin.blog.service.impl;
 
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.wuxin.blog.constant.GlobalConstant;
 import com.wuxin.blog.mapper.GithubSettingMapper;
 import com.wuxin.blog.mapper.MySystemMapper;
 import com.wuxin.blog.mapper.WebFooterLabelMapper;
@@ -68,20 +69,22 @@ public class MySystemServiceImpl implements MySystemService {
     }
 
 
-
     @Override
     public void updateMySystem(MySystem mySystem) {
         // 判断我的系统配置信息是否存在 存在 修改,不能存在就添加
         mySystem.setId(MySystem.SYSTEM_ID);
+        System.out.println("system info=>{}"+mySystem);
         if (mySystemMapper.selectById(MySystem.SYSTEM_ID) == null) {
             // 添加
+            System.out.println("add");
             ThrowUtils.ops(mySystemMapper.insert(mySystem), "修改失败！系统配置信息不存在！");
         } else {
             // 修改
+            System.out.println("update");
             ThrowUtils.ops(mySystemMapper.updateById(mySystem), "修改失败！系统配置信息不存在！");
         }
-        // 设置新的系统信息
-        redisService.set(SYSTEM_INFO, mySystem);
+        // 删除原来info设置
+        redisService.del(SYSTEM_INFO);
     }
 
     @Override
@@ -149,17 +152,18 @@ public class MySystemServiceImpl implements MySystemService {
 
     @Override
     public void updateGithubSetting(GithubSetting githubSetting) {
-        if (!githubSetting.getId().equals(1)) {
-            githubSetting.setId(1);
+        if (!githubSetting.getId().equals(GithubSetting.GITHUB_REPOSITORY_ID)) {
+            githubSetting.setId(GithubSetting.GITHUB_REPOSITORY_ID);
         }
-        if (findGithubSetting(1) == null) {
+        githubSetting.setApi(String.format(GlobalConstant.GITHUB_URL,githubSetting.getUsername(),githubSetting.getRepository(),githubSetting.getFolder()));
+        githubSetting.setAccessApi(String.format(GlobalConstant.ACCESS_URL,githubSetting.getUsername(),githubSetting.getRepository(),githubSetting.getFolder()));
+        if (findGithubSetting(GithubSetting.GITHUB_REPOSITORY_ID) == null) {
             ThrowUtils.ops(githubSettingMapper.insert(githubSetting), "github仓库配置修改失败！");
         } else {
             ThrowUtils.ops(githubSettingMapper.updateById(githubSetting), "github仓库配置修改失败！");
-
         }
-        // 不管是添加还是修改重新配置redis中github配置信息
-        redisService.set(GITHUB_REPO_INFO, githubSetting);
+        // 删除redis中github仓库信息
+        redisService.del(GITHUB_REPO_INFO);
 
     }
 

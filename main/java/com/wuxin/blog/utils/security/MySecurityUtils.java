@@ -33,14 +33,13 @@ public class MySecurityUtils {
      */
     public static User getUser() {
         try {
-
             User principal = (User) SecurityUtils.getSubject().getPrincipal();
             if (principal == null) {
                 throw new UnauthorizedException("未登录！");
             }
             return principal;
         } catch (Exception e) {
-            throw new ServiceException("获取用户信息异常", HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException("用户信息获取失败！");
         }
 
     }
@@ -51,7 +50,7 @@ public class MySecurityUtils {
         try {
             return getUser().getUsername();
         } catch (Exception e) {
-            throw new ServiceException("用户名获取失败", HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException("用户名获取失败！");
         }
     }
 
@@ -61,7 +60,7 @@ public class MySecurityUtils {
         try {
             return getUser().getUserId();
         } catch (Exception e) {
-            throw new ServiceException("获取用户Id异常", HttpStatus.UNAUTHORIZED);
+            throw new UnauthorizedException("用户id获取失败！");
         }
     }
 
