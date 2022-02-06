@@ -26,7 +26,7 @@ public class JWTUtils {
     @Value("${token.header}")
     private static String header;
     @Value("${token.secret}")
-    private static String secret;
+    private static String SIGN = "^wuxin001root^%@2191377759qq.com^ ";
     @Value("${token.expireTime}")
     private static Long expireTime;
     private static final String USERNAME = "username";
@@ -46,7 +46,7 @@ public class JWTUtils {
         map.forEach((K, V) -> {
             builder.withClaim(K, V);
         });
-        String token = builder.sign(Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8)));
+        String token = builder.sign(Algorithm.HMAC256(SIGN.getBytes(StandardCharsets.UTF_8)));
         return token;
 
     }
@@ -56,7 +56,7 @@ public class JWTUtils {
      * 校验token
      */
     public static void validToken(String token) {
-        JWT.require(Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8))).build().verify(token);
+        JWT.require(Algorithm.HMAC256(SIGN.getBytes(StandardCharsets.UTF_8))).build().verify(token);
     }
 
 
@@ -64,7 +64,7 @@ public class JWTUtils {
      * 解析token
      */
     public static DecodedJWT parse(String token) {
-        DecodedJWT verify = JWT.require(Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8))).build().verify(token);
+        DecodedJWT verify = JWT.require(Algorithm.HMAC256(SIGN.getBytes(StandardCharsets.UTF_8))).build().verify(token);
         String header = verify.getHeader();
         String payload = verify.getPayload();
         String signature = verify.getSignature();

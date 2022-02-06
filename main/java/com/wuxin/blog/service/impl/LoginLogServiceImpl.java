@@ -58,7 +58,7 @@ public class LoginLogServiceImpl implements LoginLogService {
         Page<LoginLog> page = new Page<>(current, limit);
         return MapperUtils.lambdaQueryWrapper(loginLogMapper)
                 .orderByDesc(LoginLog::getCreateTime)
-                .like(StringUtils.isNotNull(keywords), LoginLog::getUsername, keywords)
+                .like(StringUtils.isNotNull(keywords), LoginLog::getByCreate, keywords)
                 .le(StringUtils.isNotNull(end), LoginLog::getCreateTime, end)
                 .ge(StringUtils.isNotNull(start), LoginLog::getCreateTime, start).page(page);
     }

@@ -32,17 +32,6 @@ public class Log {
 
 
     /**
-     * 请求路径
-     */
-    public String url;
-
-
-    /**
-     * 请求参数
-     */
-    public String params;
-
-    /**
      * 请求结果
      */
     public String result;

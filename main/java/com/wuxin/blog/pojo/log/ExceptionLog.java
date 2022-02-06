@@ -28,6 +28,11 @@ public class ExceptionLog extends Log implements Serializable {
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
+    /**
+     * 请求参数
+     */
+    private String params;
+
 
 
 
