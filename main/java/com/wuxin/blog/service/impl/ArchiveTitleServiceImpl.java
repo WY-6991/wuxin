@@ -44,22 +44,19 @@ public class ArchiveTitleServiceImpl implements ArchiveTitleService {
         ArchiveTitle archiveTitle = new ArchiveTitle();
         archiveTitle.setArchiveTitle(title);
         ThrowUtils.ops(archiveTitleMapper.insert(archiveTitle),"添加失败");
-        // addCache(archiveTitle);
-        redisService.del(ARCHIVE_TITLE_LIST);
+        addCache(archiveTitle);
     }
 
     @Override
     public void delete(Long id) {
         ThrowUtils.ops(archiveTitleMapper.deleteById(id),"内容不存在");
-        // deleteCache(id);
-        redisService.del(ARCHIVE_TITLE_LIST);
+        deleteCache(id);
     }
 
     @Override
     public void update(ArchiveTitle archiveTitle) {
         ThrowUtils.ops(archiveTitleMapper.updateById(archiveTitle),"内容不存在");
-        // updateCache(archiveTitle);
-        redisService.del(ARCHIVE_TITLE_LIST);
+        updateCache(archiveTitle);
     }
 
     @Override
@@ -68,16 +65,16 @@ public class ArchiveTitleServiceImpl implements ArchiveTitleService {
     }
 
 
-    // @Override
-    // public IPage<ArchiveTitle> selectListByPage(int current,int limit) {
-    //     Page<ArchiveTitle> archiveTitlePage = new Page<>(current, limit);
-    //     Page<ArchiveTitle> page = MapperUtils.lambdaQueryWrapper(archiveTitleMapper).orderByDesc(ArchiveTitle::getId).page(archiveTitlePage);
-    //     page.getRecords().forEach(archiveTitle -> {
-    //         List<Archive> list = MapperUtils.lambdaQueryWrapper(archiveMapper).eq(Archive::getArchiveTitle, archiveTitle.getArchiveTitle()).list();
-    //         archiveTitle.setArchiveList(list);
-    //     });
-    //     return page;
-    // }
+    @Override
+    public IPage<ArchiveTitle> selectListByPage(int current,int limit) {
+        Page<ArchiveTitle> archiveTitlePage = new Page<>(current, limit);
+        Page<ArchiveTitle> page = MapperUtils.lambdaQueryWrapper(archiveTitleMapper).orderByDesc(ArchiveTitle::getId).page(archiveTitlePage);
+        page.getRecords().forEach(archiveTitle -> {
+            List<Archive> list = MapperUtils.lambdaQueryWrapper(archiveMapper).eq(Archive::getArchiveTitle, archiveTitle.getArchiveTitle()).list();
+            archiveTitle.setArchiveList(list);
+        });
+        return page;
+    }
 
 
     @Override
@@ -109,54 +106,25 @@ public class ArchiveTitleServiceImpl implements ArchiveTitleService {
         return null;
     }
 
-    @Override
-    public IPage<ArchiveTitle> selectListByPage(Integer current, Integer limit) {
-        // Page<ArchiveTitle> archiveTitlePage = new Page<>(current, limit);
-        // Page<ArchiveTitle> page = MapperUtils.lambdaQueryWrapper(archiveTitleMapper).orderByDesc(ArchiveTitle::getId).page(archiveTitlePage);
-        // page.getRecords().forEach(archiveTitle -> {
-        //     List<Archive> list = MapperUtils.lambdaQueryWrapper(archiveMapper).eq(Archive::getArchiveTitle, archiveTitle.getArchiveTitle()).list();
-        //     archiveTitle.setArchiveList(list);
-        // });
-        // return page;
-        return null;
+
+    public void deleteCache(Long id) {
+        List<ArchiveTitle> list = list();
+        list.removeIf(value -> value.getId().equals(id));
+        redisService.set(ARCHIVE_TITLE_LIST, list);
     }
 
-    @Override
-    public IPage<ArchiveTitle> selectListByPage(Integer current, Integer limit, String keywords) {
-        Page<ArchiveTitle> archiveTitlePage = new Page<>(current, limit);
-        Page<ArchiveTitle> page = MapperUtils.lambdaQueryWrapper(archiveTitleMapper)
-                .orderByDesc(ArchiveTitle::getId)
-                .like(ArchiveTitle::getArchiveTitle,keywords)
-                .page(archiveTitlePage);
-        page.getRecords().forEach(archiveTitle -> {
-            List<Archive> list = MapperUtils.lambdaQueryWrapper(archiveMapper)
-                    .eq(Archive::getArchiveTitle, archiveTitle.getArchiveTitle())
-                    .like(Archive::getTitle,keywords)
-                    .list();
-            archiveTitle.setArchiveList(list);
-        });
-        return page;
+    public void updateCache(ArchiveTitle archiveTitle) {
+        List<ArchiveTitle> list = list();
+        list.add(archiveTitle);
+        redisService.set(ARCHIVE_TITLE_LIST, list);
     }
 
 
-    // public void deleteCache(Long id) {
-    //     List<ArchiveTitle> list = list();
-    //     list.removeIf(value -> value.getId().equals(id));
-    //     redisService.set(ARCHIVE_TITLE_LIST, list);
-    // }
-    //
-    // public void updateCache(ArchiveTitle archiveTitle) {
-    //     List<ArchiveTitle> list = list();
-    //     list.add(archiveTitle);
-    //     redisService.set(ARCHIVE_TITLE_LIST, list);
-    // }
-    //
-    //
-    // public void addCache(ArchiveTitle archiveTitle) {
-    //     List<ArchiveTitle> list = list();
-    //     list.add(archiveTitle);
-    //     redisService.set(ARCHIVE_TITLE_LIST, list);
-    // }
+    public void addCache(ArchiveTitle archiveTitle) {
+        List<ArchiveTitle> list = list();
+        list.add(archiveTitle);
+        redisService.set(ARCHIVE_TITLE_LIST, list);
+    }
 
 
 }

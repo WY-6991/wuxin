@@ -59,8 +59,4 @@ public interface ArchiveService extends PageService<Archive> {
     IPage<Archive> selectListByPage(Integer current, Integer limit, String keywords, String start, String end);
 
 
-    /**
-     * 统计收录文章总数
-     */
-    Integer selectCount();
 }

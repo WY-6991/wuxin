@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.front.category;
 
+import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.TagService;

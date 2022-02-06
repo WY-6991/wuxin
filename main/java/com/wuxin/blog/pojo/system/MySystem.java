@@ -52,13 +52,6 @@ public class MySystem implements Serializable {
 
 
     /**
-     * 二维码
-     */
-    @TableField(value = "er_code")
-    private String erCode;
-
-
-    /**
      * 博主评论标签名称
      */
     @TableField("comment_label_name")
@@ -70,14 +63,6 @@ public class MySystem implements Serializable {
      */
     @TableField("comment_label_color")
     private String commentLabelColor;
-
-
-
-    /**
-     * 名称
-     */
-    @TableField("web_name")
-    private String webName;
 
     /**
      * 域名备案

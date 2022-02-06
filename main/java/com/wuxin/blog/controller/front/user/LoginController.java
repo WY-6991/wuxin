@@ -2,7 +2,6 @@ package com.wuxin.blog.controller.front.user;
 
 
 import com.wuxin.blog.annotation.OperationLogger;
-import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.constant.GlobalConstant;
 import com.wuxin.blog.constant.HttpStatus;
 import com.wuxin.blog.exception.UserException;
@@ -204,6 +203,8 @@ public class LoginController {
 
     /**
      * 用户访问需要admin/** 下的资源需要登录认证
+     *
+     * @return 提示用户需要登录
      */
     @OperationLogger("提示未登录的用户需要登录！")
     @GetMapping("/no/role")

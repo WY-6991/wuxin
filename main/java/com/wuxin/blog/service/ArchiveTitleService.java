@@ -1,7 +1,6 @@
 package com.wuxin.blog.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.wuxin.blog.mode.Base.PageService;
 import com.wuxin.blog.pojo.blog.ArchiveTitle;
 import com.wuxin.blog.mode.Base.BaseService;
 
@@ -11,7 +10,7 @@ import com.wuxin.blog.mode.Base.BaseService;
  * @Date: 2021/10/01/11:08
  * @Description:
  */
-public interface ArchiveTitleService extends PageService<ArchiveTitle> {
+public interface ArchiveTitleService extends BaseService<ArchiveTitle> {
 
 
      /**
@@ -28,6 +27,12 @@ public interface ArchiveTitleService extends PageService<ArchiveTitle> {
      void add(String title);
 
 
-
+     /**
+      *
+      * @param current
+      * @param limit
+      * @return
+      */
+     IPage<ArchiveTitle> selectListByPage(int current,int limit);
 
 }
