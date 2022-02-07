@@ -1,7 +1,7 @@
 package com.wuxin.blog.config;
 
 import com.wuxin.blog.interceptor.AccessLimitInterceptor;
-import com.wuxin.blog.interceptor.JWTInterceptor;
+import com.wuxin.blog.interceptor.TokenInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -19,6 +19,9 @@ public class MyWebConfig implements WebMvcConfigurer {
 
     @Autowired
     private AccessLimitInterceptor accessLimitInterceptor;
+
+    @Autowired
+    private TokenInterceptor tokenInterceptor;
 
 
     @Override
@@ -41,7 +44,7 @@ public class MyWebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
        // registry.addInterceptor(accessLimitInterceptor).addPathPatterns("/**");
-        registry.addInterceptor(new JWTInterceptor()).addPathPatterns("/admin/**");
+        registry.addInterceptor(tokenInterceptor).addPathPatterns("/admin/**");
 
     }
 

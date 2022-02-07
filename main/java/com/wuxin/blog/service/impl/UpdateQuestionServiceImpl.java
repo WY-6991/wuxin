@@ -37,9 +37,7 @@ public class UpdateQuestionServiceImpl implements UpdateQuestionService {
     @Override
     public void add(UpdateQuestion updateQuestion) {
         ThrowUtils.ops(updateQuestionMapper.insert(updateQuestion),"系统问题发布失败！");
-        List<UpdateQuestion> list = list();
-        list.add(updateQuestion);
-        redisService.set(RedisKey.UPDATE_INFO, list);
+        redisService.del(RedisKey.UPDATE_INFO);
     }
 
     @Override
@@ -55,14 +53,6 @@ public class UpdateQuestionServiceImpl implements UpdateQuestionService {
 
         ThrowUtils.ops(updateQuestionMapper.deleteById(id),"删除失败！,内容不存在！");
         redisService.del(RedisKey.UPDATE_INFO);
-        // 删除redis中内容
-        List<UpdateQuestion> list = list();
-        for (int i = 0; i < list.size(); i++) {
-            if(list.get(i).getId().equals(id)){
-                list.remove(i);
-                redisService.set(RedisKey.UPDATE_INFO,list);
-            }
-        }
     }
 
     @Override
