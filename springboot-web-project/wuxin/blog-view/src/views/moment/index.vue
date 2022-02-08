@@ -1,5 +1,5 @@
 <template>
-  <div class="ui attached segment " :style="$MyBg()" >
+  <div class="ui attached segment " :style="bgColor" >
     <Title :title="`共发布了${total}个动态`" />{{ res }}
     <MomentsList :momentsList="momentsList" :getList="getList" :totalPage="totalPage" />
   </div>

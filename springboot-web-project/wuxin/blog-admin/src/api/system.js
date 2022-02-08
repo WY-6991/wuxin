@@ -1,9 +1,5 @@
 import request from '@/utils/request'
 
-
-/*===================================backgroundMap=============================*/
-
-
 /**
  * 获取动态列表
  * @returns {list}
@@ -11,7 +7,7 @@ import request from '@/utils/request'
 export function getBackgroundMap() {
   return request({
     url: '/background/list',
-    method: 'get',
+    method: 'get'
   })
 }
 
@@ -30,15 +26,14 @@ export function delBackgroundMap(id) {
   })
 }
 
-
 /**
  * 获取系统信息
  * @returns {info}
  */
 export function getMySystemInfo() {
   return request({
-    url: '/system/info',
-    method: 'get',
+    url: '/admin/system/info',
+    method: 'get'
   })
 }
 
@@ -63,11 +58,10 @@ export function updateMySystemInfo(data) {
 export function getWebFooterLabel() {
   return request({
     url: '/system/find/footer/label',
-    method: 'get',
+    method: 'get'
 
   })
 }
-
 
 /**
  * 删除系统底部标签
@@ -84,8 +78,6 @@ export function delWebFooterLabel(id) {
   })
 }
 
-
-
 /**
  * 添加或者修改系统底部标签
  * @param data data
@@ -98,7 +90,6 @@ export function updateWebFooterLabel(data) {
     data
   })
 }
-
 
 /**
  * 修改github配置
@@ -113,7 +104,6 @@ export function updateGithubSetting(data) {
   })
 }
 
-
 /**
  * 查看github操作
  * @param data data
@@ -122,10 +112,9 @@ export function updateGithubSetting(data) {
 export function getGithubSetting() {
   return request({
     url: '/admin/system/find/github/setting',
-    method: 'get',
+    method: 'get'
   })
 }
-
 
 /**
  * 查看github操作
@@ -136,7 +125,7 @@ export function getGithubRecords(url) {
   return request({
     url: '/github/records',
     method: 'get',
-    params:{
+    params: {
       url
     }
   })
@@ -154,8 +143,6 @@ export function deleteGithubRecords(data) {
   })
 }
 
-
-
 export function getUploadFileList(data) {
   return request({
     url: '/admin/upload/picture/list',
@@ -164,10 +151,9 @@ export function getUploadFileList(data) {
   })
 }
 
-
 export function delPicture(id) {
   return request({
-    url: '/admin/upload/picture/del/'+id,
-    method: 'get',
+    url: '/admin/upload/picture/del/' + id,
+    method: 'get'
   })
 }

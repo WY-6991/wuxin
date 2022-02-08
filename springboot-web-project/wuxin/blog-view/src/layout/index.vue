@@ -1,11 +1,11 @@
 <template>
   <div class="site m-animation-welcome" :style="styleSetting">
-    <MyNav :category-list="categoryList" :tag-list="tagList"></MyNav>
+    <MyNav :category-list="categoryList" :tag-list="tagList" :login-url="site.loginUrl"
+           :web-name="site.webName"></MyNav>
     <!--首页大图 只在首页且pc端时显示-->
     <div class="m-mobile-hide">
       <HeaderIndex v-show="checkRoute('Index')"></HeaderIndex>
     </div>
-
     <!--    页面设置按钮-->
     <PageSetting></PageSetting>
 
@@ -19,7 +19,8 @@
               <transition-group enter-active-class="animate__animated animate__fadeInLeft"
                                 leave-active-class="animate__animated animate__fadeOutLeft">
                 <div v-show="settingState.focusMode" :key="1">
-                  <TagSidebar :tag-list="tagList"></TagSidebar>
+                  <!--                  <TagSidebar :tag-list="tagList"></TagSidebar>-->
+                  <Blogger :user="adminUserInfo"></Blogger>
                 </div>
               </transition-group>
             </div>
@@ -28,10 +29,7 @@
                 <keep-alive>
                   <router-view />
                 </keep-alive>
-
               </transition>
-
-
             </div>
             <div class="three wide column m-mobile-hide m-position-absolute">
               <transition-group enter-active-class="animate__animated animate__fadeInRight "
@@ -42,9 +40,7 @@
                   <!--如果文章有密码,不加载目录-->
                   <BlogContents ref="contents" v-show="checkRoute('Blog')"></BlogContents>
                 </div>
-
               </transition-group>
-
             </div>
           </div>
 
@@ -64,7 +60,7 @@
     </el-backtop>
 
     <!--    底部内容-->
-    <FooterIndex :blog-list="newBlogList" :label-list="footerLabel"></FooterIndex>
+    <FooterIndex :blog-list="newBlogList" :label-list="footerLabel" :site="site"></FooterIndex>
 
   </div>
 </template>
@@ -84,10 +80,11 @@ import {mapActions, mapGetters} from "vuex";
 import {settingBackgroundColor, settingBackgroundImageUrl} from "@/utils/setting";
 import Blogger from "@/layout/components/sidebar/Blogger";
 import MyPlayer from "@/layout/components/sidebar/MyPlayer";
-
+import resizeHandle from './mixin/resizeHandle'
 
 export default {
   name: 'LayoutIndex',
+  mixins: [resizeHandle],
   components: {
     MyPlayer,
     Blogger,
@@ -142,7 +139,6 @@ export default {
   },
 
 
-
   mounted() {
     this.init()
     this.initData()
@@ -150,7 +146,7 @@ export default {
 
     const blog = this.$refs.contents
     console.log(blog)
-    console.log(blog.offsetTop)
+    console.log('==================>elementui', this.adminUserInfo)
   },
 
   methods: {
@@ -187,14 +183,15 @@ export default {
           this.footerLabel = footerLabelList
           this.site = site
         }
-
-
       })
 
-      getAdminUserInfo()
-          .then((result) => {
-            this.adminUserInfo = result.result;
-          })
+
+      getAdminUserInfo().then((res) => {
+        if (res.code === 200) {
+          this.adminUserInfo = res;
+          console.log('admin user result============>'+res)
+        }
+      })
 
 
     },
@@ -260,11 +257,11 @@ export default {
   padding-top: 0;
 }
 
-.animate__animated.animate__fadeIn{
+.animate__animated.animate__fadeIn {
   animation-duration: 600ms !important;
 }
 
-.animate__animated.animate__fadeOut{
+.animate__animated.animate__fadeOut {
   animation-duration: 10s !important;
 }
 
@@ -278,6 +275,7 @@ export default {
     opacity: 1;
   }
 }
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -287,6 +285,7 @@ export default {
     opacity: 1;
   }
 }
+
 .animate__fadeIn {
   -webkit-animation-name: fadeIn;
   animation-name: fadeIn;
@@ -294,12 +293,12 @@ export default {
 
 
 @keyframes welcomeAnimation {
-  0%{
+  0% {
     opacity: 0;
     filter: alpha(opacity=0);
     transform: translateY(-30px);
   }
-  100%{
+  100% {
     opacity: 1;
     -webkit-filter: none;
     filter: none;
@@ -308,12 +307,12 @@ export default {
 }
 
 @-webkit-keyframes welcomeAnimation {
-  0%{
+  0% {
     opacity: 0;
     filter: alpha(opacity=0);
     transform: translateY(-50px);
   }
-  100%{
+  100% {
     opacity: 1;
     -webkit-filter: none;
     filter: none;
@@ -330,7 +329,6 @@ export default {
   animation-play-state: running;
   animation-name: welcomeAnimation;
 }
-
 
 
 </style>

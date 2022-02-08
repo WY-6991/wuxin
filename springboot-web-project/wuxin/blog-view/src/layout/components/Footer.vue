@@ -3,7 +3,7 @@
     <div class="ui center aligned container footer-container">
       <div class="ui inverted divided grid m-text-padding-big" >
         <div class="three wide computer three wide tablet sixteen wide mobile column">
-          <img :src="webUrl" alt="" v-if="webUrl">
+          <img :src="site.erCode" alt="" v-if="site.erCode" style="width: 150px;height: 150px;">
           <div slot="error" class="image-slot" v-else>
             <svg
                 t="1638501593212"
@@ -86,17 +86,12 @@
             v-if="blogList && blogList.length !== 0"
             :class="{inverted:$store.state.setting.inverted}"
           >
-            <a
-              :href="`/blog/${blog.blogId}`"
-              class="item m-text-maring-tb-small"
-              v-for="blog in blogList"
-              :key="blog.blogId"
-              target="_blank"
-              >{{ blog.title }}</a
-            >
+            <router-link class="item m-text-margin-tb-small" v-for="blog in blogList" :key="blog.blogId" :to="`/blog/${blog.blogId}`" target="_blank">
+              {{blog.title}}
+            </router-link>
           </div>
           <div v-else>
-            <a href="javascript:;" class="item m-text-maring-tb-small"
+            <a href="javascript:void(0)" class="item m-text-margin-tb-small"
               >暂无数据</a
             >
           </div>
@@ -116,7 +111,8 @@
       <sui-divider inverted />
       <div class="ui inverted dividing  section" >
         <p class="m-text-padding-small">
-          Copyright © <a href="/about" style="color: white">wuxin001</a> 2021
+          {{site.webRecord}}
+          <router-link to="/about" style="color: white" target="_blank">{{ site.webName }}</router-link> 2021
         </p>
         <div v-if="labelList.length !== 0">
           <a
@@ -164,13 +160,21 @@ export default {
       type: Array,
       default: [],
     },
+    site:{
+      type:Object,
+      default:()=>{
+        return {
+          erCode:'https://cdn.jsdelivr.net/gh/WY-6991/wuxin/img/202111/20211126200446.png',
+          webName:'wuxin001'
+        }
+      }
+    }
   },
 
   data() {
     return {
       content: "沉舟侧畔千帆过，病树前头万木春。",
       author: "刘禹锡",
-      webUrl:'https://cdn.jsdelivr.net/gh/WY-6991/wuxin/img/202111/20211126200446.png'
     };
   },
 
@@ -229,7 +233,7 @@ export default {
   padding-bottom: 1em !important;
 }
 
-.m-text-maring-tb-small {
+.m-text-margin-tb-small {
   margin-top: 0.5em !important;
   margin-bottom: 0.5em !important;
 }

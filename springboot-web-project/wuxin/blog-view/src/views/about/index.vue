@@ -1,5 +1,5 @@
 <template>
-  <div class="ui attached segment" :style="$MyBg()" >
+  <div class="ui attached segment" :style="bgColor" >
     <div class="typo content">
       <Title :title="title" />
       <div class="ui middle aligned mobile reversed stackable">
@@ -12,7 +12,7 @@
       <div>
         <AboutComment v-if="about.commentEnabled" :commentEnabled="about.commentEnabled" />
         <h3 v-else>
-          <span :style="$MyBg()">评论已关闭</span>
+          <span :style="bgColor">评论已关闭</span>
         </h3>
       </div>
     </div>

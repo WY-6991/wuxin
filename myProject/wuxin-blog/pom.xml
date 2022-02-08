@@ -3,6 +3,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>blog-api</module>
+        <module>blog-core</module>
+        <module>blog-service</module>
+        <module>blog-common</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -23,14 +29,6 @@
     <packaging>pom</packaging>
     <version>${wuxin.version}</version>
 
-
-    <modules>
-        <module>wuxin-api</module>
-        <module>wuxin-main</module>
-        <module>wuxin-common</module>
-        <module>wuxin-redis</module>
-        <module>wuxin-shiro</module>
-    </modules>
 
 
     <dependencies>
@@ -178,74 +176,32 @@
             <version>3.8.1</version>
         </dependency>
 
-
-
-
-
     </dependencies>
 
 
     <dependencyManagement>
         <dependencies>
-            <!--api接口模块-->
             <dependency>
                 <groupId>com.wuxin.blog</groupId>
-                <artifactId>wuxin-api</artifactId>
-                <version>${wuxin.version}</version>
+                <artifactId>blog-api</artifactId>
+                <version>wuxin-1.0</version>
             </dependency>
-            <!--业务层-->
             <dependency>
                 <groupId>com.wuxin.blog</groupId>
-                <artifactId>wuxin-main</artifactId>
-                <version>${wuxin.version}</version>
+                <artifactId>blog-service</artifactId>
+                <version>wuxin-1.0</version>
             </dependency>
-
-            <!--公共部分模块-->
             <dependency>
                 <groupId>com.wuxin.blog</groupId>
-                <artifactId>wuxin-common</artifactId>
-                <version>${wuxin.version}</version>
+                <artifactId>blog-common</artifactId>
+                <version>wuxin-1.0</version>
             </dependency>
-
             <dependency>
                 <groupId>com.wuxin.blog</groupId>
-                <artifactId>wuxin-redis</artifactId>
-                <version>${wuxin.version}</version>
+                <artifactId>blog-core</artifactId>
+                <version>wuxin-1.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-
-    <!--    <build>-->
-    <!--        <plugins>-->
-    <!--            <plugin>-->
-    <!--                <groupId>org.apache.maven.plugins</groupId>-->
-    <!--                <artifactId>maven-compiler-plugin</artifactId>-->
-    <!--                <version>3.8.1</version>-->
-    <!--                <configuration>-->
-    <!--                    <source>1.8</source>-->
-    <!--                    <target>1.8</target>-->
-    <!--                    <encoding>UTF-8</encoding>-->
-    <!--                </configuration>-->
-    <!--            </plugin>-->
-    <!--            <plugin>-->
-    <!--                <groupId>org.springframework.boot</groupId>-->
-    <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-    <!--                <version>2.3.7.RELEASE</version>-->
-    <!--                <configuration>-->
-    <!--                    <mainClass>com.wuxin.blog.StartApplication</mainClass>-->
-    <!--                </configuration>-->
-    <!--                <executions>-->
-    <!--                    <execution>-->
-    <!--                        <id>repackage</id>-->
-    <!--                        <goals>-->
-    <!--                            <goal>repackage</goal>-->
-    <!--                        </goals>-->
-    <!--                    </execution>-->
-    <!--                </executions>-->
-    <!--            </plugin>-->
-    <!--        </plugins>-->
-    <!--    </build>-->
-
 
 </project>

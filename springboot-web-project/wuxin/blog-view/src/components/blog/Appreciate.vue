@@ -1,6 +1,6 @@
 <template>
 <div>
-    <el-popover placement="bottom" width="400" trigger="click" style="margin: 2em auto" :style="$MyBg()">
+    <el-popover placement="bottom" width="400" trigger="click" style="margin: 2em auto" :style="bgColor">
         <div class="ui grid divided">
             <div class="eight wide column">
                 <div class="ui orange basic label">

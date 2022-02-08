@@ -1,7 +1,7 @@
 <template>
-  <div class="ui attached segment " :style="$MyBg()" style="width: 100%;min-height: 100vh;">
+  <div class="ui attached segment " :style="bgColor" style="width: 100%;min-height: 100vh;">
     <Title :title="title" />
-    <div class="update-question-container" :style="$MyBg()">
+    <div class="update-question-container" :style="bgColor">
       <div class="ui input" style="float: right;z-index: 100">
         <input type="text" placeholder="Search..." v-model="keywords">
       </div>
@@ -9,7 +9,7 @@
         <el-timeline-item v-for="(item, index) in list"  :key="`update-${index}`"
                           :color="item.color"
                           :timestamp="new Date(item.createTime).getTime() | formatDate" size="large">
-          <span :style="$MyBg()"> {{ item.content }}</span>
+          <span :style="bgColor"> {{ item.content }}</span>
         </el-timeline-item>
       </el-timeline>
     </div>

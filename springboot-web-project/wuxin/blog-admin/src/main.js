@@ -11,13 +11,11 @@ import './plugins/index'
 
 Vue.config.productionTip = false
 
+console.log('\n\n %c  gitee %c '
+  .concat('https://gitee.com/wuxin0011', ''), 'background: rgb(199, 29, 35); padding: 1px; border-radius: 3px 0 0 3px; color: #fff', 'border-radius: 0 3px 3px 0; color:#fff')
 console.log(
-  `https://gitee.com/wuxin0011`,
-  'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-  'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-  'background:transparent'
-)
-
+  '\n\n %c  github %c '
+    .concat('https://github.com/WY-6991/wuxin', ''), 'background: rgb(36, 41, 47); padding: 1px; border-radius: 3px 0 0 3px; color: #fff', 'border-radius: 0 3px 3px 0; color: #fff')
 new Vue({
   el: '#app',
   router,

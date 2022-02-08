@@ -1,6 +1,6 @@
 <template>
   <div class="ui center aligned container" >
-    <div class="ui header big" :style="$MyBg()" >
+    <div class="ui header big" :style="bgColor" >
      {{title}}
     </div>
     <el-divider />

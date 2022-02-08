@@ -1,7 +1,7 @@
 <template>
   <div class="ui container m-comment-list">
     <sui-comment-group threaded ref="reference" style=" padding: 0 20px" >
-      <h3 is="sui-header" style="padding-top: 10px;" :style="$MyBg()">{{ commentCount }}条评论</h3>
+      <h3 is="sui-header" style="padding-top: 10px;" :style="bgColor">{{ commentCount }}条评论</h3>
       <sui-divider style="width:100%;"  />
 
       <!----------------------------------------------commentList--------------------------------------->
@@ -11,17 +11,17 @@
         <div class="ui left pointing label orange mini" v-if="comment.commentUserId===1">作者</div>
         <sui-comment-content>
           <!--username-->
-          <a is="sui-comment-author" :style="$MyBg()">{{ comment.username }}</a>
+          <a is="sui-comment-author" :style="bgColor">{{ comment.username }}</a>
 
           <sui-comment-metadata>
-            <div :style="$MyBg()">{{ comment.createTime | formatDateTime }}</div>
+            <div :style="bgColor">{{ comment.createTime | formatDateTime }}</div>
             <!--button-->
             <label class="ui label blue mini m-comment-button" @click="showReply(comment.commentId)"
                    v-if="parentCommentId===-1||parentCommentId!==comment.commentId">回复</label>
             <label class="ui label info mini m-comment-button" @click="showReply(-1)"
                    v-if="parentCommentId===comment.commentId">取消</label>
           </sui-comment-metadata>
-          <sui-comment-text :style="$MyBg()">
+          <sui-comment-text :style="bgColor">
             {{ comment.content }}
           </sui-comment-text>
 
@@ -37,14 +37,14 @@
             <sui-comment-avatar :src="reply.replyAvatar" />
             <div class="ui left pointing label orange mini" v-if="comment.commentUserId===1">作者</div>
             <sui-comment-content>
-              <a is="sui-comment-author" :style="$MyBg()">{{ reply.replyUsername }}</a>
+              <a is="sui-comment-author" :style="bgColor">{{ reply.replyUsername }}</a>
               <sui-comment-metadata>
-                <div :style="$MyBg()">{{ reply.createTime | formatDateTime }}</div>
+                <div :style="bgColor">{{ reply.createTime | formatDateTime }}</div>
               </sui-comment-metadata>
               <sui-comment-text>
-                <div class="reply_content" :style="$MyBg()">
-                  @<a is="sui-comment-author" class="no-decoration" :style="$MyBg()"> {{ reply.commentUsername }} : </a>
-                  <span :style="$MyBg()"> {{ reply.replyContent }} </span>
+                <div class="reply_content" :style="bgColor">
+                  @<a is="sui-comment-author" class="no-decoration" :style="bgColor"> {{ reply.commentUsername }} : </a>
+                  <span :style="bgColor"> {{ reply.replyContent }} </span>
                 </div>
 
                 <!-- button -->
@@ -66,7 +66,7 @@
 
       </sui-comment>
 
-      <h3 is="sui-header" :style="$MyBg()" v-if="commentCount===0" style="padding-bottom: 20px">~暂无评论,快来占楼吧~</h3>
+      <h3 is="sui-header" :style="bgColor" v-if="commentCount===0" style="padding-bottom: 20px">~暂无评论,快来占楼吧~</h3>
 
     </sui-comment-group>
 

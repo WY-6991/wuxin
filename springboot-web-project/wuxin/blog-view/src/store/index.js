@@ -4,7 +4,7 @@ import getters from './getters'
 
 Vue.use(Vuex)
 
-
+// 参照  vue-admin-template
 // 获取modules
 // https://webpack.js.org/guides/dependency-management/#requirecontext
 const modulesFiles = require.context('./modules', true, /\.js$/)

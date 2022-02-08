@@ -14,7 +14,7 @@
 
     <el-divider></el-divider>
 
-    <div class="ui attached positive message" :style="$MyBg()">
+    <div class="ui attached positive message" :style="bgColor">
       <p>需要添加网址的在评论区留言就行了 , 排名不分先后哦！ 基本格式 :</p>
       <ul class="list">
         <li> 昵称 : xxx</li>

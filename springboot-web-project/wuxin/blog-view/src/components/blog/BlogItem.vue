@@ -4,18 +4,18 @@
       "
          v-for="item in blogList"
          :key="`blog${item.blogId}`"
-         :style="$MyBg()"
+         :style="bgColor"
 
     >
       <div class="ui large red right corner label" v-if="item.top === 1">
         <i class="arrow alternate circle up icon"></i>
       </div>
-      <div class="ui middle aligned mobile reversed stackable" :style="$MyBg()">
+      <div class="ui middle aligned mobile reversed stackable" :style="bgColor">
         <div class="ui grid m-margin-lr">
           <!--标题-->
           <div class="row m-padded-tb-small">
             <h2 class="ui header m-center m-scaleup">
-              <a @click.prevent="toBlog(item)" :style="$MyBg()">{{
+              <a @click.prevent="toBlog(item)" :style="bgColor">{{
                   item.title
                 }}</a>
             </h2>

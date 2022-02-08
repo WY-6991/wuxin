@@ -1,5 +1,5 @@
 <template>
-  <div class="ui attached segment" :style="$MyBg()">
+  <div class="ui attached segment" :style="bgColor">
     <div class="container">
 
       <!-- 标题 -->

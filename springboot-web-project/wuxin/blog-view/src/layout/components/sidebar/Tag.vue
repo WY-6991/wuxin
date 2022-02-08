@@ -1,7 +1,7 @@
 <template>
-  <div class="ui segments  m-box tag-sidebar" v-if="tagList&&tagList.length!==0" :style="$MyBg()">
-    <div class="ui secondary segment " :style="$MyBg()"><i class="tags icon" :style="$MyBg()"></i>标签云</div>
-    <div class="ui yellow segment m-padding-small" :style="$MyBg()">
+  <div class="ui segments  m-box tag-sidebar" v-if="tagList&&tagList.length!==0" :style="bgColor">
+    <div class="ui secondary segment " :style="bgColor"><i class="tags icon" :style="bgColor"></i>标签云</div>
+    <div class="ui yellow segment m-padding-small" :style="bgColor">
       <router-link :to="`/tag/${tag.name}`" class="ui label m-text-500" :class="tag.color"
                    v-for="(tag,index) in tagList" :key="`tag${index}`">
         {{ tag.name }}

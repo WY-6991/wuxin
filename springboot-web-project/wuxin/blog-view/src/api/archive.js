@@ -6,9 +6,11 @@ import request from "../network/request";
  * @param {current} current 
  * @returns 
  */
-export function getArchiveList() {
+export function getArchiveList(data) {
     return request({
         url: '/archive/list',
-        method: 'get'
+        method: 'post',
+        data
+
     })
 }

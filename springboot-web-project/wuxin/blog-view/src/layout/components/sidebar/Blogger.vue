@@ -1,14 +1,13 @@
 <template lang="html">
   <div v-if="user">
     <div class="ui card">
-      <img :src="info.avatar" v-if="info.avatar" alt=""/>
+      <img :src="info.avatar" v-if="info.avatar" />
       <sui-card-content>
-        <sui-card-header>{{ info.nickname }}</sui-card-header>
+        <sui-card-header class="m-margin-left-small">{{ info.nickname }}</sui-card-header>
         <sui-card-description id="rollText">{{ info.motto }}</sui-card-description>
       </sui-card-content>
       <sui-card-content extra style="text-align:center">
         <div>
-          <!-- gitee -->
           <a :href="chatUrl.gitee" target="_blank" v-if="chatUrl.gitee">
             <svg t="1638696494899" class="m-user-icon" viewBox="0 0 1024 1024" version="1.1"
                  xmlns="http://www.w3.org/2000/svg" p-id="4875">
@@ -61,7 +60,6 @@
                 <div style="font-size: 12px;text-align: center;margin-top: 5px;">扫一扫加我微信</div>
               </div>
             </div>
-            <!-- <sui-icon slot="reference" name="wechat" circular size="large" color="olive" /> -->
             <svg slot="reference" t="1638696674178" class="m-user-icon" viewBox="0 0 1024 1024" version="1.1"
                  xmlns="http://www.w3.org/2000/svg" p-id="8966">
               <path
@@ -89,7 +87,13 @@ export default {
   props: {
     user: {
       type: Object,
-      default: {}
+      default: () => {
+        return {
+          chatUrl: {},
+          info: {},
+          hobby: []
+        }
+      }
     },
   },
   data() {
@@ -97,7 +101,6 @@ export default {
       chatUrl: {},
       info: {},
       hobby: []
-
     }
   },
   created() {

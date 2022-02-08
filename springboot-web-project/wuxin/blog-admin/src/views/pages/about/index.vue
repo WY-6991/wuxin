@@ -16,14 +16,14 @@
       <el-form-item>
         <el-switch
           v-model="about.commentEnabled"
-          @change="updateData"
           active-text="开启评论"
-          inactive-text="关闭评论">
-        </el-switch>
+          inactive-text="关闭评论"
+          @change="updateData"
+        />
       </el-form-item>
 
       <el-form-item>
-        <div id="vditor-content"></div>
+        <div id="vditor-content" />
       </el-form-item>
     </el-form>
 
@@ -32,14 +32,11 @@
 
 <script>
 
-
-import {mapGetters} from "vuex";
-import {createVditor} from "@/plugins/CreateVditor";
-import {findAbout, updateAbout} from "@/api/about";
-
+import { createVditor } from '@/plugins/CreateVditor'
+import { findAbout, updateAbout } from '@/api/about'
 
 export default {
-  name: "About",
+  name: 'About',
   data() {
     return {
       contentVditor: '',
@@ -49,56 +46,49 @@ export default {
         commentEnabled: true
       },
       msg: '关于'
-    };
+    }
+  },
+  created() {
+    if (this.about.content === '') {
+      this.getAboutData()
+    }
+  },
+  mounted() {
+    this.initVditor()
   },
   methods: {
 
-
     initVditor() {
-      this.contentVditor = createVditor('vditor-content',  500, false)
+      this.contentVditor = createVditor('vditor-content', 500, false)
     },
 
-    //添加数据
+    // 添加数据
     updateData() {
       if (!this.isRoot) {
         this.$message.error('操作失败，不具备操作权限！')
-        return;
+        return
       }
       this.about.content = this.contentVditor.getHTML()
       updateAbout(this.about).then(res => {
         if (res.code === 200) {
           this.$notify.success('修改成功！')
         }
-
       })
-
     },
 
     getAboutData() {
       findAbout().then(res => {
         if (res.code === 200) {
-          const {content, commentEnabled} = res.result
+          const { content, commentEnabled } = res.result
           this.about.commentEnabled = commentEnabled
           this.about.content = this.contentVditor.html2md(content)
           this.contentVditor.setValue(this.about.content)
         }
-
       })
     }
 
+  }
 
-  },
-  created() {
-    if (this.about.content === '') {
-      this.getAboutData()
-    }
-
-  },
-  mounted() {
-    this.initVditor()
-  },
-
-
-};
+}
 </script>
 

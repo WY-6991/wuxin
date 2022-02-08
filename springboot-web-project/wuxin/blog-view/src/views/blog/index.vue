@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="ui attached segment typo content blog" v-if="blog" :style="$MyBg()">
+    <div class="ui attached segment typo content blog" v-if="blog" :style="bgColor">
       <!--文章是否加密-->
       <div class="m-padded-tb-large placeholder"
            v-if="!result.secrecy || result.password === password">
@@ -13,7 +13,7 @@
               <div class="ui grid m-margin-lr">
                 <!--标题-->
                 <div class="row m-padded-tb-small">
-                  <h2 class="ui header m-center" :style="$MyBg()">{{ blog.title }}</h2>
+                  <h2 class="ui header m-center" :style="bgColor">{{ blog.title }}</h2>
                 </div>
                 <!--文章简要信息-->
                 <div class="row m-padded-tb-small">
@@ -28,13 +28,13 @@
                     <a class="item m-common-black" @click.prevent=" $store.state.setting.focusMode = !$store.state.setting.focusMode
                     " >
                       <div class="item m-common-black"  :data-inverted="['inverted']" data-tooltip="纯净模式" data-position="top center">
-                        <i class="laptop icon" :style="$MyBg()"></i>
+                        <i class="laptop icon" :style="bgColor"></i>
                       </div>
                     </a>
 
                     <a class="item m-common-black" @click.prevent="bigFontSize = !bigFontSize">
                       <div data-inverted="inverted"  data-tooltip="点击切换字体大小" data-position="top center">
-                        <i class="font icon" :style="$MyBg()"></i>
+                        <i class="font icon" :style="bgColor"></i>
                       </div>
                     </a>
                   </div>
@@ -76,7 +76,7 @@
               </div>
             </div>
 
-            <div class="ui positive message" :style="$MyBg()">
+            <div class="ui positive message" :style="bgColor">
               <div class="ui grid">
                 <div class="thirteen wide computer sixteen wide mobile column">
                   <div class="float left">

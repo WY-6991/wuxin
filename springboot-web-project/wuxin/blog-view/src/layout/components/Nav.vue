@@ -4,7 +4,7 @@
          :class="{ 'transparent': $route.name === 'Index' && clientSize.clientWidth > 768, 'inverted':inverted}">
       <div class="ui container ">
         <router-link to="/welcome">
-          <h3 class="ui header item m-blue">{{ blogName }}</h3>
+          <h3 class="ui header item m-blue">{{ webName!==''?webName:'wuxin001' }}`blog</h3>
         </router-link>
         <router-link to="/index" class="item "
                      :class="` ${showMobile()}  ${isActive('Index')} ${color}`">
@@ -49,12 +49,13 @@
 
         <!--右侧登录注册-->
         <div class="right menu">
-          <a class="item m-mobile-hide" href="javaScript:"
+          <a class="item m-mobile-hide" href="javaScript:void(0)"
              :class="` ${showMobile()}  ${color}`" @click.prevent="search">
             <i class="ui search icon"></i>搜索
           </a>
 
           <a :href="loginUrl" class="item m-mobile-hide"
+             target="_blank"
              :class="` ${showMobile()}  ${isActive('Login')} ${color}`">
             <i class="user icon"></i>登录
           </a>
@@ -84,7 +85,7 @@ export default {
   name: "MyNav",
   components: {Search},
   props: {
-    blogName: {
+    webName: {
       type: String,
       default: "wuxin001`blog",
     },

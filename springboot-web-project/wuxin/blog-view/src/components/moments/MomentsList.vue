@@ -4,13 +4,13 @@
         <sui-comment >
                 <sui-comment-content >
                     <sui-comment-avatar :src="item.avatar" />
-                    <a is="sui-comment-author" style="text-decoration: none;" :style="$MyBg()">&nbsp;&nbsp;{{ item.username }}</a>
+                    <a is="sui-comment-author" style="text-decoration: none;" :style="bgColor">&nbsp;&nbsp;{{ item.username }}</a>
                     <sui-comment-metadata>
-                        <div :style="$MyBg()" >{{ item.createTime |formatDateTime}}</div>
+                        <div :style="bgColor" >{{ item.createTime |formatDateTime}}</div>
                     </sui-comment-metadata>
                 </sui-comment-content>
                 <sui-comment-group v-viewer >
-                    <sui-card class="link" :style="$MyBg()" >
+                    <sui-card class="link" :style="bgColor" >
                         <sui-card-content v-html="item.content" />
                     </sui-card>
                 </sui-comment-group>

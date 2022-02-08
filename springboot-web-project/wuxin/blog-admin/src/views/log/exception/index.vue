@@ -1,137 +1,28 @@
 <template>
-  <div class="app-container">
-    <MySearchHeader
-      :show-create-button="false"
-      @handleSearch="handleFilter"
-    >
-      <el-button
-        class="m-margin-left-mini"
-        icon="el-icon-delete"
-        size="small"
-        type="danger"
-        @click.native.prevent="delAll"
-      >全部删除
-      </el-button>
-    </MySearchHeader>
-
-    <!-- 表格数据 -->
-    <el-table
-      v-loading="listLoading"
-      class="m-table"
-      max-height="350"
-      :data="list"
-      highlight-current-row
-      fit
-      size="mini"
-    >
-
-      <el-table-column type="selection" width="55" />
-      <el-table-column label="序号" prop="id" align="center" width="55" fixed>
-        <template slot-scope="{ row,$index }">
-          <span>{{ $index + 1 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="访问标识" align="center" width="200">
-        <template slot-scope="{ row }">
-          <span class="m-message link-type">{{ row.byCreate }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="请求方法" align="center" width="200">
-        <template slot-scope="{ row }">
-          <span class="m-message">{{ row.method }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="请求类型" align="center" width="100">
-        <template slot-scope="{ row }">
-          <span>{{ row.type | lowerCase }} </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="来源" align="center" width="150">
-        <template slot-scope="{ row }">
-          <span>{{ row.ipSource }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="浏览器" align="center" width="150">
-        <template slot-scope="{ row }">
-          <span>{{ row.browser | lowerCase }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="description" align="center" width="150">
-        <template slot-scope="{ row}">
-          <span>{{ row.description }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="os" align="center" width="150">
-        <template slot-scope="{ row}">
-          <span>{{ row.os | lowerCase }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="日期" width="160" align="center">
-        <template slot-scope="{ row }">
-          <span>{{ row.createTime }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="操作" align="center" width="150" fixed="right">
-        <template slot-scope="{ row }">
-          <el-button type="primary" circle icon="el-icon-view" @click="showErrorMessage(row.result)" />
-          <el-button type="danger" circle icon="el-icon-delete" @click="removeData(row.id,index)" />
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 分页-->
-    <MyPagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="query.current"
-      :limit.sync="query.limit"
-      @pagination="getList"
-    />
-
-    <el-dialog :visible.sync="dialogVisible" title="详情" width="700px">
-      <div slot="title">
-        详情
-      </div>
-      <div>
-        <pre class="language-number">
-        <code class="language-java" v-text="message" />
-      </pre>
-      </div>
-      <div slot="footer">
-        <el-button type="primary" @click="dialogVisible = false">关闭</el-button>
-      </div>
-    </el-dialog>
-
-  </div>
+  <MyLog
+    title="异常日志记录"
+    :show-controller="false"
+    :show-username="false"
+    :list-loading="listLoading"
+    :list="list"
+    :total="total"
+    :query="query"
+    @getList="getList"
+    @delLogById="removeData"
+    @delAllLog="delAll"
+    @handleSearch="handleFilter"
+  />
 </template>
 
 <script>
 import { getExceptionLogList, delExceptionLog, delAllExceptionLog } from '@/api/log'
 import { query } from '@/mixin/query'
+import MyLog from '@/views/log/components'
 
 export default {
   name: 'ExceptionLog',
-  filters: {
-    lowerCase(value) {
-      return value.toLowerCase()
-    }
-  },
+  components: { MyLog },
   mixins: [query],
-  data() {
-    return {
-      // 表格key
-      dialogVisible: false,
-      message: {}
-    }
-  },
-  mounted() {
-    this.getList()
-  },
   methods: {
 
     getList() {

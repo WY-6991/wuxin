@@ -1,10 +1,10 @@
 <template>
-  <div class="update-question-container" :style="$MyBg()">
+  <div class="update-question-container" :style="bgColor">
     <div class="ui input" style="float: right;z-index: 100" >
       <input type="text" placeholder="Search..." v-model="keywords">
     </div>
     <el-timeline>
-      <el-timeline-item v-for="(item, index) in updates" :style="$MyBg()" :key="`update-${index}`" :color="item.color"
+      <el-timeline-item v-for="(item, index) in updates" :style="bgColor" :key="`update-${index}`" :color="item.color"
                         :timestamp="new Date(item.createTime).getTime() | formatDate" size="large">
         {{ item.content }}
       </el-timeline-item>

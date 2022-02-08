@@ -1,15 +1,13 @@
 <template>
-
   <MyLog
+    title="登录日记记录"
     :show-username="true"
     :show-controller="false"
     :show-method="false"
     :show-controller-button="false"
     :show-type="false"
-    :show-url="false"
-    :show-message="false"
+    :show-description="false"
     :query="query"
-    :title="title"
     :list="list"
     :list-loading="listLoading"
     :total="total"
@@ -29,14 +27,7 @@ export default {
   name: 'LoginLog',
   components: { MyLog },
   mixins: [query],
-  data() {
-    return {
-      title: '登录日志记录'
-    }
-  },
-
   methods: {
-
     getList() {
       getLoginLogList(this.query).then(res => {
         this.list = res.result.records

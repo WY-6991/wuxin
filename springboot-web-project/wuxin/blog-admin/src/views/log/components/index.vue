@@ -45,20 +45,6 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <!--      <el-table-column v-if="showMethod" label="请求方法" align="center" :width="fit?'auto':150">-->
-      <!--        <template slot-scope="{ row }">-->
-      <!--          <el-tooltip v-if="row.method" :content="row.method">-->
-      <!--            <span class="m-message">{{ row.method ? row.method : '未知' }}</span>-->
-      <!--          </el-tooltip>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-
-      <!--      <el-table-column v-if="showType" label="type" align="center" :width="fit?'auto':60">-->
-      <!--        <template slot-scope="{ row }">-->
-      <!--          <span>{{ row.type ? row.type : '未知' }}</span>-->
-      <!--        </template>-->
-      <!--      </el-table-column>-->
-
       <el-table-column label="ip" align="center" :width="fit?'auto':120">
         <template slot-scope="{ row }">
           <span class="m-message">{{ row.ip ? row.ip : '未知' }}</span>
@@ -83,7 +69,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="描述" align="center" :width="fit?'auto':100">
+      <el-table-column v-show="showDescription" label="描述" align="center" :width="fit?'auto':100">
         <template slot-scope="{ row }">
           <span class="m-message">{{ row.description ? row.description : '未知' }}</span>
         </template>
@@ -129,12 +115,7 @@
       @pagination="getList"
     />
     <el-dialog width="50%" title="参数信息" :visible.sync="dialogVisible">
-      <div slot="title">
-        请求详情
-      </div>
-      <div>
-        <LogDetail :log="log" />
-      </div>
+      <LogDetail :log="log" />
       <div slot="footer">
         <el-button type="info" @click="dialogVisible = false">关闭</el-button>
       </div>
@@ -150,7 +131,6 @@ import LogDetail from '@/views/log/components/LogDetail'
 export default {
   name: 'MyLog',
   components: { LogDetail, MyUserLink },
-
   props: {
     list: {
       type: Array,
@@ -174,24 +154,7 @@ export default {
       type: Boolean,
       default: true
     },
-    showUrl: {
-      type: Boolean,
-      default: true
-    },
 
-    showController: {
-      type: Boolean,
-      default: true
-    },
-
-    showMethod: {
-      type: Boolean,
-      default: true
-    },
-    showType: {
-      type: Boolean,
-      default: true
-    },
     showMessage: {
       type: Boolean,
       default: true
@@ -207,6 +170,10 @@ export default {
     total: {
       type: Number,
       default: 0
+    },
+    showDescription: {
+      type: Boolean,
+      default: true
     }
 
   },
