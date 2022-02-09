@@ -37,7 +37,7 @@
         label-position="left"
         label-width="70px"
       >
-        <el-form-item label="类型" prop="category">
+        <el-form-item label="类型">
           <el-select
             style="min-width: 300px;"
             v-model="blog.cid"
@@ -121,7 +121,7 @@ export default {
         appreciation: false, // 开启赞赏
         secrecy: false, // 是否保密 默认不开启公开的
         password: "", //密码
-        cid: '',
+        cid: 1,
         tagIds: [],
         views: 0,
       },

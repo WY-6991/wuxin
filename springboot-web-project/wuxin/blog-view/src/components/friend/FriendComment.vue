@@ -32,7 +32,6 @@ export default {
         type:3,
         blogId:''
       },
-      commentCount:0
     };
   },
 

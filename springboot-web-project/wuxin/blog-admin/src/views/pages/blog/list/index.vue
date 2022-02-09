@@ -1,20 +1,28 @@
 <template>
   <div class="app-container">
-
-    <MySearchHeader :show-search-input="false" @handleSearch="handleFilter" :query="query"
-                    @handleCreate="handleCreate">
-      <el-autocomplete
+    <MySearchHeader
+      :show-search-input="true"
+      @handleSearch="handleFilter"
+      :query="query"
+      @handleCreate="handleCreate"
+    >
+      <el-select
         slot="pre"
-        size="small"
-        style="width: 200px;"
-        v-model="query.keywords"
-        :fetch-suggestions="querySearch"
-        placeholder="请输入内容"
-        @keyup.enter.native="handleFilter"
-        @select="handleFilter"
-      />
+        v-model="query.id"
+        size="mini"
+        style="width: 150px"
+        class="m-margin-left-small"
+        @change="getList"
+      >
+        <el-option label="全部" :value="null"></el-option>
+        <el-option
+          :value="item.cid"
+          :label="item.name"
+          v-for="(item, index) in categoryList"
+          :key="index"
+        ></el-option>
+      </el-select>
     </MySearchHeader>
-
 
     <el-table
       v-loading="listLoading"
@@ -24,27 +32,26 @@
       max-height="350"
       :data="list"
     >
-
       <el-table-column width="55" type="selection"></el-table-column>
       <el-table-column label="序号" prop="id" align="center" width="55">
-        <template slot-scope="{ row,$index }">
+        <template slot-scope="{ row, $index }">
           <span>{{ $index + 1 }}</span>
         </template>
       </el-table-column>
 
       <el-table-column label="作者" align="center" width="100">
         <template slot-scope="{ row }">
-          <el-link :underline="false" icon="el-icon-user">{{ row.username }}</el-link>
+          <el-link :underline="false" icon="el-icon-user">{{
+            row.username
+          }}</el-link>
         </template>
       </el-table-column>
       <el-table-column label="标题" align="center" width="auto">
         <template slot-scope="{ row }">
-
-          <el-tooltip
-            placement="bottom"
-            trigger="hover"
-            :content="row.title">
-            <span class="m-message" @click="handleUpdate(row.blogId)">{{ row.title }}</span>
+          <el-tooltip placement="bottom" trigger="hover" :content="row.title">
+            <span class="m-message" @click="handleUpdate(row.blogId)">{{
+              row.title
+            }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -55,19 +62,31 @@
             size="mini"
             :underline="false"
             @click.native.prevent="showBlog(row)"
-            :type="row.secrecy?'warning':'primary'">
-            {{ row.secrecy ? '私密' : '公开' }}
+            :type="row.secrecy ? 'warning' : 'primary'"
+          >
+            {{ row.secrecy ? "私密" : "公开" }}
           </el-link>
         </template>
       </el-table-column>
       <el-table-column label="评论" align="center" width="100">
         <template slot-scope="{ row }">
-          <el-badge :value="row.commentNum" style="margin-left:10px;margin-top: 10px;" v-if="row.commentNum!==0">
-            <el-icon style="font-size: 24px;" name="chat-dot-round"
-                     @click.native.prevent="handleComment(row)"></el-icon>
+          <el-badge
+            :value="row.commentNum"
+            style="margin-left: 10px; margin-top: 10px"
+            v-if="row.commentNum !== 0"
+          >
+            <el-icon
+              style="font-size: 24px"
+              name="chat-dot-round"
+              @click.native.prevent="handleComment(row)"
+            ></el-icon>
           </el-badge>
-          <el-icon  style="margin-left:10px;margin-top: 10px;font-size: 24px;" name="chat-dot-round" v-else
-                   @click.native.prevent="handleComment(row)"></el-icon>
+          <el-icon
+            style="margin-left: 10px; margin-top: 10px; font-size: 24px"
+            name="chat-dot-round"
+            v-else
+            @click.native.prevent="handleComment(row)"
+          ></el-icon>
         </template>
       </el-table-column>
       <el-table-column label="分类" align="center" width="100">
@@ -82,10 +101,20 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" fixed="right">
         <template slot-scope="{ row, $index }">
-          <el-button type="primary" size="mini" @click="handleUpdate(row.blogId)" icon="el-icon-edit">
+          <el-button
+            type="primary"
+            size="mini"
+            @click="handleUpdate(row.blogId)"
+            icon="el-icon-edit"
+          >
             编辑
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(row.blogId, $index)" icon="el-icon-delete">删除
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleDelete(row.blogId, $index)"
+            icon="el-icon-delete"
+            >删除
           </el-button>
         </template>
       </el-table-column>
@@ -119,23 +148,38 @@
         <el-form-item label="密码" v-if="blog.secrecy">
           <el-input v-if="blog.secrecy" v-model="blog.password" />
         </el-form-item>
-
       </el-form>
       <div slot="footer" label-width="200px">
-        <el-button size="mini" type="info" @click.native.prevent="dialogBlogVisible=false">取消</el-button>
-        <el-button size="mini" type="primary" @click.native.prevent="update(blog)">保存</el-button>
-        <el-button size="mini" @click="handleArchive(blog)" plain>归档</el-button>
+        <el-button
+          size="mini"
+          type="info"
+          @click.native.prevent="dialogBlogVisible = false"
+          >取消</el-button
+        >
+        <el-button
+          size="mini"
+          type="primary"
+          @click.native.prevent="update(blog)"
+          >保存</el-button
+        >
+        <el-button size="mini" @click="handleArchive(blog)" plain
+          >归档</el-button
+        >
       </div>
     </el-dialog>
     <!--    归档-->
     <el-dialog title="归档" :visible.sync="dialogFormArchive">
-      <AddArchive :archive="archive" @addArchive="addArchive" @cancelArchive="cancelArchive" />
+      <AddArchive
+        :archive="archive"
+        @addArchive="addArchive"
+        @cancelArchive="cancelArchive"
+      />
     </el-dialog>
   </div>
 </template>
 
 <script>
-import list from '@/views/pages/blog/list/blog'
+import list from "@/views/pages/blog/list/blog";
 
-export default list
+export default list;
 </script>

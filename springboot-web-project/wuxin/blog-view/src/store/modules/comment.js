@@ -31,11 +31,11 @@ import {
 const state = {
 
     commentUser: {
-        username: getUser().username?getUser().username:'',
-        email: getUser().email?getUser().email:'',
+        username: getUser().username ? getUser().username : '',
+        email: getUser().email ? getUser().email : '',
         userId: null,
         content: null,
-        subscription: getUser().subscription?getUser().subscription:true,
+        subscription: getUser().subscription ? getUser().subscription : true,
     },
 
     parentCommentId: -1,
@@ -56,7 +56,7 @@ const mutations = {
         state.commentUser.email = user.email
         state.commentUser.subscription = user.subscription
         // 将存储到cookie中
-        setUser({ 'username': user.username, 'email': user.email,'subscription':user.subscription });
+        setUser({'username': user.username, 'email': user.email, 'subscription': user.subscription});
     },
 
     // 设置评论用户
@@ -112,8 +112,8 @@ const actions = {
      * @param user
      */
     setCommentUser({
-        commit
-    }, user) {
+                       commit
+                   }, user) {
         commit(SET_COMMENT_USER, user)
     },
 
@@ -123,8 +123,8 @@ const actions = {
      * @param current 当前页
      */
     setCurrent({
-        commit
-    }, current) {
+                   commit
+               }, current) {
         commit(SET_COMMENT_CURRENT, current)
     },
 
@@ -134,8 +134,8 @@ const actions = {
      * @param totalPage 页码总数
      */
     setPage({
-        commit
-    }, totalPage) {
+                commit
+            }, totalPage) {
         commit(SET_COMMENT_TOTAL_PAGE, totalPage)
     },
 
@@ -145,8 +145,8 @@ const actions = {
      * @param parentCommentId 评论楼层id
      */
     setParentCommentId({
-        commit
-    }, parentCommentId) {
+                           commit
+                       }, parentCommentId) {
         commit(SET_COMMENT_PARENT_ID, parentCommentId)
     },
 
@@ -158,8 +158,8 @@ const actions = {
      * @returns {Promise<res>}
      */
     addComment({
-        commit
-    }, data) {
+                   commit
+               }, data) {
         return new Promise((resolve, reject) => {
             addComment(data).then(res => {
                 commit(SET_CLEAN_CONTENT, "")
@@ -183,8 +183,8 @@ const actions = {
      * @returns {Promise<res>}
      */
     addReply({
-        commit
-    }, data) {
+                 commit
+             }, data) {
         return new Promise((resolve, reject) => {
             addReply(data).then(res => {
                 commit(SET_CLEAN_CONTENT, "")
@@ -209,12 +209,15 @@ const actions = {
      * @returns {Promise<res>}
      */
     getCommentList({
-        commit
-    },query) {
+                       commit
+                   }, query) {
         return new Promise((resolve, reject) => {
             getCommentList(state.current, 5, query.type, query.blogId).then(res => {
-                commit(SET_COMMENT_LIST, res.result.records)
-                commit(SET_COMMENT_TOTAL_PAGE, setTotalPage(res.result.total, res.result.size))
+                console.log('commentList=========>', JSON.stringify(res))
+                const {commentList, commentCount} = res
+                commit(SET_COMMENT_LIST, commentList.records)
+                commit(SET_COMMENT_COUNT, commentCount)
+                commit(SET_COMMENT_TOTAL_PAGE, setTotalPage(commentList.total, commentList.size))
                 resolve(res)
             }).catch(error => {
                 reject(error)
@@ -223,14 +226,6 @@ const actions = {
 
         })
     },
-
-
-
-
-
-
-
-
 
 
 }
