@@ -13,6 +13,7 @@ import {
     SET_COMMENT_LIST,
     SET_COMMENT_PARENT_ID,
     SET_COMMENT_COUNT,
+    SET_LOADING,
 } from "@/store/mutations-type";
 
 import {
@@ -33,11 +34,11 @@ const state = {
     commentUser: {
         username: getUser().username ? getUser().username : '',
         email: getUser().email ? getUser().email : '',
-        userId: null,
         content: null,
         subscription: getUser().subscription ? getUser().subscription : true,
     },
 
+    loading: false,
     parentCommentId: -1,
     totalPage: 0,
     current: 1,
@@ -94,6 +95,11 @@ const mutations = {
     // 统计评论数量
     [SET_COMMENT_COUNT]: (state, commentCount) => {
         state.commentCount = commentCount
+    },
+
+    // 统计评论数量
+    [SET_LOADING]: (state, loading) => {
+        state.loading = loading
     },
 
 }
@@ -161,6 +167,7 @@ const actions = {
                    commit
                }, data) {
         return new Promise((resolve, reject) => {
+            commit(SET_LOADING,true)
             addComment(data).then(res => {
                 commit(SET_CLEAN_CONTENT, "")
                 commit(SET_COMMENT_USER_ID, res.result)
@@ -169,8 +176,10 @@ const actions = {
                     'email': data.email,
                     'subscription': data.subscription,
                 })
+                commit(SET_LOADING,false)
                 resolve(res)
             }).catch(error => {
+                commit(SET_LOADING,false)
                 reject(error)
             })
         })
@@ -186,16 +195,18 @@ const actions = {
                  commit
              }, data) {
         return new Promise((resolve, reject) => {
+            commit(SET_LOADING,true)
             addReply(data).then(res => {
                 commit(SET_CLEAN_CONTENT, "")
-                commit(SET_COMMENT_USER_ID, res.result)
                 commit(SET_COMMENT_USER, {
                     "username": data.replyUsername,
                     "email": data.replyEmail,
                     "subscription": data.subscription
                 })
+                commit(SET_LOADING,false)
                 resolve(res)
             }).catch(error => {
+                commit(SET_LOADING,false)
                 reject(error)
             })
         })
@@ -213,11 +224,11 @@ const actions = {
                    }, query) {
         return new Promise((resolve, reject) => {
             getCommentList(state.current, 5, query.type, query.blogId).then(res => {
-                console.log('commentList=========>', JSON.stringify(res))
-                const {commentList, commentCount} = res
-                commit(SET_COMMENT_LIST, commentList.records)
+                const {page, commentCount} = res
+                const {records, pages} = page
+                commit(SET_COMMENT_LIST, records)
                 commit(SET_COMMENT_COUNT, commentCount)
-                commit(SET_COMMENT_TOTAL_PAGE, setTotalPage(commentList.total, commentList.size))
+                commit(SET_COMMENT_TOTAL_PAGE, pages)
                 resolve(res)
             }).catch(error => {
                 reject(error)

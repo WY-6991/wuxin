@@ -37,15 +37,7 @@ const systemRouter = {
       name: 'Music',
       component: () => import('@/views/system/music/Music'),
       meta: { title: '音乐', noCache: true ,icon:'music'}
-    },
-
-    {
-      path: 'picture',
-      name: 'Picture',
-      component: () => import('@/views/system/uplaod/index'),
-      meta: { title: '文件上传',icon:'picture',noCache:true}
     }
-
   ]
 }
 export default systemRouter

@@ -2,9 +2,7 @@
   <MyLog
     title="登录日记记录"
     :show-username="true"
-    :show-controller="false"
-    :show-method="false"
-    :show-controller-button="false"
+    :show-message="false"
     :show-type="false"
     :show-description="false"
     :query="query"

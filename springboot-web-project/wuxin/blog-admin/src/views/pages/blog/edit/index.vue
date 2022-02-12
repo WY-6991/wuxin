@@ -10,72 +10,81 @@
     >
       修改
     </el-button>
-
-
     <el-form
       ref="updateDataForm"
       :rules="rules"
       :model="blog"
       label-position="left"
-      label-width="70px"
+      inline
     >
-
       <el-form-item label="权限">
-        <el-switch v-model="blog.publish" active-text="发布" />
-        <el-switch v-model="blog.commentEnabled" active-text="开启评论" class="m-margin-left-small" />
-        <el-switch v-model="blog.top" active-text="置顶" :active-value="1" :inactive-value="0" />
-        <el-switch v-model="blog.appreciation" active-text="开启赞赏" class="m-margin-left-small" />
-        <el-switch v-model="blog.secrecy" active-text="开启密码" />
+        <el-switch v-model="blog.publish" active-text="发布"   class="m-margin-left-small" />
+        <el-switch v-model="blog.commentEnabled" active-text="评论" class="m-margin-left-small" />
+        <el-switch v-model="blog.top" active-text="置顶" :active-value="1" :inactive-value="0"   class="m-margin-left-small" />
+        <el-switch v-model="blog.appreciation" active-text="赞赏" class="m-margin-left-small" />
+        <el-switch v-model="blog.secrecy" active-text="密码"   class="m-margin-left-small" />
         <el-input v-if="blog.secrecy" v-model="blog.password" style="width: 200px;" placeholder="请输入密码" :maxlength="15"
                   show-word-limit />
       </el-form-item>
 
-      <el-form-item label="分类" prop="category">
-        <el-select
-          style="width: 120px;"
-          v-model="blog.cid"
-          placeholder="请选择..."
-        >
-          <el-option
-            v-for="item in categoryList"
-            :key="item.cid"
-            :label="item.name"
-            :value="item.cid"
-          />
-        </el-select>
+      <el-row>
+        <el-form-item label="分类" prop="category" required>
+          <el-select
+            style="width: 150px;"
+            v-model="blog.cid"
+            placeholder="请选择..."
+          >
+            <el-option
+              v-for="item in categoryList"
+              :key="item.cid"
+              :label="item.name"
+              :value="item.cid"
+            />
+          </el-select>
 
-        <el-button type="primary" size="small" class="m-margin-left-small" @click="addCategory" icon="el-icon-plus" />
-      </el-form-item>
+          <el-button type="primary" size="small" class="m-margin-left-small" @click="addCategory" icon="el-icon-plus" />
+        </el-form-item>
 
+        <el-form-item label="标签" prop="tagIds" required>
+          <el-drag-select
+            filterable
+            v-model="blog.tagIds"
+            style=" width:300px;"
+            multiple
+            placeholder="请选择，输入关键字搜索"
+          >
+            <el-option
+              v-for="item in tagList"
+              :key="item.tagId"
+              :label="item.name"
+              :value="item.tagId"
+            />
+          </el-drag-select>
+          <el-button type="primary" size="small" class="m-margin-left-small" icon="el-icon-plus" @click="addTag" />
+        </el-form-item>
 
-      <el-form-item label="标签" prop="tagIds">
-
-        <el-drag-select
-          filterable
-          v-model="blog.tagIds"
-          style=" width:300px;min-width: 300px;"
-          multiple
-          placeholder="请选择，输入关键字搜索"
-        >
-          <el-option
-            v-for="item in tagList"
-            :key="item.tagId"
-            :label="item.name"
-            :value="item.tagId"
-          />
-        </el-drag-select>
-        <el-button type="primary" size="small" class="m-margin-left-small" icon="el-icon-plus" @click="addTag" />
-      </el-form-item>
-
+      </el-row>
       <el-col :span="24">
-        <el-form-item prop="title" label="标题" label-width="50px">
+        <el-form-item prop="title" label="标题">
           <el-input
-            size="small"
             v-model="blog.title"
-            :maxlength="100"
+            :maxlength="30"
             show-word-limit
+            clearable
+            style=" width:300px;min-width: 300px;"
           >
           </el-input>
+
+        </el-form-item>
+
+        <el-form-item prop="title" label="封面图片">
+          <el-input
+            show-word-limit
+            clearable
+            style=" width:300px"
+          >
+          </el-input>
+
         </el-form-item>
 
         <el-form-item prop="desc" width="100%">

@@ -85,7 +85,7 @@ const routes = [
                 name: 'Time',
                 component: () => import("@/views/timeline/index.vue"),
                 meta: {
-                    title: "时间线",
+                    title: "通知",
                 },
             },
             {
@@ -93,7 +93,7 @@ const routes = [
                 name: 'Archive',
                 component: () => import("@/views/archive/index.vue"),
                 meta: {
-                    title: "收藏",
+                    title: "我的收藏",
                 },
             }
         ]

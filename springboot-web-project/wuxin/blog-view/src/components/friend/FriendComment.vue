@@ -1,17 +1,18 @@
 <template lang="html">
   <div>
-    <CommentForm :comment-type="commentType" @addComment="addMyComment" :type="query.type" />
-    <CommentList @addReply="addMyReply" @setParentId="setParentId" :type="query.type" :comment-list="commentList"
-                 :commentCount="commentCount" :parentCommentId="parentCommentId" :user-id="commentUser.userId"
-                />
-    <MyPagination :current="current" :totalPage="commentTotalPage" @current-page="changePage" />
+    <CommentForm :comment-type="commentType" @addComment="addMyComment" :loading="loading" :type="query.type" />
+    <CommentList @addReply="addMyReply" @setParentId="setParentId" :loading="loading" :type="query.type"
+                 :comment-list="commentList"
+                 :commentCount="commentCount" :parentCommentId="parentCommentId"
+    />
+    <MyPagination :current="current" :total-page="totalPage" @current-page="changePage" :is-scroll-top="false" />
   </div>
 </template>
 
 <script>
 import CommentForm from "@/components/comment/CommentForm";
 import CommentList from "@/components/comment/CommentList";
-import { mapActions, mapState } from "vuex";
+import {mapActions, mapState} from "vuex";
 
 export default {
   name: "FriendComment",
@@ -28,10 +29,10 @@ export default {
   data() {
     return {
       commentType: "comment",
-      query:{
-        type:3,
-        blogId:''
-      },
+      query: {
+        type: 3,
+        blogId: ''
+      }
     };
   },
 
@@ -39,10 +40,10 @@ export default {
     ...mapState("comment", [
       "current",
       "commentList",
-      "commentTotalPage",
+      "totalPage",
       "parentCommentId",
       "commentCount",
-      "commentUser",
+      "loading"
     ]),
   },
   methods: {
@@ -76,8 +77,8 @@ export default {
       this.setParentCommentId(id);
     },
 
-    getData(){
-      if(this.commentEnabled){
+    getData() {
+      if (this.commentEnabled) {
         this.getCommentList(this.query)
       }
     },

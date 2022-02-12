@@ -1,26 +1,13 @@
-import {
-  addArchive
-} from '@/api/archive'
+import {addArchive} from '@/api/archive'
 import AddArchive from '@/views/pages/blog/components/AddArchive'
 import MyImage from '@/components/MyComponents/MyImage'
-import {
-  getCategoryList
-} from '@/api/category'
-import {
-  delBlog,
-  getBlogList,
-  updateBlog
-} from '@/api/blog'
-import {
-  query
-} from '@/mixin/query'
+import {getCategoryList} from '@/api/category'
+import {delBlog, getBlogList, updateBlog} from '@/api/blog'
+import {query} from '@/mixin/query'
 
 export default {
   name: 'list',
-  components: {
-    MyImage,
-    AddArchive
-  },
+  components: {MyImage, AddArchive},
   mixins: [query],
   data() {
     return {

@@ -29,6 +29,12 @@ const logRouter = {
       path: 'exception',
       component: () => import('@/views/log/exception/index.vue'),
       meta: {title: '异常日志', noCache: true, icon: 'bug'}
+    },
+
+    {
+      path: 'file',
+      component: () => import('@/views/log/upload/index.vue'),
+      meta: { title: '文件日志',icon:'picture',noCache:true}
     }
 
   ]

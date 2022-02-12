@@ -9,8 +9,6 @@ export const minix = {
     components: {AddCategory, AddTag, ElDragSelect},
 
     data() {
-
-
         let validateDesc = (rule, value, callback) => {
             if (this.descriptionVditor.getValue().length === 1) {
                 this.msg = "请填写描述"
@@ -29,12 +27,11 @@ export const minix = {
         };
 
         let validatePass = (rule, value, callback) => {
-            // 密码是否开启 只有开启了才会要求输入密码
+      // 密码是否开启 只有开启了才会要求输入密码
             if (!this.blog.secrecy) {
                 callback();
             }
             if (value.length < 4 || value.length > 16) {
-                this.msg = "密码长度4-16"
                 callback(new Error("密码长度4-16"));
             }
             callback();

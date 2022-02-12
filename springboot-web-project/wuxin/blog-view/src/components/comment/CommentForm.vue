@@ -68,7 +68,10 @@
                   v-model="commentUser.email" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" size="small" @click.prevent="submit">提交</el-button>
+        <el-button type="primary" size="small" @click.prevent="submit" :loading="loading">{{
+            loading ? '' : '提交'
+          }}
+        </el-button>
       </el-form-item>
 
       <el-form-item class="m-mobile-hide">
@@ -86,8 +89,9 @@ import {
   mapGetters
 } from "vuex";
 import {
-  validEmail
+  validEmail, validKeywords
 } from "@/utils/validate.js";
+
 
 export default {
   name: "CommentForm",
@@ -156,6 +160,10 @@ export default {
       type: Function,
       default: () => {
       }
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -168,48 +176,13 @@ export default {
     // 提交
     submit() {
 
-      const keywords = this.commentUser.content
-      if (!keywords) {
+      const content = this.commentUser.content
+      if (!content) {
         this.$notify.warning("内容不能为空！");
         return false;
       }
       // 敏感字符不允许发送
-      if (
-          keywords.indexOf('操') !== -1
-          || keywords.indexOf('尼玛') !== -1
-          || keywords.indexOf('nm') !== -1
-          || keywords.indexOf('n m') !== -1
-          || keywords.indexOf('cnm') !== -1
-          || keywords.indexOf('c n m') !== -1
-          || keywords.indexOf('日') !== -1
-          || keywords.indexOf('m') !== -1
-          || keywords.indexOf('艹') !== -1
-          || keywords.indexOf('cao') !== -1
-          || keywords.indexOf('草') !== -1
-          || keywords.indexOf('si') !== -1
-          || keywords.indexOf('死') !== -1
-          || keywords.indexOf('婊') !== -1
-          || keywords.indexOf('儿') !== -1
-          || keywords.indexOf('爷') !== -1
-          || keywords.indexOf('姑') !== -1
-          || keywords.indexOf('姥') !== -1
-          || keywords.indexOf('爸') !== -1
-          || keywords.indexOf('妈') !== -1
-          || keywords.indexOf('弟') !== -1
-          || keywords.indexOf('ba') !== -1
-          || keywords.indexOf('ma') !== -1
-          || keywords.indexOf('末日') !== -1
-          || keywords.indexOf('崴') !== -1
-          || keywords.indexOf('薇') !== -1
-          || keywords.indexOf('日本') !== -1
-          || keywords.indexOf('日 本') !== -1
-          || keywords.indexOf('huang') !== -1
-          || keywords.indexOf('h u a n g') !== -1
-          || keywords.indexOf('黄色') !== -1
-          || keywords.indexOf('riben') !== -1
-          || keywords.indexOf('meiguo') !== -1
-
-      ) {
+      if (validKeywords(content)) {
         this.$message.warning('请不要发敏感字符哦！')
         return
       }
@@ -276,8 +249,6 @@ export default {
       } else {
         this.commentUser.content += e.data
       }
-
-
     },
 
   }
@@ -324,12 +295,6 @@ export default {
   0% {
     transform: rotate(0deg);
   }
-
-
-  /* 初始状态 */
-  /*50% {*/
-  /*  transform: rotate(360deg);*/
-  /*}*/
 
 
   /* 结束状态 */

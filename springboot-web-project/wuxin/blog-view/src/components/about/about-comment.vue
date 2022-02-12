@@ -1,10 +1,12 @@
 <template lang="html">
   <div>
-    <CommentForm :comment-type="commentType" @addComment="addMyComment" :type="query.type" />
+    <CommentForm :comment-type="commentType" @addComment="addMyComment" :type="query.type" :loading="loading" />
     <CommentList @addReply="addMyReply"
-                 @setParentId="setParentId" :type="query.type" :id="blogId" :comment-list="commentList" :commentCount="commentCount"
-                 :parentCommentId="parentCommentId" :user-id="commentUser.userId" ref="reply" />
-    <MyPagination :current="current" :totalPage="totalPage" @current-page="changePage" />
+                 @setParentId="setParentId" :type="query.type" :id="query.blogId" :loading="loading"
+                 :comment-list="commentList"
+                 :commentCount="commentCount"
+                 :parentCommentId="parentCommentId" ref="reply" />
+    <MyPagination :current="current"  :is-scroll-top="false" :totalPage="totalPage" @current-page="changePage" />
   </div>
 </template>
 
@@ -31,9 +33,9 @@ export default {
   data() {
     return {
       commentType: "comment",
-      query:{
-        type:2,
-        blogId:''
+      query: {
+        type: 2,
+        blogId: null
       }
     };
   },
@@ -44,8 +46,8 @@ export default {
       "commentList",
       "totalPage",
       "parentCommentId",
-      "commentUser",
       "commentCount",
+      "loading"
     ]),
   },
   methods: {
@@ -61,11 +63,10 @@ export default {
       this.addComment(comment).then((res) => {
         if (res.code === 200) {
           this.$notify.success("发表成功！");
-         this.getData()
+          this.getData()
         }
       });
     },
-
 
 
     addMyReply(reply) {
@@ -77,12 +78,11 @@ export default {
       });
     },
 
-    getData(){
-      if(this.commentEnabled){
+    getData() {
+      if (this.commentEnabled) {
         this.getCommentList(this.query)
       }
     },
-
 
 
     setParentId(id) {

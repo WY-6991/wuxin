@@ -1,11 +1,11 @@
 <template>
   <div class="ui container m-comment-list">
-    <sui-comment-group threaded ref="reference" style=" padding: 0 20px" >
+    <sui-comment-group threaded ref="reference" v-if="commentCount!==0" style=" padding: 0 20px">
       <h3 is="sui-header" style="padding-top: 10px;" :style="bgColor">{{ commentCount }}条评论</h3>
-      <sui-divider style="width:100%;"  />
+      <sui-divider style="width:100%;" />
 
       <!----------------------------------------------commentList--------------------------------------->
-      <sui-comment v-for="(comment,$index) in commentList" :key="comment.commentId">
+      <sui-comment v-for="comment in commentList" :key="comment.commentId">
 
         <sui-comment-avatar :src="comment.avatar" style="border-radius: 50%" circular />
         <div class="ui left pointing label orange mini" v-if="comment.commentUserId===1">作者</div>
@@ -25,7 +25,7 @@
             {{ comment.content }}
           </sui-comment-text>
 
-          <CommentForm v-if="parentCommentId===comment.commentId" :comment-type="commentType"
+          <CommentForm v-if="parentCommentId===comment.commentId" :comment-type="commentType" :loading="loading"
                        :comment-id="comment.commentId" :id="id" :comment-user-id="comment.commentUserId"
                        @addReply="addReply" :ref="comment.commentId" :type="type" />
 
@@ -58,7 +58,7 @@
               </sui-comment-text>
 
             </sui-comment-content>
-            <CommentForm v-if="reply.replyId===parentCommentId" :comment-type="commentType"
+            <CommentForm v-if="reply.replyId===parentCommentId" :comment-type="commentType" :loading="loading"
                          :comment-id="comment.commentId" :id="id" :comment-user-id="reply.commentUserId" :type="type"
                          @addReply="addReply" />
           </sui-comment>
@@ -66,10 +66,9 @@
 
       </sui-comment>
 
-      <h3 is="sui-header" :style="bgColor" v-if="commentCount===0" style="padding-bottom: 20px">~暂无评论,快来占楼吧~</h3>
 
     </sui-comment-group>
-
+    <h3 is="sui-header" :style="bgColor" v-else style="padding-bottom: 20px;color: rgba(0,0,0,.6)">~暂无评论,快来占楼吧~</h3>
   </div>
 </template>
 
@@ -106,15 +105,10 @@ export default {
     "commentList",
     "commentCount",
     "parentCommentId",
-    "userId",
     "type",
+    "loading"
   ],
 
-  watch: {
-    userId() {
-      this.setUserId();
-    },
-  },
 
   methods: {
     //  展示评论回复内容框
@@ -125,30 +119,9 @@ export default {
       this.$emit("addReply", reply);
     },
 
-    deleteReply(replyId) {
-      this.$emit("deleteReply", replyId);
-    },
-
-    deleteComment(commentId) {
-      this.$emit("deleteComment", commentId);
-    },
-
-    setUserId() {
-      sessionStorage.setItem("userId", this.userId);
-    },
-
-    cleanContent() {
-      console.log(this.$refs.reference);
-    },
-
-    commentUserId() {
-      console.log("set comment user id");
-    },
   },
 
-  created() {
-    this.setUserId();
-  },
+
 };
 </script>
 

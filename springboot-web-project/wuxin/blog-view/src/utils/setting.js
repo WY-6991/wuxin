@@ -1,4 +1,3 @@
-
 // 颜色配置默认选项列表
 export const colors = [
     'default',
@@ -14,9 +13,6 @@ export const colors = [
     'brown',
     'grey'
 ]
-
-
-
 
 
 // tv小电视列表
@@ -88,7 +84,7 @@ export const defaultSetting = {
  */
 export function settingBackgroundImageUrl(show, url) {
     if ((show) && (url !== 'default')) {
-        return 'url(' + `${url}` + ')'||"url('https://cdn.jsdelivr.net/gh/WY-6991/wuxin/img/202112/20211217101725.png')"
+        return 'url(' + `${url}` + ')' || "url('https://cdn.jsdelivr.net/gh/WY-6991/wuxin/img/202112/20211217101725.png')"
     } else {
         return null
     }
@@ -101,8 +97,8 @@ export function settingBackgroundImageUrl(show, url) {
  * @param mode
  * @returns {string|*}
  */
-export function settingBackgroundColor(color,mode) {
-    console.log('经过默认认证了',color,mode)
+export function settingBackgroundColor(color, mode) {
+    console.log('经过默认认证了', color, mode)
     if (color && !mode) {
         return color
     } else {
@@ -115,6 +111,51 @@ export function settingBackgroundColor(color,mode) {
  * @param url
  * @returns {string}
  */
-export  function settUrl(url){
+export function settUrl(url) {
     return 'url(' + `${url}` + ')'
+}
+
+
+export function validKeywords(keywords) {
+    if (
+        keywords.indexOf('操') !== -1
+        || keywords.indexOf('尼玛') !== -1
+        || keywords.indexOf('nm') !== -1
+        || keywords.indexOf('n m') !== -1
+        || keywords.indexOf('cnm') !== -1
+        || keywords.indexOf('c n m') !== -1
+        || keywords.indexOf('日') !== -1
+        || keywords.indexOf('m') !== -1
+        || keywords.indexOf('艹') !== -1
+        || keywords.indexOf('cao') !== -1
+        || keywords.indexOf('草') !== -1
+        || keywords.indexOf('si') !== -1
+        || keywords.indexOf('死') !== -1
+        || keywords.indexOf('婊') !== -1
+        || keywords.indexOf('儿') !== -1
+        || keywords.indexOf('爷') !== -1
+        || keywords.indexOf('姑') !== -1
+        || keywords.indexOf('姥') !== -1
+        || keywords.indexOf('爸') !== -1
+        || keywords.indexOf('妈') !== -1
+        || keywords.indexOf('弟') !== -1
+        || keywords.indexOf('ba') !== -1
+        || keywords.indexOf('ma') !== -1
+        || keywords.indexOf('末日') !== -1
+        || keywords.indexOf('崴') !== -1
+        || keywords.indexOf('薇') !== -1
+        || keywords.indexOf('日本') !== -1
+        || keywords.indexOf('日 本') !== -1
+        || keywords.indexOf('huang') !== -1
+        || keywords.indexOf('h u a n g') !== -1
+        || keywords.indexOf('黄色') !== -1
+        || keywords.indexOf('riben') !== -1
+        || keywords.indexOf('meiguo') !== -1
+
+    )
+    {
+
+        return true
+    }
+    return false
 }

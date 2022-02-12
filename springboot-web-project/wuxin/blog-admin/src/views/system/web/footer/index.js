@@ -1,6 +1,6 @@
 import FooterContent from '@/views/system/web/footer/FooterContent'
 import MyCard from '@/components/MyComponents/MyCard'
-import { delWebFooterLabel, getWebFooterLabel, updateWebFooterLabel } from '@/api/system'
+import { delWebFooterLabel, updateWebFooterLabel } from '@/api/system'
 
 export default {
   name: 'WebFooter',
@@ -56,16 +56,8 @@ export default {
           this.getData()
         }
       })
-    },
-    getData() {
-      getWebFooterLabel().then(res => {
-        if (res.code === 200) {
-          this.footerLabel = res.result
-        }
-      })
     }
-  },
-  mounted() {
-    this.getData()
+
   }
+
 }
