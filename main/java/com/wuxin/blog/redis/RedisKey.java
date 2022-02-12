@@ -1,5 +1,7 @@
 package com.wuxin.blog.redis;
 
+import com.wuxin.blog.utils.string.StringUtils;
+
 /**
  * @Author: wuxin001
  * @Date: 2022/01/01/22:33
@@ -119,6 +121,26 @@ public class RedisKey {
      * 归档列表二级标题
      */
     public static final String ARCHIVE_LIST = "archive_list";
+
+
+    public static String getKey(Object id) {
+        return "" + id;
+    }
+
+    public static String getKey(Object id, String keyName) {
+        if (!StringUtils.isEmpty(keyName)) {
+            keyName = "";
+        }
+        return keyName + "_" + id;
+    }
+
+
+    public static String getKey(Long blogId, String keyName, Integer current, Integer type) {
+        if (blogId == null || blogId == 0) {
+            return keyName + "_" + current + "_" + type;
+        }
+        return blogId + "_" + keyName + "_" + current + "_" + type;
+    }
 
 
 }

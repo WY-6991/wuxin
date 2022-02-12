@@ -43,8 +43,8 @@ public class UploadPictureServiceImpl implements UploadPictureService {
     public IPage<UploadPicture> selectListByPage(Integer current, Integer limit,String start,String end) {
         return MapperUtils.lambdaQueryWrapper(uploadPictureMapper)
                 .orderByDesc(UploadPicture::getCreateTime)
-                .le(StringUtils.isNotNull(end), UploadPicture::getCreateTime, end)
-                .ge(StringUtils.isNotNull(start), UploadPicture::getCreateTime, start)
+                .le(StringUtils.isNotEmpty(end), UploadPicture::getCreateTime, end)
+                .ge(StringUtils.isNotEmpty(start), UploadPicture::getCreateTime, start)
                 .page(new Page<>(current,limit));
     }
 

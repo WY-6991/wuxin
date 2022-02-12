@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.log;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.LoginLogService;
@@ -22,6 +23,8 @@ public class AdminLoginController {
     @Autowired
     private LoginLogService loginLogService;
 
+
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("获取登录日志")
     @PostMapping("/list")
     public Result findLoginLog(@RequestBody PageVo pageVo)

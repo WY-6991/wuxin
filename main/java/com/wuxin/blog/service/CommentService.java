@@ -85,14 +85,7 @@ public interface CommentService {
 
 
 
-    /**
-     * 根据blogID分页显示comment
-     * @param current current
-     * @param size size
-     * @param blogId blogId
-     * @return records
-     */
-    IPage<Comment> findBlogCommentByBlogId(Integer current, Integer size, Long blogId);
+
 
 
 
@@ -108,10 +101,12 @@ public interface CommentService {
 
 
     /**
-     * 统计评论数量
+     * 统计文章评论数量
+     * @param blogId id 可以为null
+     * @param type type
      * @return count
      */
-    Integer findCommentCount();
+    Integer findCommentCount(Long blogId,Integer type);
 
 
 

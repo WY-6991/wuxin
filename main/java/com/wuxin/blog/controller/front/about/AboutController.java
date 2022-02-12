@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.front.about;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.pojo.blog.About;
@@ -29,6 +30,7 @@ public class AboutController {
      *
      * @return 关于我
      */
+    @AccessLimit(seconds = 120, limitCount = 10, msg = "操作频率过高！稍后再试！")
     @VisitLogger(value = "访问了关于我的内容",name = "关于页")
     @GetMapping("/detail")
     public Result findAbout() {

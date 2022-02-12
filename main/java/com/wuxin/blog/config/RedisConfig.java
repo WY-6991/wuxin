@@ -6,31 +6,31 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.wuxin.blog.redis.FastJson2JsonRedisSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /***
- * 功能描述: redis 配置
+ * 功能描述: redisConfig
  * @Author: wuxin001
  * @Date: 2021/8/27 0027
  */
 @Configuration
 public class RedisConfig extends CachingConfigurerSupport {
-    /**
-     * JSON序列化
-     * @param connectionFactory RedisTemplate
-     * @return template
-     */
+
+    @Autowired
+    private RedisTemplate<Object, Object> redisTemplate;
+
     @Bean
     public RedisTemplate<Object, Object> jsonRedisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<Object, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-
+        redisTemplate.setConnectionFactory(connectionFactory);
         FastJson2JsonRedisSerializer<Object> serializer = new FastJson2JsonRedisSerializer<>(Object.class);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -38,20 +38,20 @@ public class RedisConfig extends CachingConfigurerSupport {
         mapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
         serializer.setObjectMapper(mapper);
 
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(serializer);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(serializer);
 
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(serializer);
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashValueSerializer(serializer);
 
-        template.afterPropertiesSet();
-        return template;
+        redisTemplate.afterPropertiesSet();
+        return redisTemplate;
     }
 
 
+
     @Bean
-    public DefaultRedisScript<Long> limitScript()
-    {
+    public DefaultRedisScript<Long> limitScript() {
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
         redisScript.setScriptText(limitScriptText());
         redisScript.setResultType(Long.class);
@@ -61,8 +61,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     /**
      * 限流脚本
      */
-    private String limitScriptText()
-    {
+    private String limitScriptText() {
         return "local key = KEYS[1]\n" +
                 "local count = tonumber(ARGV[1])\n" +
                 "local time = tonumber(ARGV[2])\n" +
@@ -76,7 +75,6 @@ public class RedisConfig extends CachingConfigurerSupport {
                 "end\n" +
                 "return tonumber(current);";
     }
-
 
 
 }

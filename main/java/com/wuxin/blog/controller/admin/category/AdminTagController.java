@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.category;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.pojo.blog.Tag;
 import com.wuxin.blog.mode.PageVo;
@@ -31,6 +32,7 @@ public class AdminTagController {
      *
      * @return success
      */
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("查看文章标签")
     @PostMapping("/list")
     public Result selectTag(@RequestBody PageVo pageVo) {
@@ -44,6 +46,7 @@ public class AdminTagController {
      * @param tag tagDTO
      * @return success
      */
+    @AccessLimit(seconds = 60, limitCount = 2, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("添加文章标签")
     @RequiresRoles("root")
     @PostMapping("/add")

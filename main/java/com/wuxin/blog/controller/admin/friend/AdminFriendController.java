@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.friend;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.pojo.blog.Friend;
 import com.wuxin.blog.mode.PageVo;
@@ -22,7 +23,7 @@ public class AdminFriendController {
     @Resource
     private FriendService friendService;
 
-
+    @AccessLimit(seconds = 60, limitCount = 1, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("添加友情链接")
     @RequiresRoles("root")
     @PostMapping("/add")
@@ -47,6 +48,7 @@ public class AdminFriendController {
         return Result.ok("删除成功!");
     }
 
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("查看友情链接列表")
     @PostMapping("/list")
     public Result findFriend(@RequestBody PageVo pageVo){

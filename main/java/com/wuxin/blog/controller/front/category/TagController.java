@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.front.category;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.TagService;
@@ -38,6 +39,7 @@ public class TagController {
      * @param pageVo
      * @return
      */
+    @AccessLimit(seconds = 120, limitCount = 10, msg = "操作频率过高！两分钟之后再试！")
     @VisitLogger(value = "根据文章标签名获取文章列表",name = "标签页")
     @PostMapping("/blog/list")
     public Result findBlogByTagName(@RequestBody PageVo pageVo) {

@@ -60,9 +60,9 @@ public class AccessLogServiceImpl implements AccessLogService {
         Page<AccessLog> page = new Page<>(current, limit);
         return MapperUtils.lambdaQueryWrapper(accessLogMapper)
                 .orderByDesc(AccessLog::getCreateTime)
-                .like(StringUtils.isNotNull(keywords), AccessLog::getByCreate, keywords)
-                .le(StringUtils.isNotNull(end), AccessLog::getCreateTime, end)
-                .ge(StringUtils.isNotNull(start), AccessLog::getCreateTime, start).page(page);
+                .eq(StringUtils.isNotEmpty(keywords), AccessLog::getByCreate, keywords)
+                .le(StringUtils.isNotEmpty(end), AccessLog::getCreateTime, end)
+                .ge(StringUtils.isNotEmpty(start), AccessLog::getCreateTime, start).page(page);
     }
 
 

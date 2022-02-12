@@ -68,6 +68,11 @@ public class JWTTest {
 
         final JWT jwt = JWT.of(rightToken);
 
+
+        JWTHeader header = jwt.getHeader();
+
+
+
         Assertions.assertTrue(jwt.setKey("1234567890".getBytes()).verify());
         //
         // //header

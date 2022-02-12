@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.comment;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.enums.BusinessType;
 import com.wuxin.blog.mode.PageVo;
@@ -31,6 +32,7 @@ public class AdminCommentController {
      * @param pageVo pagevo
      * @return ok
      */
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger(value = "查看评论",type = BusinessType.SELECT)
     @PostMapping("/list")
     public Result findBlogCommentByPage(@RequestBody PageVo pageVo) {

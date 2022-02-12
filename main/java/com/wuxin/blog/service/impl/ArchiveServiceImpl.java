@@ -96,11 +96,11 @@ public class ArchiveServiceImpl implements ArchiveService {
     @Override
     public IPage<Archive> selectListByPage(Integer current, Integer limit,String keywords,String start,String end) {
         return MapperUtils.lambdaQueryWrapper(archiveMapper).orderByDesc(Archive::getCreateTime)
-                .like(StringUtils.isNotNull(keywords), Archive::getTitle, keywords)
+                .like(StringUtils.isNotEmpty(keywords), Archive::getTitle, keywords)
                 // 大于开始时间
-                .ge(StringUtils.isNotNull(start), Archive::getCreateTime, start)
+                .ge(StringUtils.isNotEmpty(start), Archive::getCreateTime, start)
                 // 小于结束时间
-                .le(StringUtils.isNotNull(end), Archive::getCreateTime, end)
+                .le(StringUtils.isNotEmpty(end), Archive::getCreateTime, end)
                 .page(new Page<>(current, limit));
     }
 

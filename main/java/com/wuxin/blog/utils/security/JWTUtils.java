@@ -25,8 +25,8 @@ public class JWTUtils {
 
     @Value("${token.header}")
     private static String header;
-    @Value("${token.secret}")
-    private static String SIGN = "^wuxin001root^%@2191377759qq.com^ ";
+
+    private static final String SIGN = "^wuxin001root^%@2191377759qq.com^ ";
     @Value("${token.expireTime}")
     private static Long expireTime;
     private static final String USERNAME = "username";
@@ -37,17 +37,17 @@ public class JWTUtils {
      * 生成token
      */
     public static String createToken(Map<String, String> map) {
+        // token过期时间
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, 7);
         // 创建jwt
         JWTCreator.Builder builder = JWT.create();
         builder.withExpiresAt(calendar.getTime());
-        // builder.withHeader()
+        // 添加payload信息
         map.forEach((K, V) -> {
             builder.withClaim(K, V);
         });
-        String token = builder.sign(Algorithm.HMAC256(SIGN.getBytes(StandardCharsets.UTF_8)));
-        return token;
+        return builder.sign(Algorithm.HMAC256(SIGN.getBytes(StandardCharsets.UTF_8)));
 
     }
 
@@ -61,7 +61,7 @@ public class JWTUtils {
 
 
     /**
-     * 解析token
+     * 解析token 后期从token获取数据校验通过之后 从token获取用户id
      */
     public static DecodedJWT parse(String token) {
         DecodedJWT verify = JWT.require(Algorithm.HMAC256(SIGN.getBytes(StandardCharsets.UTF_8))).build().verify(token);

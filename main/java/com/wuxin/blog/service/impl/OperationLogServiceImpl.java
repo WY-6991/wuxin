@@ -59,8 +59,8 @@ public class OperationLogServiceImpl implements OperationLogService {
         Page<OperationLog> page = new Page<>(current, limit);
         return MapperUtils.lambdaQueryWrapper(operationLogMapper)
                 .orderByDesc(OperationLog::getCreateTime)
-                .like(StringUtils.isNotNull(keywords), OperationLog::getByCreate, keywords)
-                .le(StringUtils.isNotNull(end), OperationLog::getCreateTime, end)
-                .ge(StringUtils.isNotNull(start), OperationLog::getCreateTime, start).page(page);
+                .eq(StringUtils.isNotEmpty(keywords), OperationLog::getByCreate, keywords)
+                .le(StringUtils.isNotEmpty(end), OperationLog::getCreateTime, end)
+                .ge(StringUtils.isNotEmpty(start), OperationLog::getCreateTime, start).page(page);
     }
 }

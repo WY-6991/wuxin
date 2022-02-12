@@ -1,4 +1,4 @@
-package com.wuxin.blog.mapper.vo;
+package com.wuxin.blog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.wuxin.blog.pojo.blog.BlogTag;

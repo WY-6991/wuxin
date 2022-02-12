@@ -163,11 +163,11 @@ public class UserServiceImpl implements UserService {
                         User::getRoleId,
                         User::getAvatar,
                         User::getCreateTime)
-                .like(StringUtils.isNotNull(pageVo.getKeywords()), User::getUsername, pageVo.getKeywords())
-                .or().like(StringUtils.isNotNull(pageVo.getKeywords()), User::getEmail, pageVo.getKeywords())
-                .or().like(StringUtils.isNotNull(pageVo.getKeywords()), User::getNickname, pageVo.getKeywords())
-                .le(StringUtils.isNotNull(pageVo.getEnd()), User::getCreateTime, pageVo.getEnd())
-                .ge(StringUtils.isNotNull(pageVo.getStart()), User::getCreateTime, pageVo.getStart())
+                .like(StringUtils.isNotEmpty(pageVo.getKeywords()), User::getUsername, pageVo.getKeywords())
+                .or().like(StringUtils.isNotEmpty(pageVo.getKeywords()), User::getEmail, pageVo.getKeywords())
+                .or().like(StringUtils.isNotEmpty(pageVo.getKeywords()), User::getNickname, pageVo.getKeywords())
+                .le(StringUtils.isNotEmpty(pageVo.getEnd()), User::getCreateTime, pageVo.getEnd())
+                .ge(StringUtils.isNotEmpty(pageVo.getStart()), User::getCreateTime, pageVo.getStart())
                 .page(userPage);
 
     }
@@ -318,7 +318,7 @@ public class UserServiceImpl implements UserService {
     public IPage<User> selectUserRoleList(PageVo pageVo) {
         return MapperUtils.lambdaQueryWrapper(userMapper)
                 .eq(StringUtils.isNotNull(pageVo.getId()), User::getRoleId, pageVo.getId())
-                .like(StringUtils.isNotNull(pageVo.getKeywords()), User::getNickname, pageVo.getKeywords())
+                .like(StringUtils.isNotEmpty(pageVo.getKeywords()), User::getNickname, pageVo.getKeywords())
                 .orderByDesc(User::getRoleId)
                 .select(User::getUserId, User::getAvatar, User::getUsername, User::getNickname, User::getRoleId)
                 .page(new Page<>(pageVo.getCurrent(), pageVo.getLimit()));
@@ -329,6 +329,8 @@ public class UserServiceImpl implements UserService {
         MapperUtils.lambdaUpdateChainWrapper(userMapper).eq(User::getUserId, user.getUserId()).update(user);
     }
 
-
-
+    @Override
+    public User findUserByNickName(String nickname) {
+        return MapperUtils.lambdaQueryWrapper(userMapper).eq(User::getNickname,nickname).one();
+    }
 }

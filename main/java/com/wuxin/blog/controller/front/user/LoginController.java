@@ -1,10 +1,13 @@
 package com.wuxin.blog.controller.front.user;
 
 
+import com.wuxin.blog.annotation.AccessLimit;
+import com.wuxin.blog.annotation.LoginLogger;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.constant.GlobalConstant;
 import com.wuxin.blog.constant.HttpStatus;
+import com.wuxin.blog.exception.ServiceException;
 import com.wuxin.blog.exception.UserException;
 import com.wuxin.blog.mode.LoginBody;
 import com.wuxin.blog.mode.UserEmailPassword;
@@ -19,6 +22,7 @@ import com.wuxin.blog.utils.result.Result;
 import com.wuxin.blog.utils.security.JWTUtils;
 import com.wuxin.blog.utils.security.MySecurityUtils;
 import com.wuxin.blog.utils.string.StringUtils;
+import com.wuxin.blog.utils.validate.ValidUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.StringValue;
 import org.apache.shiro.SecurityUtils;
@@ -62,7 +66,8 @@ public class LoginController {
      * @param user 前台获取的用户名和密码
      * @return 查询结果
      */
-    @OperationLogger("登录")
+    @AccessLimit(seconds = 60, limitCount = 1, msg = "登录频繁，1分钟之后再试！")
+    @LoginLogger("密码登录")
     @PostMapping("/login")
     public Result userLogin(@RequestBody LoginBody user) throws UnsupportedEncodingException {
         // 处理用户名是中文带来报错问题
@@ -88,7 +93,8 @@ public class LoginController {
     /**
      * 登录用户获取验证码
      */
-    @OperationLogger("邮箱验证码登录")
+    @AccessLimit(seconds = 60, msg = "验证码获取频繁，1分钟之后再试！")
+    @OperationLogger("获取验证码")
     @GetMapping("/login/get/email/code")
     public Result loginEmail(@RequestParam(value = "email") String email) {
         // 查看用户邮箱是否存在
@@ -110,7 +116,8 @@ public class LoginController {
     /**
      * 通过邮箱方式登录
      */
-    @OperationLogger("通过邮箱和验证码方式登录")
+    @AccessLimit(seconds = 60, msg = "验证码获取频繁，1分钟之后再试！")
+    @LoginLogger("邮箱登录")
     @PostMapping("/login/to/email/code")
     public Result loginToEmail(@RequestBody UserEmailPassword emailUser) {
         boolean b = redisService.hHasKey(RedisKey.EMAIL_CODE, emailUser.getEmail());
@@ -146,9 +153,23 @@ public class LoginController {
     /**
      * 注册用户获取验证码
      */
-    @OperationLogger("获取邮箱验证码")
+    @AccessLimit(seconds = 60, msg = "验证码获取频繁，1分钟之后再试！")
+    @OperationLogger("获取注册码")
     @PostMapping("/register/user/code")
     public Result sendEmail(@RequestBody UserRegister user) {
+
+        if (!ValidUtil.validUsername(user.getUsername())) {
+            return Result.error("用户名不合法！");
+        }
+
+        if (!ValidUtil.validPassword(user.getPassword())) {
+            return Result.error("密码不合法！");
+        }
+
+        if (!ValidUtil.validEmail(user.getEmail())) {
+            return Result.error("邮箱不合法！");
+        }
+
         User username = userService.findUserByUsername(user.getUsername());
         if (StringUtils.isNotNull(username)) {
             return Result.error("该用户名已注册！");
@@ -162,7 +183,7 @@ public class LoginController {
             return Result.ok("验证码已发送到你的邮箱了，请及时查收！");
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.error("邮箱发送失败！");
+            throw new ServiceException("验证码发送失败！请稍后再试！");
         }
 
     }
@@ -171,7 +192,8 @@ public class LoginController {
     /**
      * 注册
      */
-    @OperationLogger("用户注册")
+    @AccessLimit(seconds = 60, msg = "注册失败！60s之后再试哦")
+    @LoginLogger("用户注册")
     @PostMapping(value = "/register/user")
     public Result registerUser(@RequestBody UserRegister user) {
         boolean b = redisService.hHasKey(RedisKey.EMAIL_CODE, user.getEmail());
@@ -196,7 +218,6 @@ public class LoginController {
      *
      * @return 提示用户需要登录
      */
-    @OperationLogger("提示未登录的用户需要登录！")
     @GetMapping("/to/login")
     public Result toLogin() {
         return Result.error(HttpStatus.UNAUTHORIZED, "无法访问,请登录之后再试！");
@@ -205,7 +226,6 @@ public class LoginController {
     /**
      * 用户访问需要admin/** 下的资源需要登录认证
      */
-    @OperationLogger("提示未登录的用户需要登录！")
     @GetMapping("/no/role")
     public Result noRole() {
         return Result.error(HttpStatus.UNAUTHORIZED, "没有权限访问");

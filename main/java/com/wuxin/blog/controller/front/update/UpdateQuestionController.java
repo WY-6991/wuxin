@@ -1,6 +1,7 @@
 package com.wuxin.blog.controller.front.update;
 
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.service.UpdateQuestionService;
@@ -22,7 +23,7 @@ public class UpdateQuestionController {
     @Resource
     private UpdateQuestionService updateQuestionService;
 
-
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @VisitLogger(value = "访问更新内容",name = "更新页")
     @GetMapping("/list")
     public Result findAllQuestion(){

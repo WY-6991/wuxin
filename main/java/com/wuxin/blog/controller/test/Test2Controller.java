@@ -1,6 +1,7 @@
 package com.wuxin.blog.controller.test;
 
-import com.wuxin.blog.annotation.RepeatSubmit;
+import com.wuxin.blog.annotation.AccessLimit;
+import com.wuxin.blog.annotation.RateLimiter;
 import com.wuxin.blog.utils.result.Result;
 import com.wuxin.blog.utils.security.MySecurityUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,7 @@ public class Test2Controller {
      * 测试限流处理
      * @return
      */
-    @RepeatSubmit
+    @AccessLimit
     @GetMapping("/access/limit")
     public Result accessLimit(){
         return Result.ok("hello");

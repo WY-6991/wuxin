@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.front.category;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.mode.PageVo;
@@ -24,7 +25,6 @@ public class CategoryController {
     private CategoryService categoryService;
 
 
-
     @GetMapping("/list")
     public Result cateList() {
         return Result.ok(categoryService.list());
@@ -33,15 +33,16 @@ public class CategoryController {
 
     /**
      * 根据categoryName显示blog信息
+     *
      * @return result
      */
-    @VisitLogger(value = "获取分类下的文章列表",name = "分类页")
+    @AccessLimit(seconds = 120, limitCount = 10, msg = "操作频率过高！两分钟之后再试！")
+    @VisitLogger(value = "获取分类下的文章列表", name = "分类页")
     @PostMapping("/blog/list")
-    public Result findBlogByCategoryName(@RequestBody PageVo pageVo) {log.info("分类博客信息 categoryName={}",pageVo.getKeywords());
+    public Result findBlogByCategoryName(@RequestBody PageVo pageVo) {
+        log.info("分类博客信息 categoryName={}", pageVo.getKeywords());
         return Result.ok(categoryService.findBlogByCategoryName(pageVo.getCurrent(), pageVo.getLimit(), pageVo.getKeywords()));
     }
-
-
 
 
 }

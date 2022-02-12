@@ -8,7 +8,7 @@ import com.wuxin.blog.mapper.BlogMapper;
 import com.wuxin.blog.mapper.CategoryMapper;
 import com.wuxin.blog.mapper.TagMapper;
 import com.wuxin.blog.mapper.UserMapper;
-import com.wuxin.blog.mapper.vo.BlogTagMapper;
+import com.wuxin.blog.mapper.BlogTagMapper;
 import com.wuxin.blog.pojo.blog.Blog;
 import com.wuxin.blog.pojo.blog.Category;
 import com.wuxin.blog.pojo.blog.Tag;
@@ -126,7 +126,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public IPage<Category> selectListByPage(Integer current, Integer limit, String keywords) {
         return MapperUtils.lambdaQueryWrapper(categoryMapper)
-                .like(StringUtils.isNotNull(keywords), Category::getName, keywords)
+                .like(StringUtils.isNotEmpty(keywords), Category::getName, keywords)
                 .page(new Page<Category>(current, limit));
     }
 

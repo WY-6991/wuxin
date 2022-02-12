@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.dashboard;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.service.*;
 import com.wuxin.blog.utils.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ public class DashboardController {
     /**
      * 文章统计
      */
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @GetMapping("/count")
     public Result count() {
         Result result = Result.ok();

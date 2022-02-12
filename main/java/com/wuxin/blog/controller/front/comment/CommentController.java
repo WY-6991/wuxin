@@ -1,6 +1,8 @@
 package com.wuxin.blog.controller.front.comment;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
+import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.enums.BusinessType;
 import com.wuxin.blog.mode.UserComment;
 import com.wuxin.blog.pojo.blog.Comment;
@@ -11,6 +13,7 @@ import com.wuxin.blog.service.MailService;
 import com.wuxin.blog.service.UserService;
 import com.wuxin.blog.utils.result.Result;
 import com.wuxin.blog.utils.string.StringUtils;
+import com.wuxin.blog.utils.validate.ValidUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -51,29 +54,38 @@ public class CommentController {
         }
 
 
-        return Result.ok(commentService.findCommentList(current, limit, blogId, type));
+        return Result.ok().put("page", commentService.findCommentList(current, limit, blogId, type)).put("commentCount", commentService.findCommentCount(blogId, type));
     }
 
 
     /**
      * 添加blog评论
-     *
-     * @param comment comment
-     * @return comment
      */
-    @OperationLogger(value = "添加评论", type = BusinessType.INSERT)
+    @AccessLimit(msg = "30s仅内可发布两条评论", limitCount = 2)
+    @VisitLogger(value = "添加回复")
     @PostMapping("/add")
     public Result addComment(@RequestBody Comment comment) {
         if (!((comment.getType().equals(Comment.BLOG_COMMENT))
                 || (comment.getType().equals(Comment.ABOUT_COMMENT))
                 || (comment.getType().equals(Comment.FRIEND_COMMENT))
         )) {
-            return Result.error("添加失败，获取不到评论类型！");
+            return Result.error("发布失败，获取不到评论类型！");
+        }
+        if (StringUtils.isEmpty(comment.getContent())) {
+            return Result.error("添加添加失败！内容不能为空！");
+        }
+
+        if (!ValidUtil.validUsername(comment.getUsername())) {
+            return Result.error("发布失败，用户名不合法！");
+        }
+
+        if (!ValidUtil.validEmail(comment.getEmail())) {
+            return Result.error("发布失败，邮箱格式错误！！");
         }
 
         Long userId = userService.getCommentUserId(comment.getUsername(), comment.getEmail(), comment.isSubscription());
         if (StringUtils.isNull(userId)) {
-            return Result.error("请检查用户名或者邮箱是否输入正确!可能已被使用了哦!");
+            return Result.error("发布失败,请检查用户名或者邮箱是否输入正确!可能已被使用了哦!");
         }
         comment.setCommentUserId(userId);
         // 添加评论
@@ -86,27 +98,30 @@ public class CommentController {
 
     /**
      * 博客评论回复
-     *
-     * @param commentReply reply
-     * @return success
      */
-    @OperationLogger(value = "添加回复", type = BusinessType.INSERT)
+    @AccessLimit(msg = "30s仅内可发布两条评论", limitCount = 2)
+    @VisitLogger(value = "添加回复")
     @PostMapping("/reply/add")
     public Result addReply(@RequestBody CommentReply commentReply) {
+
         if (!((commentReply.getType().equals(Comment.BLOG_COMMENT))
                 || (commentReply.getType().equals(Comment.ABOUT_COMMENT))
                 || (commentReply.getType().equals(Comment.FRIEND_COMMENT))
         )) {
             return Result.error("添加添加失败！获取不到评论类型");
         }
-        log.info("add reply:{}", commentReply);
-
+        if (StringUtils.isEmpty(commentReply.getReplyContent())) {
+            return Result.error("添加添加失败！内容不能为空！");
+        }
+        if (!ValidUtil.validUsername(commentReply.getReplyUsername())) {
+            return Result.error("添加添加失败！用户名长度不合法！");
+        }
+        if (!ValidUtil.validEmail(commentReply.getReplyEmail())) {
+            return Result.error("添加添加失败！邮箱格式不正确！");
+        }
         UserComment userComment = userService.getReplyCommentUser(commentReply.getReplyUsername(), commentReply.getReplyEmail(), commentReply.isSubscription(), UserComment.REPLY_TYPE);
         if (StringUtils.isNull(userComment.getUserId())) {
             return Result.error("请检查用户名或者邮箱是否输入正确!可能已被使用了哦!");
-        }
-        if (StringUtils.isNull(commentReply.getCommentUserId())) {
-            return Result.error("评论失败!获取不到评论用户哦");
         }
         // 设置回复用户
         commentReply.setReplyUserId(userComment.getUserId());

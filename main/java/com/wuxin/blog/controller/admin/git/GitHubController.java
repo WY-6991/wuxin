@@ -7,6 +7,7 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.sun.istack.internal.NotNull;
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.exception.CustomException;
 import com.wuxin.blog.mode.Github;
@@ -53,6 +54,7 @@ public class GitHubController {
      * @param file 上传文件
      * @return 文件地址
      */
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @RequiresRoles("root")
     @OperationLogger("上传图像")
     @PostMapping("/upload/user/avatar")
@@ -67,6 +69,7 @@ public class GitHubController {
      * @return url
      * @throws Exception error
      */
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("上传图片")
     @PostMapping("/upload/blog/img")
     public Result uploadBlogImg(@RequestParam("file") MultipartFile file) throws Exception {

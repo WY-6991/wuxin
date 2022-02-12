@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD,ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RepeatSubmit {
+public @interface AccessLimit {
 
     /**
      * 限制周期(秒)
@@ -20,7 +20,7 @@ public @interface RepeatSubmit {
     /**
      * 规定周期内限制次数
      */
-    int limitCount() default 5;
+    int limitCount() default 1;
 
     /**
      * 触发限制时的消息提示

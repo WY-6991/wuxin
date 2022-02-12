@@ -79,7 +79,7 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public IPage<Friend> selectListByPage(Integer current, Integer limit, String keywords) {
         return MapperUtils.lambdaQueryWrapper(friendMapper)
-                .like(StringUtils.isNotNull(keywords), Friend::getUsername, keywords)
+                .like(StringUtils.isNotEmpty(keywords), Friend::getUsername, keywords)
                 .page(new Page<>(current, limit));
     }
 
@@ -108,9 +108,9 @@ public class FriendServiceImpl implements FriendService {
     @Override
     public IPage<Friend> selectListByPage(Integer current, Integer limit, String keywords, String start, String end) {
         return MapperUtils.lambdaQueryWrapper(friendMapper).orderByDesc(Friend::getCreateTime)
-                .like(StringUtils.isNotNull(keywords), Friend::getUsername, keywords)
-                .le(StringUtils.isNotNull(end), Friend::getCreateTime, end)
-                .ge(StringUtils.isNotNull(start), Friend::getCreateTime, start).page(new Page<>(current, limit));
+                .like(StringUtils.isNotEmpty(keywords), Friend::getUsername, keywords)
+                .le(StringUtils.isNotEmpty(end), Friend::getCreateTime, end)
+                .ge(StringUtils.isNotEmpty(start), Friend::getCreateTime, start).page(new Page<>(current, limit));
     }
 
 

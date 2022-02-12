@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.archive;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.enums.BusinessType;
 import com.wuxin.blog.pojo.blog.Archive;
@@ -30,9 +31,9 @@ public class AdminArchiveController {
     @Resource
     private ArchiveTitleService archiveTitleService;
 
-
-    @OperationLogger(value = "添加归档",type = BusinessType.INSERT)
     @RequiresRoles("root")
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
+    @OperationLogger(value = "添加归档",type = BusinessType.INSERT)
     @PostMapping("/add")
     public Result addArchive(@RequestBody Archive archive) {
         //判断blog是否添加到归档中...
@@ -54,6 +55,7 @@ public class AdminArchiveController {
 
     }
 
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger(value = "修改归档",type = BusinessType.UPDATE)
     @RequiresRoles("root")
     @PostMapping("/update")
@@ -61,6 +63,7 @@ public class AdminArchiveController {
         archiveService.update(archive);
         return Result.ok("修改成功！");
     }
+
 
 
     @OperationLogger(value = "删除归档",type = BusinessType.DELETE)
@@ -72,6 +75,7 @@ public class AdminArchiveController {
     }
 
 
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger(value = "归档列表",type = BusinessType.SELECT)
     @PostMapping("/list")
     public Result delArchive(@RequestBody PageVo pageVo) {

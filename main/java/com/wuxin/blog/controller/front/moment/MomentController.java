@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.front.moment;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.service.MomentService;
@@ -20,6 +21,8 @@ public class MomentController {
     @Resource
     private MomentService momentService;
 
+
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @VisitLogger(value = "获取动态信息",name = "动态页")
     @GetMapping("/list/{current}/{limit}")
     public Result getMomentList(@PathVariable("current") int current,

@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.category;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.pojo.blog.Category;
 import com.wuxin.blog.mode.PageVo;
@@ -33,6 +34,7 @@ public class AdminCategoryController {
      *
      * @return list
      */
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("查看分类标签")
     @PostMapping("/list")
     public Result findCategoryList(@RequestBody PageVo pageVo) {
@@ -47,6 +49,7 @@ public class AdminCategoryController {
      * @param category categoryDTO
      * @return success
      */
+    @AccessLimit(seconds = 60, limitCount = 1, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("添加分类")
     @RequiresRoles("root")
     @PostMapping("/add")

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wuxin.blog.mapper.MomentMapper;
+import com.wuxin.blog.mapper.UserMapper;
 import com.wuxin.blog.pojo.blog.Moment;
 import com.wuxin.blog.pojo.blog.User;
 import com.wuxin.blog.redis.RedisKey;
@@ -28,13 +29,16 @@ import java.util.List;
 @Transactional(rollbackFor = {Exception.class})
 public class MomentServiceImpl implements MomentService {
 
-    private static final String MESSAGE = "操作失败！该动态不存在";
+    private final static String MESSAGE = "操作失败！该动态不存在";
+
+    private final static String MOMENT_LIST = RedisKey.MOMENT_LIST;
+
 
     @Autowired
     private MomentMapper momentMapper;
 
     @Autowired
-    private UserService userService;
+    private UserMapper userMapper;
 
 
     @Autowired
@@ -43,30 +47,31 @@ public class MomentServiceImpl implements MomentService {
 
     @Override
     public void add(Moment moment) {
-        deleteMomentCache();
         moment.setLikes(0);
         ThrowUtils.ops(momentMapper.insert(moment), "动态添加失败！");
+        deleteMomentCache();
 
     }
 
 
     @Override
     public void update(Moment moment) {
-        deleteMomentCache();
         ThrowUtils.ops(momentMapper.updateById(moment), MESSAGE);
+        deleteMomentCache();
     }
 
     @Override
     public void delete(Long momentId) {
-        deleteMomentCache();
         ThrowUtils.ops(momentMapper.deleteById(momentId), MESSAGE);
+        deleteMomentCache();
     }
 
     @Override
     public IPage<Moment> selectListByPage(Integer current, Integer limit) {
-        boolean b = redisService.hHasKey(RedisKey.MOMENT_LIST, current + "");
+        String hk = RedisKey.getKey(current, MOMENT_LIST);
+        boolean b = redisService.hHasKey(MOMENT_LIST, hk);
         if (b) {
-            IPage<Moment> page = (IPage<Moment>) redisService.hget(RedisKey.MOMENT_LIST, current + "");
+            IPage<Moment> page = (IPage<Moment>) redisService.hget(MOMENT_LIST, hk);
             if (StringUtils.isNotNull(page) && page.getRecords().size() != 0) {
                 return page;
             }
@@ -78,7 +83,7 @@ public class MomentServiceImpl implements MomentService {
         // 获取用户名 用户头像等信息
         getUserNameAndAvatar(momentPage);
         // 存入redis
-        redisService.hset(RedisKey.MOMENT_LIST, current, page);
+        redisService.hset(MOMENT_LIST, hk, page);
         return page;
     }
 
@@ -87,7 +92,6 @@ public class MomentServiceImpl implements MomentService {
     public Moment find(Long momentId) {
         Moment moment = momentMapper.selectById(momentId);
         ThrowUtils.isNull(moment, "该动态不存在！");
-        redisService.hdel(RedisKey.MOMENT_LIST, 1);
         return moment;
     }
 
@@ -110,9 +114,9 @@ public class MomentServiceImpl implements MomentService {
         Page<Moment> page = new Page<>(current, limit);
         Page<Moment> momentPage = MapperUtils.lambdaQueryWrapper(momentMapper)
                 .orderByDesc(Moment::getCreateTime)
-                .like(StringUtils.isNotNull(keywords), Moment::getContent, keywords)
-                .le(StringUtils.isNotNull(end), Moment::getCreateTime, end)
-                .ge(StringUtils.isNotNull(start), Moment::getCreateTime, start).page(page);
+                .like(StringUtils.isNotEmpty(keywords), Moment::getContent, keywords)
+                .le(StringUtils.isNotEmpty(end), Moment::getCreateTime, end)
+                .ge(StringUtils.isNotEmpty(start), Moment::getCreateTime, start).page(page);
         getUserNameAndAvatar(momentPage);
         return momentPage;
     }
@@ -125,26 +129,30 @@ public class MomentServiceImpl implements MomentService {
      */
     public void getUserNameAndAvatar(Page<Moment> page) {
         page.getRecords().forEach(moment -> {
-            User user = userService.finUserById(moment.getUserId());
-            ThrowUtils.userNull(user);
+            User user = MapperUtils.lambdaQueryWrapper(userMapper)
+                    .eq(User::getUserId, moment.getUserId()).select(
+                            User::getUserId, User::getNickname, User::getAvatar).one();
             moment.setUsername(user.getNickname());
             moment.setAvatar(user.getAvatar());
         });
     }
 
     /**
-     * 删除动态缓存 todo 这个方法需要优化！
+     * 删除动态缓存
      */
     public void deleteMomentCache() {
-        Integer count = momentMapper.selectCount(null);
-        Integer size = 5;
-        int total = count / size + 1;
-        for (Integer i = 1; i < total; i++) {
-            boolean b = redisService.hHasKey(RedisKey.MOMENT_LIST, i);
+        int count = momentMapper.selectCount(null);
+        int size = 5;
+        int delCount = count / size + 1;
+        for (int i = 1; i < delCount; i++) {
+            String hk = RedisKey.getKey(i, MOMENT_LIST);
+            boolean b = redisService.hHasKey(RedisKey.MOMENT_LIST, hk);
             if (b) {
-                redisService.hdel(RedisKey.MOMENT_LIST, i);
+                redisService.hdel(RedisKey.MOMENT_LIST, hk);
             }
+
         }
+
     }
 
 }

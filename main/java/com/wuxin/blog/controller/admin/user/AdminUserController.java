@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.user;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.constant.GlobalConstant;
 import com.wuxin.blog.exception.CustomException;
@@ -16,6 +17,7 @@ import com.wuxin.blog.enums.Message;
 import com.wuxin.blog.utils.result.Result;
 import com.wuxin.blog.utils.security.MySecurityUtils;
 import com.wuxin.blog.utils.string.StringUtils;
+import com.wuxin.blog.utils.validate.ValidUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -104,6 +106,7 @@ public class AdminUserController {
      * @param pageVo DTO
      * @return 成功消息
      */
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("查看用户列表")
     @PostMapping("/list")
     public Result findUser(@RequestBody PageVo pageVo) {
@@ -120,22 +123,50 @@ public class AdminUserController {
     @RequiresRoles("root")
     @PostMapping("/update")
     public Result updateUser(@RequestBody User user) {
-        log.info("修改用户信息 user={}", user);
+        if(!ValidUtil.validUsername(user.getUsername())){
+            return Result.error("用户名不合法！");
+        }
+
+        if(!ValidUtil.validUsername(user.getUsername())){
+            return Result.error("用户名不合法！");
+        }
+
+        if(!ValidUtil.validEmail(user.getEmail())){
+            return Result.error("邮箱格式错误！");
+        }
+
+        if(!ValidUtil.validPassword(user.getPassword())){
+            return Result.error("密码不合法！");
+        }
+
+        if(!ValidUtil.validPassword(user.getPassword())){
+            return Result.error("密码不合法！");
+        }
+
         User updateUser = userService.finUserById(user.getUserId());
         try {
             if (!updateUser.getUsername().equals(user.getUsername())) {
-                if ((userService.findUserByUsername(user.getUsername()) != null)) {
+                if (StringUtils.isNotNull(userService.findUserByUsername(user.getUsername()))) {
                     return Result.error("该用户名已存在！");
                 }
             }
 
+            if (!updateUser.getNickname().equals(user.getNickname())) {
+                if (StringUtils.isNotNull(userService.findUserByNickName(user.getNickname()))) {
+                    return Result.error("该昵称已经存在！");
+                }
+            }
+
             if (!updateUser.getEmail().equals(user.getEmail())) {
-                if ((userService.findUserByEmail(user.getEmail()) != null)) {
+                if (StringUtils.isNotNull(userService.findUserByEmail(user.getEmail()))) {
                     return Result.error("该邮箱已存在");
                 }
             }
             if (!updateUser.getPhone().equals(user.getPhone())) {
-                if ((userService.finUserByPhone(user.getPhone()) != null)) {
+                if(!ValidUtil.validPhone(user.getPhone())){
+                    return Result.error("手机号格式错误！");
+                }
+                if (StringUtils.isNotNull(userService.finUserByPhone(user.getPhone()))) {
                     return Result.error("该手机号已存在");
                 }
             }
@@ -203,6 +234,7 @@ public class AdminUserController {
      * @param email 邮箱
      * @return message
      */
+    @AccessLimit
     @RequiresRoles("root")
     @OperationLogger("修改密码.邮箱校验")
     @GetMapping("/update/pass/valid/email")

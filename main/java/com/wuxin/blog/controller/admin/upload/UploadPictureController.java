@@ -1,6 +1,7 @@
 package com.wuxin.blog.controller.admin.upload;
 
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.UploadPictureService;
@@ -21,6 +22,8 @@ public class UploadPictureController {
 
     @OperationLogger("查看文件上传")
 
+
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @PostMapping("/list")
     public Result findUploadPictureList(@RequestBody PageVo pageVo){
         return Result.ok(uploadPictureService.selectListByPage(pageVo.getCurrent(), pageVo.getLimit(),pageVo.getStart(),pageVo.getEnd()));

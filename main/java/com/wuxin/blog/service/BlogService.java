@@ -7,7 +7,6 @@ import com.wuxin.blog.pojo.blog.Blog;
 import java.util.List;
 
 
-
 /**
  * @Author: wuxin001
  * @Date: 2021/10/01/9:24
@@ -18,22 +17,23 @@ public interface BlogService {
 
     /**
      * 添加blog
+     *
      * @param blog blog
      * @return int id
      */
     Long addBlog(Blog blog);
 
 
-
-
     /**
      * 删除blog 根据blogId
+     *
      * @param blogId userId
      */
     void delBlog(Long blogId);
 
     /**
      * 删除blog userid
+     *
      * @param userId userid
      */
     void delBlogByUserId(Long userId);
@@ -41,6 +41,7 @@ public interface BlogService {
 
     /**
      * 修改blog
+     *
      * @param blog blog实体内容
      */
     void updateBlog(Blog blog);
@@ -48,6 +49,7 @@ public interface BlogService {
     /**
      * front使用
      * 按照时间倒序分页
+     *
      * @param current current
      * @param size    limit
      * @return page
@@ -56,6 +58,7 @@ public interface BlogService {
 
     /**
      * 获取最新blog
+     *
      * @return list
      */
     List<SearchBlog> newBlog();
@@ -63,6 +66,7 @@ public interface BlogService {
 
     /**
      * 根据blogID查找blog
+     *
      * @param blogId id
      * @return DTO
      */
@@ -71,6 +75,7 @@ public interface BlogService {
 
     /**
      * 根据用户分页显示博客
+     *
      * @param userId  userid
      * @param current current
      * @param size    limit
@@ -80,14 +85,15 @@ public interface BlogService {
 
     /**
      * 随机5篇博客
+     *
      * @return list
      */
     List<Blog> randomBlog();
 
 
-
     /**
      * 统计all blog点击量
+     *
      * @return int
      */
     Integer countAllBlogViews();
@@ -95,26 +101,25 @@ public interface BlogService {
 
     /**
      * 统计blog count
-     * @return  int
+     *
+     * @return int
      */
     Integer blogCount();
 
 
-
-
-
-
     /**
      * 根据时间查询 博客 分页显示 blog
-     * @param current 页码
-     * @param limit 大小
+     *
+     * @param current  页码
+     * @param limit    大小
      * @param keywords 关键字
      * @return page
      */
-    IPage<Blog> findBlogPage(Integer current, Integer limit, String keywords,String start,String end);
+    IPage<Blog> findBlogPage(Integer current, Integer limit, String keywords, String start, String end, Long cid);
 
     /**
      * 上一篇
+     *
      * @param blogId blogId
      * @return DTO
      */
@@ -123,16 +128,16 @@ public interface BlogService {
 
     /**
      * 下一篇
+     *
      * @param blogId blogID
      * @return DTO
      */
     SearchBlog nextBlog(Long blogId);
 
 
-
-
     /**
      * 获取评论文章title
+     *
      * @param blogId 文章id
      * @return blog
      */
@@ -141,6 +146,7 @@ public interface BlogService {
 
     /**
      * 获取全部文章列表
+     *
      * @return list
      */
     List<Blog> getAllBlogList();
@@ -148,6 +154,7 @@ public interface BlogService {
 
     /**
      * 关键词搜索
+     *
      * @return
      */
     List<SearchBlog> searchBlog(String keywords);

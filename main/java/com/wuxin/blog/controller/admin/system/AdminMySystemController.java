@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.system;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.constant.GlobalConstant;
 import com.wuxin.blog.pojo.system.GithubSetting;
@@ -27,6 +28,7 @@ public class AdminMySystemController {
     private MySystemService mySystemService;
 
 
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @GetMapping("/info")
     public Result findMySystem()
     {
@@ -79,6 +81,8 @@ public class AdminMySystemController {
         return Result.ok("标签删除成功");
     }
 
+
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("查看github配置")
     @RequiresRoles("root")
     @GetMapping("/find/github/setting")

@@ -1,6 +1,7 @@
 package com.wuxin.blog.controller.admin.update;
 
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.pojo.blog.UpdateQuestion;
 import com.wuxin.blog.mode.PageVo;
@@ -22,6 +23,8 @@ public class AdminUpdateQuestionController {
     private UpdateQuestionService updateQuestionService;
 
 
+
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("查看发布问题")
     @PostMapping("/list")
     public Result findUpdateQuestion(@RequestBody PageVo pageVo){

@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.blog;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.pojo.blog.Blog;
 import com.wuxin.blog.pojo.blog.Tag;
@@ -37,7 +38,7 @@ public class AdminBlogController {
     private TagService tagService;
 
     @Autowired
-    private CommentService blogCommentService;
+    private CommentService commentService;
 
 
     @OperationLogger("获取文章列表")
@@ -50,21 +51,22 @@ public class AdminBlogController {
                         pageVo.getLimit(),
                         pageVo.getKeywords(),
                         pageVo.getStart(),
-                        pageVo.getEnd())
+                        pageVo.getEnd(),
+                        pageVo.getId()
+                )
         );
     }
 
 
     /**
      * 添加blog
-     *
-     * @param blog DTO
-     * @return 成功消息
      */
+    @AccessLimit(seconds = 60, limitCount = 1, msg = "操作频率过高！一分钟之后再试！")
     @RequiresRoles("root")
     @OperationLogger("添加文章")
     @PostMapping("/add")
-    public Result addBlog(@RequestBody Blog blog) {
+    public Result addBlog(@RequestBody Blog blog)
+    {
         Subject subject = SecurityUtils.getSubject();
         User user = (User) subject.getPrincipal();
         log.info("添加的blog信息 session 中用户信息add blog ={}", user);
@@ -81,19 +83,20 @@ public class AdminBlogController {
             return Result.error("添加失败，获取不到分类！");
         }
         blog.setUserId(user.getUserId());
-        // 将得到的blogID返回给blogTag，将tagId添加进去
+        // 将得到的blogID返回给blogTag
         Long blogId = blogService.addBlog(blog);
         tagService.addBlogTag(blogId, blog.getTagIds());
-        return Result.ok(Message.ADD_SUCCESS.getMessage());
+        return Result.ok("文章添加成功！");
 
     }
 
     @OperationLogger("获取用户文章")
     @GetMapping("/user/list")
     public Result findBlogByUserId(
-            @RequestParam(value = "userId", required = true) Long userId,
+            @RequestParam(value = "userId") Long userId,
             @RequestParam(value = "current", defaultValue = "1") Integer current,
-            @RequestParam(value = "size", defaultValue = "10") Integer size) {
+            @RequestParam(value = "size", defaultValue = "10") Integer size)
+    {
         return Result.ok(blogService.findBlogByUserId(userId, current, size));
     }
 
@@ -104,10 +107,12 @@ public class AdminBlogController {
      * @param blog blogDTO
      * @return success
      */
+    @AccessLimit(seconds = 60, limitCount = 2, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("修改文章")
     @RequiresRoles("root")
     @PutMapping("/update")
-    public Result blogUpdate(@RequestBody Blog blog) {
+    public Result blogUpdate(@RequestBody Blog blog)
+    {
         blogService.updateBlog(blog);
         // 修改blog标签
         log.info("blog tagIds：{}", blog.getTagIds());
@@ -126,11 +131,12 @@ public class AdminBlogController {
     @OperationLogger("删除文章")
     @RequiresRoles("root")
     @DeleteMapping("/del")
-    public Result blogDel(@RequestParam("blogId") Long blogId) {
+    public Result blogDel(@RequestParam("blogId") Long blogId)
+    {
         blogService.delBlog(blogId);
         tagService.delBlogTagByBlogId(blogId);
-        blogCommentService.delCommentByBlogId(blogId);
-        blogCommentService.delCommentReplyByBlogId(blogId);
+        commentService.delCommentByBlogId(blogId);
+        commentService.delCommentReplyByBlogId(blogId);
         return Result.ok(Message.DEL_SUCCESS.getMessage());
 
     }
@@ -144,16 +150,18 @@ public class AdminBlogController {
     @OperationLogger("根据用户id删除文章")
     @RequiresRoles("root")
     @DeleteMapping("/del/userId")
-    public Result blogDelByUserId(@RequestParam("userId") Long userId) {
+    public Result blogDelByUserId(@RequestParam("userId") Long userId)
+    {
         blogService.delBlogByUserId(userId);
-        blogCommentService.delCommentByUserId(userId);
-        blogCommentService.delReplyByUserId(userId);
-        return Result.ok(Message.DEL_SUCCESS.getMessage());
+        commentService.delCommentByUserId(userId);
+        commentService.delReplyByUserId(userId);
+        return Result.ok("删除成功！");
     }
 
     /**
      * 获取全部文章列表
      */
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @GetMapping("/all/list")
     public Result getAllBlogList() {
         return Result.ok(blogService.getAllBlogList());

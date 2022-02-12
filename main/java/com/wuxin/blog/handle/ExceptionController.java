@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.wuxin.blog.constant.HttpStatus;
 import com.wuxin.blog.exception.CustomException;
 import com.wuxin.blog.exception.NotFoundException;
+import com.wuxin.blog.exception.ServiceException;
 import com.wuxin.blog.utils.result.Result;
 import com.wuxin.blog.utils.security.JWTUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -124,6 +125,19 @@ public class ExceptionController {
 
 
     /**
+     * 服务层异常
+     * @param request 请求
+     * @param e       异常
+     * @return error message
+     */
+    @ExceptionHandler(ServiceException.class)
+    public Result serviceException(HttpServletRequest request, ServiceException e) {
+        log.error("ServiceException e:{} ", request.getRequestURI(), e);
+        return Result.create(HttpStatus.CUSTOM, e.getMessage());
+    }
+
+
+    /**
      * 用户未登录抛出异常
      *
      * @return error message
@@ -155,8 +169,8 @@ public class ExceptionController {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public Result httpRequestMethodNotSupportedException() {
-        log.error("请求方法不支持");
-        return Result.create(HttpStatus.ERROR, "请求方法不支持~");
+        log.error("==================请求方法不支持==================");
+        return Result.create(HttpStatus.ERROR, "请求方法错误~");
 
     }
 

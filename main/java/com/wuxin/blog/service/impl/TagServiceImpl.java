@@ -9,7 +9,7 @@ import com.wuxin.blog.mapper.BlogMapper;
 import com.wuxin.blog.mapper.CategoryMapper;
 import com.wuxin.blog.mapper.TagMapper;
 import com.wuxin.blog.mapper.UserMapper;
-import com.wuxin.blog.mapper.vo.BlogTagMapper;
+import com.wuxin.blog.mapper.BlogTagMapper;
 import com.wuxin.blog.pojo.blog.Blog;
 import com.wuxin.blog.pojo.blog.BlogTag;
 import com.wuxin.blog.pojo.blog.Tag;
@@ -127,7 +127,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public IPage<Tag> selectListByPage(Integer current, Integer limit, String keywords) {
         return MapperUtils.lambdaQueryWrapper(tagMapper)
-                .like(StringUtils.isNotNull(keywords), Tag::getName, keywords)
+                .like(StringUtils.isNotEmpty(keywords), Tag::getName, keywords)
                 .orderByDesc(Tag::getTagId).page(new Page<>(current, limit));
     }
 

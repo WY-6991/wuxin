@@ -63,8 +63,8 @@ public class ExceptionLogServiceImpl implements ExceptionService {
         Page<ExceptionLog> page = new Page<>(current, limit);
         return MapperUtils.lambdaQueryWrapper(exceptionLogMapper)
                 .orderByDesc(ExceptionLog::getCreateTime)
-                .like(StringUtils.isNotNull(keywords), ExceptionLog::getByCreate, keywords)
-                .le(StringUtils.isNotNull(end), ExceptionLog::getCreateTime, end)
-                .ge(StringUtils.isNotNull(start), ExceptionLog::getCreateTime, start).page(page);
+                .eq(StringUtils.isNotEmpty(keywords), ExceptionLog::getByCreate, keywords)
+                .le(StringUtils.isNotEmpty(end), ExceptionLog::getCreateTime, end)
+                .ge(StringUtils.isNotEmpty(start), ExceptionLog::getCreateTime, start).page(page);
     }
 }

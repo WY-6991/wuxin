@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.system;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.pojo.system.BackgroundMap;
 import com.wuxin.blog.service.BackgroundMapService;
@@ -23,6 +24,8 @@ public class BackGroundMapController {
     @Autowired
     private BackgroundMapService backgroundMapService;
 
+
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("查看背景图")
     @GetMapping("/list")
     public Result findBackGroundMap(){

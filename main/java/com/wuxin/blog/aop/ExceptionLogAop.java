@@ -1,6 +1,7 @@
 package com.wuxin.blog.aop;
 
 import cn.hutool.json.JSONUtil;
+import com.wuxin.blog.annotation.LoginLogger;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.pojo.log.ExceptionLog;
@@ -63,7 +64,6 @@ public class ExceptionLogAop {
     }
 
 
-
     /**
      * 处理异常日志参数
      */
@@ -91,6 +91,11 @@ public class ExceptionLogAop {
         VisitLogger visitLogger = method.getAnnotation(VisitLogger.class);
         if (visitLogger != null) {
             description = visitLogger.value();
+            return description;
+        }
+        LoginLogger loginLogger = method.getAnnotation(LoginLogger.class);
+        if (loginLogger != null) {
+            description = loginLogger.value();
             return description;
         }
         return description;

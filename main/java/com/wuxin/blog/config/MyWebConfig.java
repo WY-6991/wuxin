@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * web配置
+ *
  * @author Administrator
  */
 @Configuration
@@ -36,14 +37,12 @@ public class MyWebConfig implements WebMvcConfigurer {
     }
 
 
-
-
     /**
      * 拦截器注册
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-       // registry.addInterceptor(accessLimitInterceptor).addPathPatterns("/**");
+        // registry.addInterceptor(accessLimitInterceptor).addPathPatterns("/**");
         registry.addInterceptor(tokenInterceptor).addPathPatterns("/admin/**");
 
     }

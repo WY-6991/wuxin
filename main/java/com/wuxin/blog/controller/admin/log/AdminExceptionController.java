@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.log;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.ExceptionService;
@@ -22,7 +23,7 @@ public class AdminExceptionController {
     @Resource
     private ExceptionService exceptionService;
 
-
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("获取异常日志信息")
     @PostMapping("/list")
     public Result findExceptionLog(@RequestBody PageVo pageVo)

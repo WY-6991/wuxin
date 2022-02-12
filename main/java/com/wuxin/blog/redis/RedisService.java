@@ -118,6 +118,8 @@ import java.util.Set;
      * @return true 成功 false失败
      */
      boolean hset(String key,Object item,Object value) ;
+
+
     /**
      * 向一张hash表中放入数据,如果不存在将创建
      * @param key 键
@@ -209,81 +211,6 @@ import java.util.Set;
      * @return 移除的个数
      */
      long setRemove(String key, Object ...values) ;
-    //===============================list=================================
 
-    /**
-     * 获取list缓存的内容
-     * @param key 键
-     * @param start 开始
-     * @param end 结束  0 到 -1代表所有值
-     * @return
-     */
-     List<Object> lGet(String key, long start, long end);
-    /**
-     * 获取list缓存的长度
-     * @param key 键
-     * @return
-     */
-     long lGetListSize(String key);
-
-    /**
-     * 通过索引 获取list中的值
-     * @param key 键
-     * @param index 索引  index>=0时， 0 表头，1 第二个元素，依次类推；index<0时，-1，表尾，-2倒数第二个元素，依次类推
-     * @return
-     */
-     Object lGetIndex(String key,long index);
-
-    /**
-     * 将list放入缓存
-     * @param key 键
-     * @param value 值
-     * @return
-     */
-     boolean lSet(String key, Object value) ;
-
-    /**
-     * 将list放入缓存
-     * @param key 键
-     * @param value 值
-     * @param time 时间(秒)
-     * @return
-     */
-     boolean lSet(String key, Object value, long time) ;
-
-    /**
-     * 将list放入缓存
-     * @param key 键
-     * @param value 值
-     * @return
-     */
-     boolean lSet(String key, List<Object> value);
-
-    /**
-     * 将list放入缓存
-     * @param key 键
-     * @param value 值
-     * @param time 时间(秒)
-     * @return
-     */
-     boolean lSet(String key, List<Object> value, long time);
-
-    /**
-     * 根据索引修改list中的某条数据
-     * @param key 键
-     * @param index 索引
-     * @param value 值
-     * @return
-     */
-     boolean lUpdateIndex(String key, long index,Object value);
-
-    /**
-     * 移除N个值为value
-     * @param key 键
-     * @param count 移除多少个
-     * @param value 值
-     * @return 移除的个数
-     */
-     long lRemove(String key,long count,Object value);
 
 }

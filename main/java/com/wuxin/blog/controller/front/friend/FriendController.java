@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.front.friend;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.service.FriendService;
@@ -26,6 +27,7 @@ public class FriendController {
     private FriendService friendService;
 
 
+    @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @VisitLogger(value = "访问了友情连接",name = "友情连接")
     @GetMapping("list")
     public Result findAllFriendList(){

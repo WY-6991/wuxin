@@ -207,4 +207,6 @@ public interface UserService {
      * @param user
      */
     void updateUserRole(User user);
+
+    User findUserByNickName(String nickname);
 }

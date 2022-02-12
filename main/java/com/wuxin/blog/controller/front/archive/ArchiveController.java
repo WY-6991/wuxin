@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.front.archive;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.mode.PageVo;
@@ -28,13 +29,13 @@ public class ArchiveController {
     private ArchiveService archiveService;
 
 
+    @AccessLimit(seconds = 120, limitCount = 10, msg = "操作频率过高！稍后再试！")
     @VisitLogger(value = "访问我的归档",name = "归档页")
     @PostMapping("/list")
     public Result findArchive(@RequestBody PageVo pageVo){
-        Result result = Result.ok();
-        result.put("page",archiveTitleService.selectListByPage(pageVo.getCurrent(),pageVo.getLimit(), pageVo.getKeywords()));
-        result.put("count",archiveService.selectCount());
-        return result;
+        return  Result.ok()
+                .put("page",archiveTitleService.selectListByPage(pageVo.getCurrent(),pageVo.getLimit(), pageVo.getKeywords()))
+                .put("count",archiveService.selectCount());
     }
 
 

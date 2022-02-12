@@ -1,5 +1,6 @@
 package com.wuxin.blog.controller.admin.about;
 
+import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.pojo.blog.About;
 import com.wuxin.blog.service.AboutService;
@@ -26,6 +27,7 @@ public class AdminAboutController {
     @Resource
     private AboutService aboutService;
 
+    @AccessLimit(seconds = 60, limitCount = 1, msg = "操作频率过高！一分钟之后再试！")
     @OperationLogger("修改关于我的页面内容")
     @RequiresRoles("root")
     @PutMapping("/update")
