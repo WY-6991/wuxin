@@ -21,18 +21,16 @@ public class Result extends HashMap<String, Object> {
 
     }
 
-    public Result(Integer code,String message) {
-        super.put(CODE,code);
-        super.put(MESSAGE,message);
+    public Result(Integer code, String message) {
+        super.put(CODE, code);
+        super.put(MESSAGE, message);
     }
 
-    public Result(Integer code,String message,Object result) {
-        super.put(CODE,code);
-        super.put(MESSAGE,message);
-        super.put(RESULT,result);
+    public Result(Integer code, String message, Object result) {
+        super.put(CODE, code);
+        super.put(MESSAGE, message);
+        super.put(RESULT, result);
     }
-
-
 
 
     /**
@@ -104,7 +102,7 @@ public class Result extends HashMap<String, Object> {
      * @return result
      */
     public static Result create(Integer code, String message) {
-        return new Result(code, message, null);
+        return new Result(code, message);
     }
 
 
