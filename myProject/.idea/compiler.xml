@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="blog-api" />
+        <module name="blog-common" />
+        <module name="blog-core" />
+        <module name="blog-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="blog-api" target="1.8" />
+      <module name="blog-common" target="1.8" />
+      <module name="blog-core" target="1.8" />
+      <module name="blog-service" target="1.8" />
+      <module name="wuxin-api" target="1.8" />
+      <module name="wuxin-blog" target="1.8" />
+      <module name="wuxin-common" target="1.8" />
+      <module name="wuxin-controller" target="8" />
+      <module name="wuxin-main" target="1.8" />
+      <module name="wuxin-mapper" target="1.8" />
+      <module name="wuxin-redis" target="1.8" />
+      <module name="wuxin-service" target="1.5" />
+      <module name="wuxin-shiro" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
