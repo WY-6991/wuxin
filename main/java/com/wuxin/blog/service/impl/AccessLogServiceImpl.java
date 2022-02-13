@@ -68,19 +68,8 @@ public class AccessLogServiceImpl implements AccessLogService {
 
     @Override
     public Integer selectTodayAccessLog() {
-        // 获取当前时间
-        String localTime = DateUtils.localTime();
-        // 获取凌晨时间
-        String todayStartTime = DateUtils.todayStartTime();
-        MapperUtils.lambdaQueryWrapper(accessLogMapper)
-                // 小于当前时间
-                .le(AccessLog::getCreateTime, localTime)
-                // 大于今日凌晨时间
-                .ge(AccessLog::getCreateTime, todayStartTime);
-                // 指定字段去重处理
-
-
-
-        return null;
+        String start = DateUtils.todayStartTime();
+        String end = DateUtils.localTime();
+        return accessLogMapper.todayAccessCount(start, end);
     }
 }

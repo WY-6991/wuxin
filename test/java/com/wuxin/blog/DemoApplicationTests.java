@@ -35,7 +35,11 @@ import java.util.*;
 class DemoApplicationTests {
 
     @Autowired
-    private MomentService momentService;
+    private AccessLogService accessLogService;
+
+    @Autowired
+    private LoginLogService loginLogService;
+
 
     @Autowired
     private BlogService blogService;
@@ -126,10 +130,10 @@ class DemoApplicationTests {
     void deleteRedisKeyCollection() {
         for (int i = 1; i < 100; i++) {
             boolean b = redisService.hHasKey(RedisKey.BLOG_LIST, i);
-            System.out.println(i+"rediskey"+b);
+            System.out.println(i + "rediskey" + b);
             if (b) {
                 // redisService.hdel(RedisKey.BLOG_LIST, i);
-                System.out.println("rediskey"+b);
+                System.out.println("rediskey" + b);
             } else {
                 return;
             }
@@ -140,8 +144,53 @@ class DemoApplicationTests {
     @Test
     void testCodeToString() {
         String a = "123456";
-        String b = ""+123456+"";
+        String b = "" + 123456 + "";
         System.out.println(a.equals(b));
+    }
+
+    @Test
+    void testCount() {
+        Integer commentCount = commentService.commentCount();
+        System.out.println(commentCount);
+
+
+        Integer loginLog = loginLogService.selectTodayLoginLog();
+        System.out.println(loginLog);
+
+        Integer accessLog = accessLogService.selectTodayAccessLog();
+        System.out.println(accessLog);
+
+    }
+
+
+    @Test
+    void accessLoginCount() {
+        // 伪造数据
+
+
+        List<Map<String, Object>> list;
+        for (int i = 1; i < 14; i++) {
+            Map<String, Object> map = new HashMap<>();
+            boolean b = redisService.hasKey(RedisKey.ACCESS_LOGIN_COUNT);
+            if (b) {
+                list = (List<Map<String, Object>>) redisService.get(RedisKey.ACCESS_LOGIN_COUNT);
+            } else {
+                // 首次创建
+                list = new ArrayList<>();
+            }
+            String date = "2-" + i;
+            Object login = i + 1;
+            Object access = i + 2;
+            map.put("date", date);
+            map.put("login", login);
+            map.put("access", access);
+            list.add(map);
+            redisService.set(RedisKey.ACCESS_LOGIN_COUNT, list, 1209600L);
+
+        }
+
+        Object o = redisService.get(RedisKey.ACCESS_LOGIN_COUNT);
+        System.out.println(o);
     }
 
 

@@ -17,7 +17,7 @@ public class RedisKey {
     /**
      * 文章评论
      */
-    public static final String COMMENT_LSIT = "comment_list";
+    public static final String COMMENT_LIST = "comment_list";
 
 
     /**
@@ -121,6 +121,9 @@ public class RedisKey {
      * 归档列表二级标题
      */
     public static final String ARCHIVE_LIST = "archive_list";
+
+
+    public static final String ACCESS_LOGIN_COUNT = "access_login_count";
 
 
     public static String getKey(Object id) {

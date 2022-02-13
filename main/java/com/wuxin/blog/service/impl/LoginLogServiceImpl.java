@@ -66,20 +66,6 @@ public class LoginLogServiceImpl implements LoginLogService {
 
     @Override
     public Integer selectTodayLoginLog() {
-        // 获取当前时间
-        String localTime = DateUtils.localTime();
-        // 获取凌晨时间
-        String todayStartTime = DateUtils.todayStartTime();
-        MapperUtils.lambdaQueryWrapper(loginLogMapper)
-                // 小于当前时间
-                .le(LoginLog::getCreateTime, localTime)
-                // 大于今日凌晨时间
-                .ge(LoginLog::getCreateTime, todayStartTime)
-                // .select("DISTINCT username").eq()
-        ;
-
-
-
-        return null;
+        return loginLogMapper.todayLoginCount(DateUtils.todayStartTime(),DateUtils.localTime());
     }
 }

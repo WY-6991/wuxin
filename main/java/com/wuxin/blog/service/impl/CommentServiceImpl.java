@@ -37,7 +37,7 @@ import java.util.Map;
 public class CommentServiceImpl implements CommentService {
 
 
-    private final static String COMMENT_LIST = RedisKey.COMMENT_LSIT;
+    private final static String COMMENT_LIST = RedisKey.COMMENT_LIST;
 
     @Autowired
     private CommentMapper commentMapper;
@@ -276,20 +276,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Integer commentCount() {
         // 当前时间
-        String localTime = DateUtils.localTime();
-        // 凌晨时间
-        String todayStartTime = DateUtils.todayStartTime();
-        Integer commentCount = MapperUtils.lambdaQueryWrapper(commentMapper)
-                .le(Comment::getCreateTime, localTime)
-                .ge(Comment::getCreateTime, todayStartTime)
-                .count();
-
-        Integer replyCount = MapperUtils.lambdaQueryWrapper(blogCommentReplyMapper)
-                .le(CommentReply::getCreateTime, localTime)
-                .ge(CommentReply::getCreateTime, todayStartTime)
-                .count();
-        return commentCount + replyCount;
-
+        return commentMapper.todayCommentCount(DateUtils.todayStartTime(), DateUtils.localTime());
     }
 
     public void getReplyList(Comment blogComment) {

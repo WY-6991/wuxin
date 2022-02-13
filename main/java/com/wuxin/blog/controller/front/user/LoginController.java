@@ -66,7 +66,7 @@ public class LoginController {
      * @param user 前台获取的用户名和密码
      * @return 查询结果
      */
-    @AccessLimit(seconds = 60, limitCount = 1, msg = "登录频繁，1分钟之后再试！")
+    @AccessLimit(seconds = 60, limitCount = 2, msg = "登录频繁，1分钟之后再试！")
     @LoginLogger("密码登录")
     @PostMapping("/login")
     public Result userLogin(@RequestBody LoginBody user) throws UnsupportedEncodingException {

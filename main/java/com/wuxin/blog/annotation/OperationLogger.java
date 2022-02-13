@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 /**
  * @Author: wuxin001
  * @Date: 2021/12/31/23:12
- * @Description: 自定义注解 记录操作日志
+ * @Description:  记录操作日志
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

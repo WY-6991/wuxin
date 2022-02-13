@@ -1,7 +1,10 @@
 package com.wuxin.blog.controller.admin.dashboard;
 
 import com.wuxin.blog.annotation.AccessLimit;
+import com.wuxin.blog.redis.RedisKey;
+import com.wuxin.blog.redis.RedisService;
 import com.wuxin.blog.service.*;
+import com.wuxin.blog.task.ScheduleTask;
 import com.wuxin.blog.utils.result.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,15 +37,14 @@ public class DashboardController {
     @Autowired
     private LoginLogService loginLogService;
 
-
     @Autowired
     private AccessLogService accessLogService;
 
-
-
+    @Autowired
+    private ScheduleTask scheduleTask;
 
     /**
-     * 文章统计
+     * 统计数据展示
      */
     @AccessLimit(seconds = 60, limitCount = 10, msg = "操作频率过高！一分钟之后再试！")
     @GetMapping("/count")
@@ -58,8 +60,6 @@ public class DashboardController {
 
     /**
      * 类型分类展示
-     *
-     * @return category
      */
     @GetMapping("/category")
     public Result blogCountByCategoryName() {
@@ -69,11 +69,18 @@ public class DashboardController {
 
     /**
      * 标签分类展示
-     *
-     * @return tag
      */
     @GetMapping("/tag")
     public Result blogCountByTagName() {
         return Result.ok(tagService.blogCountByTagName());
+    }
+
+
+    /**
+     * 统计七天访问量和浏览量
+     */
+    @GetMapping("/access/login/count")
+    public Result accessLoginCount() {
+        return Result.ok(scheduleTask.getAccessLoginCount());
     }
 }
