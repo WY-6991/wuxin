@@ -2,7 +2,6 @@ import request from '@/utils/request'
 
 /**
  * 统计首页category blog
- * @returns {AxiosPromise} List<Object>
  */
 export function getDashboardCategory() {
   return request({
@@ -13,7 +12,6 @@ export function getDashboardCategory() {
 
 /**
  * 统计首页 tag blog
- * @returns {AxiosPromise} List<Object>
  */
 export function getDashboardTag() {
   return request({
@@ -24,8 +22,7 @@ export function getDashboardTag() {
 
 
 /**
- * 统计文章
- * @returns {AxiosPromise}
+ * 四个card 文章、访问量、浏览量、评论量
  */
 export function getDashboardCardCount() {
   return request({
@@ -36,12 +33,22 @@ export function getDashboardCardCount() {
 
 
 /**
- * 统计评论
- * @returns {AxiosPromise}
+ * 获取当天评论
  */
 export function getCommentCount() {
   return request({
     url: '/dashboard/comment/count',
+    method: 'get',
+  })
+}
+
+
+/**
+ * 获取七天访问量和浏览量
+ */
+export function getAccessLoginCount() {
+  return request({
+    url: '/dashboard/access/login/count',
     method: 'get',
   })
 }

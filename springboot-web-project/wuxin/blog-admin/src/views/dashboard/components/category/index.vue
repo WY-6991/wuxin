@@ -1,75 +1,73 @@
 <template>
-  <div class="category-echarts-count m-margin-tb-large m-echarts-container"></div>
+  <div
+    class="category-echarts-count m-margin-tb-large m-echarts-container"
+  ></div>
 </template>
 <script>
-
-import {getDashboardCategory} from "@/api/dashboard";
+import { getDashboardCategory } from "@/api/dashboard";
 
 export default {
-  name: 'CategoryDashboard',
+  name: "CategoryMap",
   data() {
     return {
-      categoryList: []
-    }
+      categoryList: [],
+    };
   },
   methods: {
     initData() {
-      let myChart = this.$echarts.init(document.querySelector('.category-echarts-count'));
-      console.log('category json',JSON.stringify(this.categoryList))
+      let myChart = this.$echarts.init(
+        document.querySelector(".category-echarts-count")
+      );
+      console.log("category json", JSON.stringify(this.categoryList));
       let option = {
         title: {
-          text: '分类下的文章',
-          subtext: 'category',
-          left: 'center'
+          text: "分类下的文章",
+          subtext: "category",
+          left: "center",
         },
         tooltip: {
-          trigger: 'item'
+          trigger: "item",
         },
         legend: {
-          bottom: 'bottom'
+          bottom: "bottom",
         },
         toolbox: {
           feature: {
-            saveAsImage: {}
-          }
+            saveAsImage: {},
+          },
         },
         series: [
           {
-            name: 'Access From',
-            type: 'pie',
-            radius: '50%',
-            data:this.categoryList,
+            name: "分类",
+            type: "pie",
+            radius: "50%",
+            data: this.categoryList,
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,
                 shadowOffsetX: 0,
-                shadowColor: 'rgba(0, 0, 0, 0.5)'
-              }
-            }
-          }
-        ]
+                shadowColor: "rgba(0, 0, 0, 0.5)",
+              },
+            },
+          },
+        ],
       };
       myChart.setOption(option);
     },
 
-    getData(){
-      getDashboardCategory().then(res=>{
-        if(res.code=== 200){
-          console.log('res=.',JSON.stringify(res))
-          this.categoryList = res.result
-          this.$nextTick(()=>{
+    getData() {
+      getDashboardCategory().then((res) => {
+        if (res.code === 200) {
+          this.categoryList = res.result;
+          this.$nextTick(() => {
             this.initData();
-          })
+          });
         }
-      })
-    }
-
-
+      });
+    },
   },
   mounted() {
-
-  this.getData()
-  }
-
-}
+    this.getData();
+  },
+};
 </script>
