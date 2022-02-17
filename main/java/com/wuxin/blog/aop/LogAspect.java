@@ -75,69 +75,67 @@ public class LogAspect {
             e.printStackTrace();
             logger.debug("登录日志捕获异常！ ");
         }
-
-
         logger.info("用户登录日志捕获中=>{}", proceedingJoinPoint.proceed());
         return proceedingJoinPoint.proceed();
     }
 
 
-    @Around("@annotation(visitLogger)")
-    public Object accessLogAopControllerMethod(ProceedingJoinPoint proceedingJoinPoint, VisitLogger visitLogger) throws Throwable {
-        // 获取请求用户基本参数 用户sessionID，请求参数，
-        try {
-            logger.info("===========================访问日志捕获中=======================");
-            AccessLog accessLog = new AccessLog();
-            // 获取访问日志注解信息
-            accessLog.setDescription(visitLogger.value());
-            // 获取访问日志基本信息
-            LogUtil.setLogInfo(accessLog, proceedingJoinPoint);
-            // 添加访问日志标识 ip ip来源 os
-            String byCreate = ShiroUtil.createSalt(accessLog.getIp() + accessLog.getIpSource() + accessLog.getOs());
-            accessLog.setByCreate(byCreate);
-            //处理访问结果
-            handleResult(accessLog, proceedingJoinPoint);
-            accessLogService.add(accessLog);
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-            logger.debug("访问日志捕获失败！ ");
-        }
-        return proceedingJoinPoint.proceed();
-    }
+    // @Around("@annotation(visitLogger)")
+    // public Object accessLogAopControllerMethod(ProceedingJoinPoint proceedingJoinPoint, VisitLogger visitLogger) throws Throwable {
+    //     // 获取请求用户基本参数 用户sessionID，请求参数，
+    //     try {
+    //         logger.info("===========================访问日志捕获中=======================");
+    //         AccessLog accessLog = new AccessLog();
+    //         // 获取访问日志注解信息
+    //         accessLog.setDescription(visitLogger.value());
+    //         // 获取访问日志基本信息
+    //         LogUtil.setLogInfo(accessLog, proceedingJoinPoint);
+    //         // 添加访问日志标识 ip ip来源 os
+    //         String byCreate = ShiroUtil.createSalt(accessLog.getIp() + accessLog.getIpSource() + accessLog.getOs());
+    //         accessLog.setByCreate(byCreate);
+    //         //处理访问结果
+    //         handleResult(accessLog, proceedingJoinPoint);
+    //         accessLogService.add(accessLog);
+    //
+    //     } catch (Throwable e) {
+    //         e.printStackTrace();
+    //         logger.debug("访问日志捕获失败！ ");
+    //     }
+    //     return proceedingJoinPoint.proceed();
+    // }
 
 
     /**
      * 操作日志aop
      */
-    @Around("@annotation(operationLogger)")
-    public Object operationLogAopControllerMethod(ProceedingJoinPoint proceedingJoinPoint,OperationLogger operationLogger) throws Throwable {
-        // 获取请求用户基本参数 用户sessionID，请求参数，
-        try {
-            logger.info("======================操作日志捕获中========================");
-
-            // 操作日志
-            OperationLog operationLog = new OperationLog();
-            User user = MySecurityUtils.getUser();
-            operationLog.setUsername(user.getNickname());
-            // 获取注解信息
-            operationLog.setDescription(operationLog.description);
-            // 获取基本操作信息
-            LogUtil.setLogInfo(operationLog, proceedingJoinPoint);
-            // 操作日志标识 用户名 方法名 ip地址 ip来源 操作系统
-            String operationIdCard = user.getNickname() + operationLog.getMethod() + operationLog.getIp() + operationLog.getIp() + operationLog.getOs();
-            operationLog.setByCreate(ShiroUtil.createSalt(operationIdCard));
-            // 获取请求结果
-            handleResult(operationLog, proceedingJoinPoint);
-            // 添加到数据库中
-            operationLogService.add(operationLog);
-
-        } catch (Throwable e) {
-            e.printStackTrace();
-            logger.debug("操作日志捕获失败！ ");
-        }
-        return proceedingJoinPoint.proceed();
-    }
+    // @Around("@annotation(operationLogger)")
+    // public Object operationLogAopControllerMethod(ProceedingJoinPoint proceedingJoinPoint,OperationLogger operationLogger) throws Throwable {
+    //     // 获取请求用户基本参数 用户sessionID，请求参数，
+    //     try {
+    //         logger.info("======================操作日志捕获中========================");
+    //
+    //         // 操作日志
+    //         OperationLog operationLog = new OperationLog();
+    //         User user = MySecurityUtils.getUser();
+    //         operationLog.setUsername(user.getNickname());
+    //         // 获取注解信息
+    //         operationLog.setDescription(operationLog.description);
+    //         // 获取基本操作信息
+    //         LogUtil.setLogInfo(operationLog, proceedingJoinPoint);
+    //         // 操作日志标识 用户名 方法名 ip地址 ip来源 操作系统
+    //         String operationIdCard = user.getNickname() + operationLog.getMethod() + operationLog.getIp() + operationLog.getIp() + operationLog.getOs();
+    //         operationLog.setByCreate(ShiroUtil.createSalt(operationIdCard));
+    //         // 获取请求结果
+    //         handleResult(operationLog, proceedingJoinPoint);
+    //         // 添加到数据库中
+    //         operationLogService.add(operationLog);
+    //
+    //     } catch (Throwable e) {
+    //         e.printStackTrace();
+    //         logger.debug("操作日志捕获失败！ ");
+    //     }
+    //     return proceedingJoinPoint.proceed();
+    // }
 
 
 

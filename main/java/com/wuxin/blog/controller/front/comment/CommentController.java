@@ -62,7 +62,7 @@ public class CommentController {
      * 添加blog评论
      */
     @AccessLimit(msg = "30s仅内可发布两条评论", limitCount = 2)
-    @VisitLogger(value = "添加回复")
+    @OperationLogger(value = "添加回复")
     @PostMapping("/add")
     public Result addComment(@RequestBody Comment comment) {
         if (!((comment.getType().equals(Comment.BLOG_COMMENT))
@@ -91,7 +91,7 @@ public class CommentController {
         // 添加评论
         commentService.addComment(comment);
         // 评论推送给我
-        mailService.pubMessage(comment);
+        // mailService.pubMessage(comment);
         return Result.ok("评论发布成功！");
     }
 
@@ -100,7 +100,7 @@ public class CommentController {
      * 博客评论回复
      */
     @AccessLimit(msg = "30s仅内可发布两条评论", limitCount = 2)
-    @VisitLogger(value = "添加回复")
+    @OperationLogger(value = "添加回复")
     @PostMapping("/reply/add")
     public Result addReply(@RequestBody CommentReply commentReply) {
 
@@ -125,7 +125,7 @@ public class CommentController {
         }
         // 设置回复用户
         commentReply.setReplyUserId(userComment.getUserId());
-        commentService.addReply(commentReply);
+        Long replyId = commentService.addReply(commentReply);
 
 
         User user = userService.selectCommentUserByUserId(commentReply.getCommentUserId());
@@ -140,7 +140,7 @@ public class CommentController {
         // 你的文章有了信息评论
         // mailService.pubMessage(commentReply);
 
-        return Result.ok("评论发布成功");
+        return Result.ok(replyId);
     }
 
 

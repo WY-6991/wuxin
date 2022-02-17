@@ -17,9 +17,9 @@ public interface CommentService {
 
     /**
      * 添加评论
-     * @param blogComment commentDTO
+     * @param comment comment
      */
-    void addComment(Comment blogComment);
+    void addComment(Comment comment);
 
 
     /**
@@ -57,7 +57,7 @@ public interface CommentService {
      * 评论回复
      * @param blogCommentReply DTO
      */
-    void addReply(CommentReply blogCommentReply);
+    Long addReply(CommentReply blogCommentReply);
 
 
     /**

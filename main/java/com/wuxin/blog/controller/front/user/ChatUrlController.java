@@ -1,4 +1,4 @@
-package com.wuxin.blog.controller.front.chatUrl;
+package com.wuxin.blog.controller.front.user;
 
 
 import com.wuxin.blog.annotation.OperationLogger;

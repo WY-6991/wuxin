@@ -45,8 +45,6 @@ public class SiteController {
         result.put("categoryList",categoryService.list());
         result.put("tagList",tagService.list());
         result.put("newBlogList",blogService.newBlog());
-        MySystem mySystem = systemService.findMySystem(MySystem.SYSTEM_ID);
-        // 过滤不必要的信息
         result.put("site", Site.getSite(systemService.findMySystem(MySystem.SYSTEM_ID)));
         return result;
     }

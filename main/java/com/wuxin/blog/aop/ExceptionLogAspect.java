@@ -30,13 +30,13 @@ import java.util.Map;
  */
 @Aspect
 @Component
-public class ExceptionLogAop {
+public class ExceptionLogAspect {
 
     @Autowired
     ExceptionService exceptionLogService;
 
 
-    private static final Logger logger = LoggerFactory.getLogger(ExceptionLogAop.class);
+    private static final Logger logger = LoggerFactory.getLogger(ExceptionLogAspect.class);
 
     /**
      * 捕获异常信息
@@ -98,7 +98,7 @@ public class ExceptionLogAop {
             description = loginLogger.value();
             return description;
         }
-        return description;
+        return null;
 
     }
 

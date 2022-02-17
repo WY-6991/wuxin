@@ -261,7 +261,6 @@ public class UserServiceImpl implements UserService {
             newUser.setSubscription(subscription);
             // 将初始密码设置为用户邮箱
             newUser.setPassword(email);
-
             userId = addUser(newUser);
         } else {
             // 用户名和邮箱是否输入正确

@@ -140,9 +140,9 @@ public class RedisKey {
 
     public static String getKey(Long blogId, String keyName, Integer current, Integer type) {
         if (blogId == null || blogId == 0) {
-            return keyName + "_" + current + "_" + type;
+            return keyName + "_" + type + "_" + current;
         }
-        return blogId + "_" + keyName + "_" + current + "_" + type;
+        return keyName + "_" + type + "_" + current + "_" + blogId;
     }
 
 

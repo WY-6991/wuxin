@@ -125,9 +125,7 @@ public class CommentServiceImpl implements CommentService {
                 .page(new Page<>(current, limit));
         // 获取评论用户Id名头像等基本信息
         page.getRecords().forEach(comment -> {
-            ThrowUtils.isNull(comment, "该评论不存在！");
             User commentUser = userMapper.selectById(comment.getCommentUserId());
-            ThrowUtils.userNull(commentUser);
             // 获取用户昵称
             comment.setUsername(commentUser.getNickname());
             // 获取用户头像
@@ -137,16 +135,16 @@ public class CommentServiceImpl implements CommentService {
         });
         // 将评论缓存 同时设置 过期时间
         redisService.hset(COMMENT_LIST, hk, page, expire);
-
         // 获取blog
         return page;
     }
 
     @Override
-    public void addReply(CommentReply reply) {
+    public Long addReply(CommentReply reply) {
         reply.setStatus(true);
         ThrowUtils.ops(blogCommentReplyMapper.insert(reply), "回复添加失败！");
         deleteCommentCache(reply.getBlogId(), reply.getType());
+        return reply.getReplyId();
     }
 
     @Override
@@ -280,7 +278,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     public void getReplyList(Comment blogComment) {
-        List<CommentReply> replyList = new LambdaQueryChainWrapper<CommentReply>(blogCommentReplyMapper)
+        List<CommentReply> replyList = new LambdaQueryChainWrapper<>(blogCommentReplyMapper)
+                .orderByDesc(CommentReply::getCreateTime)
                 .eq(CommentReply::getBlogId, blogComment.getBlogId())
                 .eq(CommentReply::getCommentId, blogComment.getCommentId())
                 .list();
@@ -333,9 +332,9 @@ public class CommentServiceImpl implements CommentService {
     void deleteCommentCache(Long blogId, Integer type) {
 
         int commentCount = onlyCommentCount(blogId, type);
-        int size = 5;
+        int size = 10;
         int totalPage = commentCount / size + 1;
-        for (int i = 1; i < totalPage; i++) {
+        for (int i = 1; i <= totalPage; i++) {
             String hk = RedisKey.getKey(blogId, COMMENT_LIST, i, type);
             boolean b = redisService.hHasKey(COMMENT_LIST, hk);
             if (b) {
