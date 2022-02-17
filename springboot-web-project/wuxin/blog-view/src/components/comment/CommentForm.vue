@@ -2,7 +2,7 @@
   <div class="comment_container ">
     <el-input style="background-color: black" type="textarea" :rows="2" class="comment_reply"
               :autosize="{ minRows: 6, maxRows: 8 }" maxlength="300"
-              clearable show-word-limit placeholder="评论千万条,文明第一条!" v-model="commentUser.content">
+              clearable show-word-limit :placeholder="placeholder" v-model="commentUser.content">
     </el-input>
     <el-form :inline="true" :model="commentUser" :rules="rules" ref="dataForm" size="small">
       <el-form-item>
@@ -154,16 +154,15 @@ export default {
     },
     id: {
       type: Number | String,
-      default: 0,
-    },
-    cleanContent: {
-      type: Function,
-      default: () => {
-      }
+      default: null,
     },
     loading: {
       type: Boolean,
       default: false
+    },
+    placeholder:{
+      type:String,
+      default:'评论千万条，文明第一条！'
     }
   },
 

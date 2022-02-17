@@ -242,7 +242,8 @@ footer {
 }
 
 .m-datetime {
-    color: #00a7e0 !important;
+    /*color: #00a7e0 !important;*/
+    color: rgba(0, 0, 0, 0.2) !important;
 }
 
 .m-datetime * {

@@ -1,5 +1,5 @@
 <template>
-  <div class="ui attached segment" :style="bgColor" >
+  <div class="ui attached segment" :style="bgColor">
     <div class="typo content">
       <Title :title="title" />
       <div class="ui middle aligned mobile reversed stackable">
@@ -8,32 +8,27 @@
              v-html="about.content"
         ></div>
       </div>
-      <!--关于我的信息-->
-      <div>
-        <AboutComment v-if="about.commentEnabled" :commentEnabled="about.commentEnabled" />
-        <h3 v-else>
-          <span :style="bgColor">评论已关闭</span>
-        </h3>
-      </div>
+      <!--评论-->
+      <Comment :commentEnabled="about.commentEnabled" :type="2"></Comment>
     </div>
   </div>
 </template>
 
 <script>
 import Title from "@/components/common/Title";
-import AboutComment from "@/components/about/about-comment.vue";
 import {getAbout,} from '@/api/about'
+import Comment from "@/components/comment/Comment";
 
 export default {
   name: "Blog",
   components: {
+    Comment,
     Title,
-    AboutComment
   },
   data() {
     return {
       title: "关于我",
-      about:{}
+      about: {}
     };
   },
 

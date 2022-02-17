@@ -33,7 +33,7 @@ export const state = {
         // 图片模糊背景化
         filter: '10px',
         // 背景色 默认无
-        color: 'default',
+        color: '#fff',
         // 图片透明度 默认 无
         imageOpacity: 1
     },

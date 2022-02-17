@@ -1,14 +1,12 @@
 <template>
   <div class="ui attached segment" :style="bgColor">
     <div class="container">
-
       <!-- 标题 -->
       <Title :title="title" />
       <!-- 友情来链接 -->
       <FriendList :friendList="friendList" />
       <!-- 评论 -->
-      <FriendComment />
-
+      <Comment :type="3" />
     </div>
   </div>
 
@@ -18,36 +16,36 @@
 import Title from "@/components/common/Title";
 import FriendList from "@/components/friend/FrirendList";
 import {
-    getFriendList
+  getFriendList
 } from "@/api/friend";
-import FriendComment from '@/components/friend/FriendComment.vue';
+import Comment from "@/components/comment/Comment";
 
 export default {
-    name: 'Friend',
-    data() {
-        return {
-            title: '友情链接',
-            friendList: [],
-        }
+  name: 'Friend',
+  data() {
+    return {
+      title: '友情链接',
+      friendList: [],
+    }
+  },
+  components: {
+    Comment,
+    FriendList,
+    Title,
+  },
+  methods: {
+    getList() {
+      getFriendList().then(res => {
+        this.friendList = res.result
+      })
     },
-    components: {
-        FriendList,
-        Title,
-        FriendComment,
-    },
-    methods: {
-        getList() {
-            getFriendList().then(res => {
-                this.friendList = res.result
-            })
-        },
 
-    },
-    created() {
+  },
+  created() {
 
-        // 加载朋友列表
-        this.getList()
-    },
+    // 加载朋友列表
+    this.getList()
+  },
 
 };
 </script>

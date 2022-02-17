@@ -1,8 +1,12 @@
 <template>
   <div class="ui bottom" style="text-align: center;">
-    <el-pagination @current-change="handleCurrentChange" :current-page="pageNum" :page-count="totalPage"
-                   layout="prev, pager, next" background hide-on-single-page>
-    </el-pagination>
+    <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page="pageNum"
+        :page-count="totalPage"
+        layout="prev, pager, next"
+        background hide-on-single-page
+    />
   </div>
 </template>
 
@@ -35,10 +39,9 @@ export default {
       default: true
     }
   },
-  // 目前只有首页被缓存，所以这个钩子只会被首页调用
   activated() {
     this.$nextTick(() => {
-      if (this.$route.name !== "index") {
+      if (this.$route.name !== "Index") {
         //从其它页面路由到首页时，让首页的分页组件页码重置到第一页
         this.pageNum = 1;
       }
@@ -55,7 +58,7 @@ export default {
       // 默认可视化距离
       clientHeight: 0,
       // 设置到顶部时间和加载数据时间一致
-      delay:1000
+      delay: 1000
     };
   },
   mounted() {
@@ -73,7 +76,7 @@ export default {
         this.pageNum = newPage;
         this.getList(newPage);
         this.$emit('currentPage', newPage)
-      }, this.delay/2)
+      }, this.delay / 2)
     },
 
     // 该部分引用了element 回到顶部按钮事件
@@ -109,7 +112,7 @@ export default {
       };
       rAF(frameFunc);
     },
-      //返回true表示为pc端打开，返回false表示为手机端打开
+    //返回true表示为pc端打开，返回false表示为手机端打开
     check() {
       let userAgentInfo = navigator.userAgent;
       console.log(userAgentInfo)
@@ -121,7 +124,7 @@ export default {
           break;
         }
       }
-      console.log(document.documentElement.clientHeight)
+      // console.log(document.documentElement.clientHeight)
       // 如果是pc端打开打开的同时是首页
       if (this.$route.name === 'Index' && flag) {
         // 获取浏览器可视化距离

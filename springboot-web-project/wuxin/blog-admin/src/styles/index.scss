@@ -277,6 +277,18 @@ aside {
   margin-left: 3em !important;
 }
 
+.m-padding-left-mini {
+  padding: 2px !important;
+}
+
+.m-padding-left-small {
+  padding: 10px !important;
+}
+
+.m-padding-left-big {
+  padding: 20px !important;
+}
+
 
 //----------------------------------------mtable---------------------------------
 
@@ -358,7 +370,7 @@ aside {
   z-index: 100;
 }
 
-.m-flex-column-align{
+.m-flex-column-align {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;

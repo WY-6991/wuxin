@@ -20,7 +20,6 @@
                                 leave-active-class="animate__animated animate__fadeOutLeft">
                 <div v-show="settingState.focusMode" :key="1">
                   <!--                  <TagSidebar :tag-list="tagList"></TagSidebar>-->
-                  <Blogger :user="adminUserInfo"></Blogger>
                 </div>
               </transition-group>
             </div>
@@ -35,10 +34,10 @@
               <transition-group enter-active-class="animate__animated animate__fadeInRight "
                                 leave-active-class="animate__animated animate__fadeOutRight">
                 <div v-show="settingState.focusMode" :key="1" class="slide right">
-                  <RandomBlog :random-blog-list="randomBlogList"></RandomBlog>
-                  <TagSidebar :tag-list="tagList" class=" tagSidebar"></TagSidebar>
+                  <RandomBlog :random-blog-list="randomBlogList" />
+                  <TagSidebar :tag-list="tagList"  id="tags" />
                   <!--如果文章有密码,不加载目录-->
-                  <BlogContents ref="contents" v-show="checkRoute('Blog')"></BlogContents>
+                  <BlogContents  v-show="checkRoute('Blog')" class="contents" />
                 </div>
               </transition-group>
             </div>
@@ -48,7 +47,7 @@
       </div>
     </div>
 
-    <MyPlayer></MyPlayer>
+    <MyPlayer />
     <!--    回到顶部按钮-->
     <el-backtop style="box-shadow: none; background: none">
       <svg t="1638758260552" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
@@ -144,9 +143,21 @@ export default {
     this.initData()
     this.randomBlog()
 
-    const blog = this.$refs.contents
-    console.log(blog)
-    console.log('==================>elementui', this.adminUserInfo)
+    const tags = document.getElementById('tags')
+    const content = document.querySelector('.contents')
+    console.log('contents===>', content, 'tags=>', tags)
+
+    const contents_offsetTop = content.offsetTop
+    const contents_offsetHeight = content.offsetHeight
+    console.log(contents_offsetTop, contents_offsetHeight);
+    // const tag_offsetTop = tag.offsetTop
+    // const tag_offsetHeight = tag.offsetHeight
+    // console.log(tag_offsetTop, tag_offsetHeight)
+
+    // window.document.addEventListener('scroll', function (e) {
+    //   // console.log(e);
+    // })
+
   },
 
   methods: {
@@ -189,7 +200,7 @@ export default {
       getAdminUserInfo().then((res) => {
         if (res.code === 200) {
           this.adminUserInfo = res;
-          console.log('admin user result============>'+res)
+          console.log('admin user result============>' + res)
         }
       })
 

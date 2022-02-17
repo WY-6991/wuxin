@@ -1,85 +1,103 @@
 <template>
-  <div class="ui container m-comment-list">
-    <sui-comment-group threaded ref="reference" v-if="commentCount!==0" style=" padding: 0 20px">
-      <h3 is="sui-header" style="padding-top: 10px;" :style="bgColor">{{ commentCount }}条评论</h3>
-      <sui-divider style="width:100%;" />
+  <div class="ui small comments" style="max-width: 100%;">
+    <div v-if="commentEnabled">
+      <div v-if="commentList&&commentList.length!==0">
+        <h3 class="ui dividing header">共 {{ commentCount }} 条评论 </h3>
+        <div class="comment" v-for="(comment,index) in commentList">
+          <a class="avatar">
+            <!--        <img :src="comment.avatar" v-if="comment.avatar">-->
+            <svg t="1644976238253" class="icon" viewBox="0 0 1024 1024"
+                 xmlns="http://www.w3.org/2000/svg"
+                 width="44" height="44">
+              <path
+                  d="M510.238 4.399C233.571 4.399 7.21 230.761 7.21 507.427c0 276.661 226.362 503.023 503.028 503.023 276.661 0 503.023-226.362 503.023-503.023 0-276.668-226.362-503.028-503.023-503.028z m12.572 150.907c191.779 0 191.779 144.623 191.779 226.362 0 81.745-75.455 232.652-191.779 235.793-113.182 0-191.779-150.907-191.779-235.793 0.001-81.74 0.001-226.362 191.779-226.362z m-12.572 826.85c-144.623 0-276.667-66.026-364.695-169.769 12.574-31.441 28.293-66.026 50.303-84.886 47.156-37.73 188.631-100.608 188.631-100.608l88.03 169.774 15.721-40.873-25.152-50.303 50.303-50.299 50.303 50.299-22.011 53.446 12.578 40.874 91.172-166.627s141.475 62.877 188.636 100.608c22.004 15.716 37.725 44.015 47.157 69.161-84.884 110.039-220.071 179.204-370.977 179.204z m0 0z"
+                  fill="#cdcdcd" p-id="4574"></path>
+            </svg>
+          </a>
+          <div class="content m-padding-left-small">
+            <a class="author">{{ comment.username }}</a>
+            <a class="ui label orange left pointing  small m-margin-left-small">作者</a>
+            <div class="text">
+              {{ comment.content }}
+            </div>
+            <div class="actions">
+              <span class="metadata date">{{ comment.createTime | formatDateTime }}</span>
+              <a class="reply " @click.prevent="showReply(comment)"
+                 v-if="parentCommentId===-1||parentCommentId!==comment.commentId">回复</a>
+              <a class="reply " @click.prevent="closeReply(-1)"
+                 v-if="parentCommentId===comment.commentId">取消</a>
+              <CommentForm
+                  v-if="parentCommentId===comment.commentId"
+                  :comment-type="commentType"
+                  :comment-user-id="comment.commentUserId"
+                  :comment-id="comment.commentId"
+                  :loading="loading"
+                  :id="id"
+                  :type="type"
+                  :placeholder="placeholder"
+                  @addReply="addReply"
+              />
 
-      <!----------------------------------------------commentList--------------------------------------->
-      <sui-comment v-for="comment in commentList" :key="comment.commentId">
+            </div>
 
-        <sui-comment-avatar :src="comment.avatar" style="border-radius: 50%" circular />
-        <div class="ui left pointing label orange mini" v-if="comment.commentUserId===1">作者</div>
-        <sui-comment-content>
-          <!--username-->
-          <a is="sui-comment-author" :style="bgColor">{{ comment.username }}</a>
+            <div class="comments" v-for="(reply,replyIndex) in comment.replyList" :key="reply.replyId">
+              <div class="comment" v-if="replyIndex<3||loadingList[comment.commentId]">
+                <a class="avatar">
+                  <!--              <img :src="reply.replyAvatar">-->
+                  <svg t="1644976238253" class="icon" viewBox="0 0 1024 1024"
+                       xmlns="http://www.w3.org/2000/svg"
+                       width="32" height="32">
+                    <path
+                        d="M510.238 4.399C233.571 4.399 7.21 230.761 7.21 507.427c0 276.661 226.362 503.023 503.028 503.023 276.661 0 503.023-226.362 503.023-503.023 0-276.668-226.362-503.028-503.023-503.028z m12.572 150.907c191.779 0 191.779 144.623 191.779 226.362 0 81.745-75.455 232.652-191.779 235.793-113.182 0-191.779-150.907-191.779-235.793 0.001-81.74 0.001-226.362 191.779-226.362z m-12.572 826.85c-144.623 0-276.667-66.026-364.695-169.769 12.574-31.441 28.293-66.026 50.303-84.886 47.156-37.73 188.631-100.608 188.631-100.608l88.03 169.774 15.721-40.873-25.152-50.303 50.303-50.299 50.303 50.299-22.011 53.446 12.578 40.874 91.172-166.627s141.475 62.877 188.636 100.608c22.004 15.716 37.725 44.015 47.157 69.161-84.884 110.039-220.071 179.204-370.977 179.204z m0 0z"
+                        fill="#cdcdcd" p-id="4574"></path>
+                  </svg>
+                </a>
+                <div class="content">
+                  <a class="author">{{ reply.replyUsername }}</a>
+                  <a class="ui label orange left pointing  small m-margin-left-small">作者</a>
+                  <div class="text">
+                    <a class="author m-padding-right-small" v-if="reply.replyUsername!==reply.commentUsername"> @ {{
+                        reply.commentUsername
+                      }}</a>{{ reply.replyContent }}
+                  </div>
+                  <div class="actions">
+                    <span class="metadata date">{{ reply.createTime | formatDateTime }}</span>
+                    <a class="reply " @click.prevent="showReply1(reply)"
+                       v-if="parentCommentId===-1||parentCommentId!==reply.replyId">回复</a>
+                    <a class="reply" @click.prevent="closeReply(-1)"
+                       v-if="parentCommentId===reply.replyId">取消</a>
 
-          <sui-comment-metadata>
-            <div :style="bgColor">{{ comment.createTime | formatDateTime }}</div>
-            <!--button-->
-            <label class="ui label blue mini m-comment-button" @click="showReply(comment.commentId)"
-                   v-if="parentCommentId===-1||parentCommentId!==comment.commentId">回复</label>
-            <label class="ui label info mini m-comment-button" @click="showReply(-1)"
-                   v-if="parentCommentId===comment.commentId">取消</label>
-          </sui-comment-metadata>
-          <sui-comment-text :style="bgColor">
-            {{ comment.content }}
-          </sui-comment-text>
-
-          <CommentForm v-if="parentCommentId===comment.commentId" :comment-type="commentType" :loading="loading"
-                       :comment-id="comment.commentId" :id="id" :comment-user-id="comment.commentUserId"
-                       @addReply="addReply" :ref="comment.commentId" :type="type" />
-
-        </sui-comment-content>
-
-        <!-- ----------------------------------------------replyList -------------------------------------------------------------------------->
-        <sui-comment-group v-for="reply in comment.replyList" :key="reply.replyId">
-          <sui-comment>
-            <sui-comment-avatar :src="reply.replyAvatar" />
-            <div class="ui left pointing label orange mini" v-if="comment.commentUserId===1">作者</div>
-            <sui-comment-content>
-              <a is="sui-comment-author" :style="bgColor">{{ reply.replyUsername }}</a>
-              <sui-comment-metadata>
-                <div :style="bgColor">{{ reply.createTime | formatDateTime }}</div>
-              </sui-comment-metadata>
-              <sui-comment-text>
-                <div class="reply_content" :style="bgColor">
-                  @<a is="sui-comment-author" class="no-decoration" :style="bgColor"> {{ reply.commentUsername }} : </a>
-                  <span :style="bgColor"> {{ reply.replyContent }} </span>
+                    <CommentForm
+                        v-if="reply.replyId===parentCommentId"
+                        :comment-type="commentType"
+                        :loading="loading"
+                        :comment-id="comment.commentId"
+                        :id="id"
+                        :comment-user-id="reply.commentUserId"
+                        :type="type"
+                        @addReply="addReply"
+                    />
+                  </div>
                 </div>
-
-                <!-- button -->
-                <div class="m-padded-tb-mini">
-                  <label class="ui label blue mini m-comment-button" @click="showReply(reply.replyId)"
-                         v-if="parentCommentId===-1||parentCommentId!==reply.replyId">回复</label>
-                  <label class="ui label info mini m-comment-button" @click="showReply(-1)"
-                         v-if="parentCommentId===reply.replyId">取消</label>
-                </div>
-
-              </sui-comment-text>
-
-            </sui-comment-content>
-            <CommentForm v-if="reply.replyId===parentCommentId" :comment-type="commentType" :loading="loading"
-                         :comment-id="comment.commentId" :id="id" :comment-user-id="reply.commentUserId" :type="type"
-                         @addReply="addReply" />
-          </sui-comment>
-        </sui-comment-group>
-
-      </sui-comment>
-
-
-    </sui-comment-group>
-    <h3 is="sui-header" :style="bgColor" v-else style="padding-bottom: 20px;color: rgba(0,0,0,.6)">~暂无评论,快来占楼吧~</h3>
+              </div>
+            </div>
+            <div class="comments"
+                 v-if="comment.replyList&&comment.replyList.length>3&&!loadingList[comment.commentId]">
+              <span class="metadata">共计{{ comment.replyList.length }}条回复</span>
+              <a class="author" style="margin-left: 10px;" @click.prevent="loadingMore(comment.commentId)">点击加载更多</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h3 class="ui dividing header" v-else>~暂无评论~ </h3>
+    </div>
+    <h3 class="ui dividing header" v-else>~评论已关闭~ </h3>
   </div>
 </template>
 
 <script>
 import CommentForm from "@/components/comment/CommentForm";
-import {
-  getDateDiff
-} from "@/utils/validate.js";
-import {
-  mapActions
-} from "vuex";
+import {getDateDiff} from "@/utils/validate.js";
 
 export default {
   name: "CommentList",
@@ -91,6 +109,8 @@ export default {
       commentType: "reply",
       commentId: 0,
       replyId: 0,
+      placeholder: '评论千万条，文明第一条',
+      loadingList: {}
     };
   },
 
@@ -99,72 +119,128 @@ export default {
       return getDateDiff(value);
     },
   },
+  props: {
+    commentEnabled: {
+      type: Boolean,
+      default: true
+    },
+    commentList: {
+      type: Array,
+      default: () => {
+        return []
+      }
+    },
+    commentCount: {
+      type: Number,
+      default: 0
+    },
+    parentCommentId: {
+      type: Number,
+      default: -1
+    },
+    type: {
+      type: Number | String,
+      default: -1,
+    },
 
-  props: [
-    "id",
-    "commentList",
-    "commentCount",
-    "parentCommentId",
-    "type",
-    "loading"
-  ],
-
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    id: {
+      type: Number | String,
+      default: null,
+    }
+  },
 
   methods: {
-    //  展示评论回复内容框
-    showReply(commentId) {
-      this.$emit("setParentId", commentId);
+
+
+    showReply(comment) {
+      console.log(comment);
+      this.placeholder = `回复 @${comment.username}`
+      this.$emit("setParentId", comment.commentId);
     },
+
+    showReply1(reply) {
+      console.log(reply);
+      this.placeholder = `回复 @${reply.commentUsername}`
+      this.$emit("setParentId", reply.replyId);
+    },
+
+    closeReply() {
+      this.$emit("setParentId", -1);
+    },
+
     addReply(reply) {
       this.$emit("addReply", reply);
     },
 
-  },
+    loadingMore(commentId) {
+      console.log('commentId', commentId, 'loading')
+      //
+      if (commentId === null || commentId === '') {
+        return
+      }
+      if (this.loadingList[commentId]) {
+        return;
+      }
+      // 使用set方法给loading对象添加属性 this.laodingList 形式为:{1:1,1}
+      this.$set(this.loadingList, commentId, commentId)
 
+    }
+
+  }
 
 };
 </script>
 
 <style scoped>
 
-.m-comment-list {
-  width: 100% !important;
-  height: auto !important;
-}
+/*.m-comment-list {*/
+/*  width: 100% !important;*/
+/*  height: auto !important;*/
+/*}*/
 
-.m-comment-button {
-  cursor: pointer !important;
-}
+/*.m-comment-button {*/
+/*  cursor: pointer !important;*/
+/*  margin-left: 10px;*/
+/*}*/
 
-div.avatar > img {
-  border-radius: 50% !important;
-}
+/*div.avatar > img {*/
+/*  border-radius: 50% !important;*/
+/*}*/
 
-.ui.threaded.comments .comment .comments {
-  margin: -1em 0 -1em 1.25em;
-  padding: 1em 0 1em 2.25em;
-}
+/*.ui.threaded.comments .comment .comments {*/
+/*  margin: -1em 0 -1em 1.25em;*/
+/*  padding: 1em 0 1em 2.25em;*/
+/*}*/
 
-.ui.comments .comment .avatar img,
-.ui.comments .comment img.avatar {
-  display: block;
-  margin: 0 auto;
-  width: 100%;
-  height: 100%;
-  border-radius: 50% !important;
-}
+/*.ui.comments .comment .avatar img,*/
+/*.ui.comments .comment img.avatar {*/
+/*  display: block;*/
+/*  margin: 0 auto;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  border-radius: 50% !important;*/
+/*}*/
 
-.comment_list {
-  color: orangered !important;
-  cursor: pointer !important;
-  display: none;
-}
-
-.comment_list:hover {
-  display: block;
-}
 
 .typo a {
   border-bottom: 1px solid #fff;
 }
+
+.reply {
+  padding-left: 20px !important;
+}
+
+.m-padding-right-small {
+  padding-right: 10px !important;
+}
+
+.m-padding-left-small {
+  padding-left: 10px !important;
+}
+
+
 </style>
