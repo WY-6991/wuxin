@@ -25,6 +25,8 @@ public class MyWebConfig implements WebMvcConfigurer {
     private TokenInterceptor tokenInterceptor;
 
 
+
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")

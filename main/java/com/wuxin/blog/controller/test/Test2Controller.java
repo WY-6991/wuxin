@@ -33,4 +33,16 @@ public class Test2Controller {
     public Result accessLimit(){
         return Result.ok("hello");
     }
+
+
+    /**
+     * 测试限流处理
+     * @return
+     */
+    @AccessLimit(limitCount = 10)
+    @GetMapping("/access/ip")
+    public Result accessIp(){
+
+        return Result.ok("您当前ip:");
+    }
 }

@@ -12,15 +12,20 @@ spring:
     url: jdbc:mysql://localhost:3306/wuxin_db?useSSL=false&serverTimezone=GMT%2b8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
     username: root
     password: 123456
+
+#    url: jdbc:mysql://localhost:3306/wuxin_db?useSSL=false&serverTimezone=GMT%2b8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+#      username: wuxin_db
+#      password: 562at6d45acyadw2
     # 支持表情包输入
     hikari:
       connection-init-sql: SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci
   #redis
   redis:
-    host: 127.0.0.1  #配置redis的主机地址，需要修改成自己的
+    host: localhost  #配置redis的主机地址，需要修改成自己的
     database: 5
     port: 6379
-    password:  # redis密码设置
+    password:
+#    password: 123456
     jedis:
       pool:
         max-active: 50
@@ -36,7 +41,7 @@ spring:
     suffix: .html
     mode: HTMl
 
-#  #    邮箱配置
+  #  #    邮箱配置
   mail:
     protocol: smtp
     host: smtp.qq.com

@@ -1,11 +1,8 @@
 package com.wuxin.blog.mode;
 
-import com.sun.istack.internal.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 
@@ -21,12 +18,9 @@ public class Github implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull
     private String url;
 
-    @NotNull
     private String sha;
 
-    @NotNull
     private String message;
 }

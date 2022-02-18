@@ -1,6 +1,5 @@
 package com.wuxin.blog.service.impl;
 
-import com.sun.istack.internal.NotNull;
 import com.wuxin.blog.constant.Constants;
 import com.wuxin.blog.constant.GlobalConstant;
 import com.wuxin.blog.pojo.blog.Comment;
@@ -24,7 +23,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -169,7 +167,7 @@ public class MailServiceImpl implements MailService {
     /**
      * 发送简单邮箱
      */
-    public void simpleMail(@NotNull String email, @NotNull String subject, @NotNull String content) {
+    public void simpleMail( String email,  String subject,  String content) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setSubject(subject);
@@ -187,7 +185,7 @@ public class MailServiceImpl implements MailService {
     /**
      * 使用模板引擎发送html模板邮件信息
      */
-    public void mailTemplateEngine(@NotNull String email, @NotNull String subject, @NotNull Map<String, Object> map, @NotNull String templatePath) {
+    public void mailTemplateEngine( String email,  String subject,  Map<String, Object> map,  String templatePath) {
 
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();

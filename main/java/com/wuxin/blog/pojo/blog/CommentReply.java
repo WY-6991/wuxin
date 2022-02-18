@@ -40,6 +40,12 @@ public class CommentReply extends CreateTime implements Serializable {
     private String replyContent;
 
 
+    /**
+     * 内容
+     */
+    @TableField("top")
+    private Integer top;
+
 
     /**
      * 回复用户
@@ -79,7 +85,7 @@ public class CommentReply extends CreateTime implements Serializable {
      * 评论用户是否 订阅了消息
      */
     @TableField(exist = false)
-    private boolean subscription ;
+    private boolean subscription;
 
     /**
      * 头像

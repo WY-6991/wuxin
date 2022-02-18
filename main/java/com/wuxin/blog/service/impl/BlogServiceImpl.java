@@ -118,9 +118,22 @@ public class BlogServiceImpl implements BlogService {
                 return redisPage;
             }
         }
-
-        // 指定
-        Page<Blog> page = MapperUtils.lambdaQueryWrapper(blogMapper).orderByDesc(Blog::getTop).orderByDesc(Blog::getCreateTime).page(new Page<>(current, limit));
+        Page<Blog> page =
+                MapperUtils.lambdaQueryWrapper(blogMapper)
+                        .orderByDesc(Blog::getTop).orderByDesc(Blog::getCreateTime)
+                        .select(
+                                Blog::getBlogId,
+                                Blog::getCreateTime,
+                                Blog::getDescription,
+                                Blog::getCid,
+                                Blog::getViews,
+                                Blog::getTitle,
+                                Blog::getTop,
+                                Blog::getWords,
+                                Blog::getUserId
+                        )
+                        .eq(Blog::isPublish, 1)
+                        .page(new Page<>(current, limit));
         for (Blog blog : page.getRecords()) {
             getBlogInfo(blog);
         }

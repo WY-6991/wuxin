@@ -55,6 +55,11 @@ public class Comment extends CreateTime implements Serializable {
     private boolean status;
 
     /**
+     * 置顶
+     */
+    private Integer top;
+
+    /**
      * 评论类型
      */
     private Integer type;
@@ -77,7 +82,7 @@ public class Comment extends CreateTime implements Serializable {
      * 是否订阅回复
      */
     @TableField(exist = false)
-    private boolean subscription ;
+    private boolean subscription;
 
     /**
      * 邮箱

@@ -61,6 +61,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void addComment(Comment comment) {
         comment.setStatus(true);
+        comment.setTop(0);
         ThrowUtils.ops(commentMapper.insert(comment), "评论添加失败");
         deleteCommentCache(comment.getBlogId(), comment.getType());
     }
@@ -142,6 +143,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Long addReply(CommentReply reply) {
         reply.setStatus(true);
+        reply.setTop(0);
         ThrowUtils.ops(blogCommentReplyMapper.insert(reply), "回复添加失败！");
         deleteCommentCache(reply.getBlogId(), reply.getType());
         return reply.getReplyId();
@@ -210,24 +212,26 @@ public class CommentServiceImpl implements CommentService {
         queryChainWrapper.orderByDesc(Comment::getCreateTime);
         Page<Comment> commentPage = new Page<>(current, limit);
         Page<Comment> page = queryChainWrapper
-                .like(StringUtils.isNotNull(keywords), Comment::getContent, keywords)
-                .eq(Comment::getType, type)
+                .like(StringUtils.isNotEmpty(keywords), Comment::getContent, keywords)
+                .eq(StringUtils.isNotNull(type), Comment::getType, type)
                 .eq(StringUtils.isNotNull(blogId), Comment::getBlogId, blogId)
-                .le(StringUtils.isNotNull(end), Comment::getCreateTime, end)
-                .ge(StringUtils.isNotNull(start), Comment::getCreateTime, start)
+                .le(StringUtils.isNotEmpty(end), Comment::getCreateTime, end)
+                .ge(StringUtils.isNotEmpty(start), Comment::getCreateTime, start)
                 .page(commentPage);
 
         page.getRecords().forEach(comment -> {
-            if (type.equals(Comment.BLOG_COMMENT)) {
+            if (comment.getType().equals(Comment.BLOG_COMMENT)) {
                 String title = MapperUtils.lambdaQueryWrapper(blogMapper).select(Blog::getBlogId, Blog::getTitle).eq(Blog::getBlogId, comment.getBlogId()).one().getTitle();
                 comment.setTitle(title);
             }
-            if (type.equals(Comment.ABOUT_COMMENT)) {
+            if (comment.getType().equals(Comment.ABOUT_COMMENT)) {
                 comment.setTitle("关于我");
             }
-            if (type.equals(Comment.FRIEND_COMMENT)) {
+            if (comment.getType().equals(Comment.FRIEND_COMMENT)) {
                 comment.setTitle("友情链接");
             }
+
+
             // 获取评论用户名
             User commentUser = userMapper.selectById(comment.getCommentUserId());
             comment.setUsername(commentUser.getUsername());

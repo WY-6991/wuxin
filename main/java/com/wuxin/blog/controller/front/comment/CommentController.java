@@ -52,8 +52,6 @@ public class CommentController {
         if (!(type.equals(Comment.BLOG_COMMENT) || type.equals(Comment.ABOUT_COMMENT) || type.equals(Comment.FRIEND_COMMENT))) {
             return Result.error("获取不到评论类型");
         }
-
-
         return Result.ok().put("page", commentService.findCommentList(current, limit, blogId, type)).put("commentCount", commentService.findCommentCount(blogId, type));
     }
 
@@ -91,7 +89,7 @@ public class CommentController {
         // 添加评论
         commentService.addComment(comment);
         // 评论推送给我
-        // mailService.pubMessage(comment);
+        mailService.pubMessage(comment);
         return Result.ok("评论发布成功！");
     }
 
@@ -139,7 +137,7 @@ public class CommentController {
         // 评论消息发布给我
         // 你的文章有了信息评论
         // mailService.pubMessage(commentReply);
-
+        //
         return Result.ok(replyId);
     }
 
