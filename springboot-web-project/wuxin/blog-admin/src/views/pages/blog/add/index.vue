@@ -37,7 +37,7 @@
         label-position="left"
         label-width="70px"
       >
-        <el-form-item label="类型" prop="category">
+        <el-form-item label="类型">
           <el-select
             style="min-width: 300px;"
             v-model="blog.cid"
@@ -89,8 +89,6 @@
         <el-button type="primary" @click="createData">确认</el-button>
       </div>
     </el-dialog>
-
-
     <el-dialog title="添加分类" :visible.sync="addCategoryDialogFormVisible" width="30%">
       <AddCategory @closeAddLabel="closeAddLabel" @getList="getLabelList" />
     </el-dialog>
@@ -106,9 +104,10 @@
 <script>
 import {createBlog} from "@/api/blog";
 import {minix} from "@/views/pages/blog/minix";
+
 export default {
   name: "BlogAdd",
-  mixins:[minix],
+  mixins: [minix],
   data() {
     return {
       blog: {
@@ -169,7 +168,6 @@ export default {
         }
       });
     },
-
 
 
   },

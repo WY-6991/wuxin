@@ -188,7 +188,7 @@ export default {
     blogs() {
       return this.blogList.filter(blog => {
         return blog.title.indexOf(this.blogKeywords) !== -1 || blog.createTime.indexOf(this.blogKeywords) !== -1
-      });
+      })
     }
   },
   methods: {

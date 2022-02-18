@@ -162,12 +162,11 @@
       </svg>
     </div>
   </div>
-
-
 </template>
 
 <script>
 import dateFormat from '@/utils/date.js'
+import {formatLink} from "@/utils/link";
 
 export default {
   name: "BlogItem",
@@ -175,15 +174,26 @@ export default {
     blogList: {
       type: Array,
       required: true,
-      default: [],
+      default: () => {
+        return []
+      },
     },
+  },
+  computed: {
+    list() {
+      return this.blogList.forEach(blog => {
+        blog.description = formatLink(blog.description)
+        console.log(blog.description)
+      })
+    }
   },
 
   filters: {
     formatDateTime(value) {
       let date = new Date(value);
       return dateFormat.formatDate(date, "yyyy-MM-dd");
-    }
+    },
+
   },
   methods: {
     toBlog(blog) {

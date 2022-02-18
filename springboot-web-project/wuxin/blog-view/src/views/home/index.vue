@@ -1,18 +1,19 @@
 <template>
   <div style="background: rgba(0,0,0,0.1)">
-    <BlogList :getList="getBlogList" :blogList="blogList" :totalPage="totalPage"/>
+    <BlogList :getList="getBlogList" :blogList="blogList" :totalPage="totalPage" />
   </div>
 </template>
 
 <script>
 import BlogList from "@/components/blog/BlogList";
 import {getBlogList} from "@/api/blog";
-import {setTotalPage} from "@/utils/validate.js";
+import {formatLink} from "@/utils/link";
+
 export default {
   data() {
     return {
       blogList: [],
-      totalPage:0,
+      totalPage: 0,
       loading: false,
       pageNum: 1
     }
@@ -27,9 +28,13 @@ export default {
     getBlogList(pageNum) {
       getBlogList(pageNum).then(res => {
         if (res.code === 200) {
-          this.blogList = res.result.records
-          this.totalPage = setTotalPage(res.result.total, 5)
-          this.$nextTick(()=>{
+          const {records, pages} = res.result
+          records.forEach(blog => {
+            blog.description = formatLink(blog.description)
+          })
+          this.blogList = records
+          this.totalPage = pages
+          this.$nextTick(() => {
             //  加载代码高亮插件
             this.$primsjs.highlightAll()
           })
@@ -41,8 +46,6 @@ export default {
         this.$message.error("请求失败")
       })
     },
-
-   
 
 
   },

@@ -10,15 +10,16 @@
       <el-card>
         <div slot="header">
           <h3>页面设置</h3>
+          <!--          <el-switch v-model="isVisible" @click="$message.success('hello')"></el-switch>-->
         </div>
         <el-form size="small" label-position="top">
           <el-form-item label="导航栏">
             <el-row>
               <el-col :span="8" :xs="24">
-                <el-switch v-model="$store.state.setting.inverted" class="m-margin-small" active-text="反转" />
+                <el-switch v-model="settingState.inverted" class="m-margin-small" active-text="反转" />
               </el-col>
               <el-col :span="12" :xs="24">
-                <el-select v-model="$store.state.setting.menuColor"
+                <el-select v-model="settingState.menuColor"
                            placeholder="请选择" class="m-margin-small">
                   <el-option
                       v-for="(item,index) in colors"
@@ -37,25 +38,23 @@
           <el-form-item label="基本设置">
             <el-row>
               <el-col :span="3" :xs="24">
-                <el-tooltip content="开启夜间模式前请关闭背景图🙂" :disabled="!$store.state.setting.background.isShowImage">
-                  <i :class="$store.state.setting.nightMode?'el-icon-sunny':'el-icon-moon'"
-                     @click="$store.state.setting.nightMode = !$store.state.setting.nightMode"
+                <el-tooltip content="开启夜间模式前请关闭背景图🙂" :disabled="!settingState.background.isShowImage">
+                  <i class="m-setting-icon" :class="settingState.nightMode?'el-icon-sunny':'el-icon-moon'"
+                     @click="updateNightMode"
                      style="cursor: pointer;font-size: 30px;"></i>
                 </el-tooltip>
-
-
               </el-col>
               <el-col :span="4" :xs="24">
                 <el-tooltip
                     content="请先关闭 夜间模式 和 背景图 自定义背景才会生效"
-                    :disabled="!$store.state.setting.background.isShowImage&&!$store.state.setting.nightMode"
+                    :disabled="!settingState.background.isShowImage&&!settingState.nightMode"
                 >
-                  <el-color-picker v-model="$store.state.setting.background.color" />
+                  <el-color-picker v-model="settingState.background.color" />
                 </el-tooltip>
 
               </el-col>
               <el-col :span="8" :xs="24" class="m-mobile-hide">
-                <el-switch v-model="$store.state.setting.focusMode" active-text="侧边栏" />
+                <el-switch v-model="settingState.focusMode" active-text="侧边栏" />
               </el-col>
 
 
@@ -63,10 +62,10 @@
 
           </el-form-item>
           <el-form-item label="背景图设置">
-            <el-switch v-model="$store.state.setting.background.isShowImage" active-text="开启"
+            <el-switch v-model="settingState.background.isShowImage" active-text="开启"
                        class="m-margin-small" />
-            <el-tooltip content="请打开背景图开关" :disabled="$store.state.setting.background.isShowImage">
-              <el-select v-model="$store.state.setting.background.image" placeholder="请选择背景图" class="m-margin-small">
+            <el-tooltip content="请打开背景图开关" :disabled="settingState.background.isShowImage">
+              <el-select v-model="settingState.background.image" placeholder="请选择背景图" class="m-margin-small">
                 <el-option
                     v-for="(item,index) in backgroundImageList"
                     :key="`image${index}`"
@@ -90,6 +89,8 @@
 <script>
 import {colors, backgroundImageList} from "@/utils/setting";
 import {mapGetters} from 'vuex'
+import {UPDATE_NIGTH_MODE} from "@/store/mutations-type";
+
 export default {
   name: 'PageSetting',
   data() {
@@ -97,11 +98,25 @@ export default {
       drawer: false,
       colors: colors,
       backgroundImageList: backgroundImageList,
-      visible: false
+      visible: true
     }
   },
   computed: {
-    ...mapGetters(['settingState'])
+    ...mapGetters(['settingState']),
+  },
+  methods: {
+    updateNightMode() {
+      let nightMode = this.settingState.nightMode
+      this.settingState.nightMode = !nightMode
+      if (this.settingState.nightMode) {
+        // 如果开启了夜间模式，导航栏需要开启夜间颜色反转
+        this.settingState.inverted = true
+      } else {
+        this.settingState.inverted = false
+      }
+
+
+    }
   },
 
 
@@ -126,6 +141,11 @@ export default {
   width: 100% !important;
   height: 100% !important;
   /*border: skyblue 10px solid;*/
+}
+
+.m-setting-icon {
+  cursor: pointer !important;
+  font-size: 30px !important;
 }
 
 </style>

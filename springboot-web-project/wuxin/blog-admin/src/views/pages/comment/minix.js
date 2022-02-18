@@ -1,24 +1,23 @@
+import {delReply, delComment, updateComment, getCommentList, updateReply} from '@/api/comment'
+import CommentList from '@/views/pages/comment/CommentList'
+import {query} from '@/mixin/query'
 
-import {delReply, delComment, updateComment, getCommentList, updateReply} from "@/api/comment";
-import CommentList from "@/views/pages/comment/CommentList";
-import {query} from "@/mixin/query";
-
-export const minix =  {
+export const minix = {
   components: {CommentList},
-  mixins:[query],
+  mixins: [query],
   data() {
     return {
       list: [],
       listLoading: true,
-      total:0,
+      total: 0,
       query: {
         current: 1,
         limit: 10,
-        type: 1,
+        type: null,
         keywords: null,
         id: null
-      },
-    };
+      }
+    }
   },
   methods: {
 
@@ -33,7 +32,7 @@ export const minix =  {
     delComment(cid) {
       delComment(cid).then(res => {
         if (res.code === 200) {
-          this.$notify.success("删除成功！")
+          this.$notify.success('删除成功！')
         }
       })
     },
@@ -41,7 +40,7 @@ export const minix =  {
     delReply(id) {
       delReply(id).then(res => {
         if (res.code === 200) {
-          this.$notify.success("删除成功！")
+          this.$notify.success('删除成功！')
         }
       })
     },
@@ -50,7 +49,7 @@ export const minix =  {
       updateComment(comment).then(res => {
         if (res.code === 200) {
           this.$notify.success('操作成功')
-          this.getData()
+          this.getList()
         }
       })
     },
@@ -65,6 +64,4 @@ export const minix =  {
     }
 
   }
-
-
-};
+}

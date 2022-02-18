@@ -2,9 +2,9 @@
   <div class="ui small comments" style="max-width: 100%;">
     <div v-if="commentEnabled">
       <div v-if="commentList&&commentList.length!==0">
-        <h3 class="ui dividing header">共 {{ commentCount }} 条评论 </h3>
+        <h3 class="ui dividing header" :style="bgColor">共 {{ commentCount }} 条评论 </h3>
         <div class="comment" v-for="(comment,index) in commentList">
-          <a class="avatar">
+          <a class="avatar" :style="bgColor">
             <!--        <img :src="comment.avatar" v-if="comment.avatar">-->
             <svg t="1644976238253" class="icon" viewBox="0 0 1024 1024"
                  xmlns="http://www.w3.org/2000/svg"
@@ -14,17 +14,18 @@
                   fill="#cdcdcd" p-id="4574"></path>
             </svg>
           </a>
-          <div class="content m-padding-left-small">
-            <a class="author">{{ comment.username }}</a>
-            <a class="ui label orange left pointing  small m-margin-left-small">作者</a>
-            <div class="text">
+          <div class="content m-padding-left-small" :style="bgColor">
+            <a class="author" :style="bgColor">{{ comment.username }}</a>
+            <a class="ui label orange left pointing  mini m-margin-left-small">作者</a>
+            <div class="text" :style="bgColor">
+              <a class="ui label basic pink mini" v-if="comment.top!==0">置顶</a>
               {{ comment.content }}
             </div>
             <div class="actions">
-              <span class="metadata date">{{ comment.createTime | formatDateTime }}</span>
-              <a class="reply " @click.prevent="showReply(comment)"
+              <span class="metadata date" :style="bgColor">{{ comment.createTime | formatDateTime }}</span>
+              <a class="reply " :style="bgColor" @click.prevent="showReply(comment)"
                  v-if="parentCommentId===-1||parentCommentId!==comment.commentId">回复</a>
-              <a class="reply " @click.prevent="closeReply(-1)"
+              <a class="reply " :style="bgColor" @click.prevent="closeReply(-1)"
                  v-if="parentCommentId===comment.commentId">取消</a>
               <CommentForm
                   v-if="parentCommentId===comment.commentId"
@@ -53,18 +54,19 @@
                   </svg>
                 </a>
                 <div class="content">
-                  <a class="author">{{ reply.replyUsername }}</a>
-                  <a class="ui label orange left pointing  small m-margin-left-small">作者</a>
-                  <div class="text">
-                    <a class="author m-padding-right-small" v-if="reply.replyUsername!==reply.commentUsername"> @ {{
+                  <a class="author" :style="bgColor">{{ reply.replyUsername }}</a>
+                  <a class="ui label orange left pointing mini m-margin-left-small">作者</a>
+                  <div class="text" :style="bgColor">
+                    <a class="author m-padding-right-small" :style="bgColor"
+                       v-if="reply.replyUsername!==reply.commentUsername"> @ {{
                         reply.commentUsername
                       }}</a>{{ reply.replyContent }}
                   </div>
                   <div class="actions">
-                    <span class="metadata date">{{ reply.createTime | formatDateTime }}</span>
-                    <a class="reply " @click.prevent="showReply1(reply)"
+                    <span class="metadata date" :style="bgColor">{{ reply.createTime | formatDateTime }}</span>
+                    <a class="reply " :style="bgColor" @click.prevent="showReply1(reply)"
                        v-if="parentCommentId===-1||parentCommentId!==reply.replyId">回复</a>
-                    <a class="reply" @click.prevent="closeReply(-1)"
+                    <a class="reply" :style="bgColor" @click.prevent="closeReply(-1)"
                        v-if="parentCommentId===reply.replyId">取消</a>
 
                     <CommentForm
@@ -81,10 +83,11 @@
                 </div>
               </div>
             </div>
-            <div class="comments"
+            <div class="comments m-more" :style="bgColor"
                  v-if="comment.replyList&&comment.replyList.length>3&&!loadingList[comment.commentId]">
-              <span class="metadata">共计{{ comment.replyList.length }}条回复</span>
-              <a class="author" style="margin-left: 10px;" @click.prevent="loadingMore(comment.commentId)">点击加载更多</a>
+              <span class="metadata" :style="bgColor">共计{{ comment.replyList.length }}条回复</span>
+              <a class="author m-loading-more-link" :style="bgColor"
+                 @click.prevent="loadingMore(comment.commentId)">点击加载更多</a>
             </div>
           </div>
         </div>
@@ -177,8 +180,6 @@ export default {
     },
 
     loadingMore(commentId) {
-      console.log('commentId', commentId, 'loading')
-      //
       if (commentId === null || commentId === '') {
         return
       }
@@ -197,34 +198,6 @@ export default {
 
 <style scoped>
 
-/*.m-comment-list {*/
-/*  width: 100% !important;*/
-/*  height: auto !important;*/
-/*}*/
-
-/*.m-comment-button {*/
-/*  cursor: pointer !important;*/
-/*  margin-left: 10px;*/
-/*}*/
-
-/*div.avatar > img {*/
-/*  border-radius: 50% !important;*/
-/*}*/
-
-/*.ui.threaded.comments .comment .comments {*/
-/*  margin: -1em 0 -1em 1.25em;*/
-/*  padding: 1em 0 1em 2.25em;*/
-/*}*/
-
-/*.ui.comments .comment .avatar img,*/
-/*.ui.comments .comment img.avatar {*/
-/*  display: block;*/
-/*  margin: 0 auto;*/
-/*  width: 100%;*/
-/*  height: 100%;*/
-/*  border-radius: 50% !important;*/
-/*}*/
-
 
 .typo a {
   border-bottom: 1px solid #fff;
@@ -240,6 +213,23 @@ export default {
 
 .m-padding-left-small {
   padding-left: 10px !important;
+}
+
+.ui.comments .comment .comments {
+  margin: 1em 0 .5em .5em !important;
+  padding: 0 0.2em !important;
+}
+
+.m-more {
+  margin-top: 20px;
+}
+
+.m-loading-more-link {
+  margin-left: 20px !important;
+}
+
+.m-loading-more-link:hover {
+  color: rgba(0, 51, 255, 0.93) !important;
 }
 
 

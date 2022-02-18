@@ -57,7 +57,9 @@
                   match-braces
                   rainbow-braces
                   blog-js-toc-content
-                " :class="{ 'm-big-fontsize': bigFontSize }" v-html="blog.content" v-viewer></div>
+                " :class="{ 'm-big-fontsize': bigFontSize }" v-html="formatContent" v-viewer>
+
+                </div>
 
                 <!--赞赏-->
                 <div class="ui center aligned container m-padded-tb-small" v-if="blog.appreciation">
@@ -174,6 +176,7 @@
 </template>
 
 <script>
+import {formatLink} from "@/utils/link";
 import dateFormat from "@/utils/date.js";
 import {
   setBlogPassword,
@@ -215,11 +218,15 @@ export default {
       let date = new Date(value);
       return dateFormat.formatDate(date, "yyyy-MM-dd hh:mm");
     },
+
   },
   computed: {
     blogPasswordKey() {
       return this.blogkey + this.$route.params.blogId;
     },
+    formatContent() {
+      return formatLink(this.blog.content)
+    }
   },
 
   methods: {
@@ -260,6 +267,9 @@ export default {
 
     loadData(res) {
       this.blog = res.result;
+      // 给a标签添加target属性
+      this.blog.description = formatLink(this.blog.description)
+      this.blog.content = formatLink(this.blog.content)
       this.userId = res.result.userId;
       // 回到顶部
       this.backTop();
@@ -341,8 +351,10 @@ export default {
 
   beforeRouteEnter(to, _, next) {
     next((vm) => {
+
       vm.blogId = to.params.blogId;
       vm.getData(vm.blogId);
+
       vm.$store.state.blog.loadingComplete = false
     });
   },

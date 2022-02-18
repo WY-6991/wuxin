@@ -1,6 +1,6 @@
 <template>
   <div class="header-container m-animation-welcome" :style="headerBackgroundImage" ref="header">
-    <MyTv v-for="i in clickCount" :key="i" @click.native.prevent="createTV"></MyTv>
+<!--    <MyTv v-for="i in clickCount" :key="i" @click.native.prevent="createTV"></MyTv>-->
   </div>
 </template>
 

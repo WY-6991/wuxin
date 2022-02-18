@@ -18,7 +18,7 @@ const routes = [
     {
         path: '/',
         component: Layout,
-        redirect: '/index',
+        redirect: '/welcome',
         children: [
             {
                 path: "index",

@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
     <MySearchHeader :show-create-button="false" @handleSearch="handleSearch">
+      <slot name="pre" slot="pre"></slot>
       <el-button
         type="danger"
         icon="el-icon-delete"
@@ -59,11 +60,18 @@
         </template>
       </el-table-column>
 
+      <el-table-column label="置顶" width="60" align="center">
+        <template slot-scope="{ row }">
+          <el-switch v-model="row.top" :active-text="1" :inactive-text="0"></el-switch>
+        </template>
+      </el-table-column>
+
       <el-table-column label="评论日期" width="160" align="center">
         <template slot-scope="{ row }">
           <span>{{ row.createTime }}</span>
         </template>
       </el-table-column>
+
       <el-table-column label="操作" align="center" width="200">
         <template slot-scope="{ row, $index }">
           <el-tooltip :content="row.status?'显示评论':'隐藏评论'" placement="bottom" :open-delay="1000">
@@ -137,8 +145,6 @@ export default {
       multipleSelection: []
     }
   },
-
-
   mounted() {
     this.getList()
   },

@@ -2,9 +2,9 @@
   <div class="ui attached segment timeline " :style="bgColor">
 
     <Title :title="`当前共收录文章${count}篇`"></Title>
-    <div class="ui left icon input" style="position: absolute;right: 10px;">
-      <input type="text" placeholder="Search..." v-model="keywords">
-    </div>
+    <!--    <div class="ui left icon input" style="position: absolute;right: 10px;">-->
+    <!--      <input type="text" placeholder="Search..." v-model="keywords">-->
+    <!--    </div>-->
     <div v-for="(archive,index) in archiveMap" :key="`archiveMap-${index}`" style="margin-top: 66px;">
       <div class="ui horizontal divider">
         <label class="ui large label " :class="colorObj[index%10]" style="color: white">{{
@@ -22,7 +22,7 @@
         <div class="ui label orange basic" v-else style="float: right">转载</div>
       </div>
     </div>
-<!--    <MyPagination-->
+    <!--    <MyPagination-->
     <!--        :total-page="totalPage"-->
     <!--        :get-list="getArchives"-->
     <!--        -->
@@ -98,13 +98,12 @@ export default {
 }
 
 .m-link {
-  color: black;
-  cursor: pointer;
+  cursor: pointer !important;
 
 }
 
 .m-link:hover {
-  color: blue;
+  color: #5454e5 !important;
 }
 
 

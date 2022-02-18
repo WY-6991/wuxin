@@ -18,6 +18,7 @@
 import Title from "@/components/common/Title";
 import {getAbout,} from '@/api/about'
 import Comment from "@/components/comment/Comment";
+import {formatLink} from "@/utils/link";
 
 export default {
   name: "Blog",
@@ -37,6 +38,7 @@ export default {
     init() {
       getAbout().then(res => {
         this.about = res.result
+        this.about.content = formatLink(this.about.content)
         this.$nextTick(() => {
           this.$primsjs.highlightAll();
         });

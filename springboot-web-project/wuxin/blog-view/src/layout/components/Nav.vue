@@ -4,7 +4,7 @@
          :class="{ 'transparent': $route.name === 'Index' && clientSize.clientWidth > 768, 'inverted':inverted}">
       <div class="ui container ">
         <router-link to="/welcome">
-          <h3 class="ui header item m-blue">{{ webName!==''?webName:'wuxin001' }}`blog</h3>
+          <h3 class="ui header item m-blue">{{ webName !== '' ? webName : 'wuxin001' }}`blog</h3>
         </router-link>
         <router-link to="/index" class="item "
                      :class="` ${showMobile()}  ${isActive('Index')} ${color}`">
@@ -38,7 +38,7 @@
         </router-link>
         <router-link to="/friends" class="item "
                      :class="` ${showMobile()}  ${isActive('Friend')} ${color}`">
-          <i class="users icon"></i>友情链接
+          <i class="users icon"></i>友接
         </router-link>
 
         <router-link to="/time" class="item "
