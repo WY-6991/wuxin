@@ -3,7 +3,7 @@
     <div class="stars">
       <div class="star" v-for="item in startCount" :key="`start${item}`" ref="star"></div>
     </div>
-    <div class="motto">{{ motto }}</div>
+    <div class="motto" ref="motto">{{ motto }}</div>
     <div class="enter">
       <router-link to="/index">
         <svg t="1643112468373" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
@@ -32,26 +32,35 @@ export default {
       startCount: 800,
       distance: 800,
       motto: null,
+      size: 0
 
     }
   },
   methods: {
+    // 加载诗歌函数
     loadMotto() {
       load((res) => {
             if (res.status === "success") {
               this.motto = res.data.content;
+
             } else {
               this.motto = "人生代代无穷已，江月年年望相似。";
             }
+            this.size = this.motto.length
+            this.settingWidth()
+
           },
           () => {
             this.motto = "人生代代无穷已，江月年年望相似。";
+            this.size = this.motto.length
+            this.settingWidth()
           }
       );
 
 
     },
 
+    // 星星函数
     star() {
       const that = this
       let starArr = that.$refs.star
@@ -72,6 +81,12 @@ export default {
       this.$nextTick(() => {
         this.loadMotto()
       })
+    },
+
+
+    // 根据字数多少动态设置宽度
+    settingWidth() {
+      this.$refs.motto.style.width = this.size * 30 + 15 + 'px'
     }
 
 
@@ -131,26 +146,25 @@ export default {
   position: absolute;
   height: 44px;
   color: white;
+  max-width: 100vh;
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
   line-height: 44px;
   letter-spacing: 2px;
   top: 43%;
   left: 50%;
-  transform: translate(-50%, -50%) ;
+  transform: translate(-50%, -50%);
   font-size: 30px;
-  transition: color 1s linear inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  word-break: keep-all;
+  text-align: center;
+  border-right: 3px solid #fff;
+  animation: caret 1s step-end infinite, text 5s steps(15);
 }
 
-
-.motto::after {
-  content: " | ";
-  animation: mottoLine 2s linear 1s infinite ;
-  z-index: 40;
-}
 
 .enter {
   text-align: center !important;
-
 }
 
 .icon {
@@ -224,24 +238,22 @@ export default {
   }
 }
 
-/*竖线动画*/
-@keyframes mottoLine {
-  0% {
-    opacity: 0.1;
+
+/*光标动画*/
+@keyframes caret {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: currentColor;
   }
 
-  100% {
-    opacity: 1;
-  }
 }
 
-@-webkit-keyframes mottoLine {
-  0% {
-    opacity: 0.1;
-  }
-
-  100% {
-    opacity: 0.8;
+/*文本动画：从宽度为0开始*/
+@keyframes text {
+  from {
+    width: 0;
   }
 }
 
