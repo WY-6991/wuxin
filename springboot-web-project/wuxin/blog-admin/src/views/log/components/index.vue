@@ -15,7 +15,7 @@
       highlight-current-row
       max-height="350"
       :data="list"
-      size="mini"
+      size="large"
       @selection-change="handleSelectionChange"
     >
       <el-table-column
@@ -115,7 +115,8 @@
       @pagination="getList"
     />
     <el-dialog width="50%" title="参数信息" :visible.sync="dialogVisible">
-      <LogDetail :log="log" />
+      <LogDetail v-if="name!=='error'" :log="log" />
+      <ErrorLogResult v-else :error="log"/>
       <div slot="footer">
         <el-button type="info" @click="dialogVisible = false">关闭</el-button>
       </div>
@@ -127,15 +128,20 @@
 
 import MyUserLink from '@/components/MyComponents/MyUsernameLink'
 import LogDetail from '@/views/log/components/LogDetail'
+import ErrorLogResult from '@/views/log/components/ErrorLog'
 
 export default {
   name: 'MyLog',
-  components: { LogDetail, MyUserLink },
+  components: { ErrorLogResult, LogDetail, MyUserLink },
   props: {
     list: {
       type: Array,
       // eslint-disable-next-line vue/require-valid-default-prop
       default: []
+    },
+    name: {
+      type: String,
+      default: 'ok'
     },
     query: {
       type: Object,

@@ -5,7 +5,7 @@ import request from '@/utils/request'
  * @param data
  * @returns {AxiosPromise}
  */
-export function createFriend(data){
+export function createFriend(data) {
   return request({
     url: '/admin/friend/add',
     method: 'post',
@@ -18,7 +18,7 @@ export function createFriend(data){
  * @param data
  * @returns {AxiosPromise}
  */
-export function updateFriend(data){
+export function updateFriend(data) {
   return request({
     url: '/admin/friend/update',
     method: 'post',
@@ -41,7 +41,6 @@ export function delFriend(friendId){
   })
 }
 
-
 /**
  * 显示友情链接
  * @param data
@@ -55,42 +54,28 @@ export function getFriendList(data) {
   })
 }
 
-
 /**
- * 显示友情链接评论
- * @param data
- * @returns {AxiosPromise}
- */
-export function getFriendCommentList(data) {
-  return request({
-    url: '/admin/friend/comment/list',
-    method: 'post',
-    data
-  })
-}
-
-
-/**
- * 删除评论
+ * 删除回复
  * @param id
  * @returns {AxiosPromise}
  */
-export function delFriendComment(id) {
+export function getFriendMessage() {
   return request({
-    url: `/admin/friend/comment/del/${id}`,
+    url: '/admin/friend/find/message',
     method: 'get',
   })
 }
-
 
 /**
  * 删除回复
  * @param id
  * @returns {AxiosPromise}
  */
-export function delFriendCommentReply(id) {
+export function updateFriendMessage(data) {
   return request({
-    url: `/admin/friend/comment/del/reply/${id}`,
-    method: 'get',
+    url: '/admin/friend/update/message',
+    method: 'post',
+    data
   })
 }
+

@@ -1,24 +1,29 @@
 <template>
   <div class="pass-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="rules" class="login-form" autocomplete="off"
-             size="small">
+    <el-form
+      ref="loginForm"
+      :model="loginForm"
+      :rules="rules"
+      class="login-form"
+      autocomplete="off"
+      size="small"
+    >
       <el-form-item prop="username">
 
         <el-input
+          v-model="loginForm.username"
           clearable
           prefix-icon="el-icon-user"
-          v-model="loginForm.username"
           placeholder="用户名"
           type="text"
           autocomplete="off"
         />
       </el-form-item>
 
-
       <el-form-item prop="password">
         <el-input
-          prefix-icon="el-icon-message"
           v-model="loginForm.password"
+          prefix-icon="el-icon-message"
           placeholder="密码"
           show-password
           @keyup.enter.native="handleLogin"
@@ -26,8 +31,12 @@
 
       </el-form-item>
       <el-form-item>
-        <el-button :loading="loading" type="primary" style="width:100%;"
-                   @click.native.prevent="handleLogin">登录
+        <el-button
+          :loading="loading"
+          type="primary"
+          style="width:100%;"
+          @click.native.prevent="handleLogin"
+        >登录
         </el-button>
       </el-form-item>
       <el-form-item>
@@ -41,15 +50,16 @@
 </template>
 
 <script>
-import {mixin} from './mix'
+import { mixin } from './mix'
 export default {
   name: 'PassTab',
+  mixins: [mixin],
   data() {
     return {
       loginForm: {
         username: '',
         password: '',
-        rememberMe: false,
+        rememberMe: false
       },
 
       capsTooltip: false,
@@ -59,17 +69,17 @@ export default {
       otherQuery: {},
       rules: {
         username: [
-          {required: true, min: 2, max: 15, message: '用户名由2-15个字符组成', trigger: 'blur'}
+          { required: true, min: 2, max: 15, message: '用户名由2-15个字符组成', trigger: 'blur' }
         ],
         password: [
-          {required: true, min: 5, max: 15, message: '密码4-15个字符组成', trigger: 'blur'}
+          { required: true, min: 5, max: 15, message: '密码4-15个字符组成', trigger: 'blur' }
         ]
       }
     }
   },
   watch: {
     $route: {
-      handler: function (route) {
+      handler: function(route) {
         const query = route.query
         if (query) {
           this.redirect = query.redirect
@@ -79,14 +89,12 @@ export default {
       immediate: true
     }
   },
-  mixins: [mixin],
   methods: {
 
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          //
           setTimeout(() => {
             this.$store.dispatch('user/login',
               {
@@ -95,7 +103,7 @@ export default {
               })
               .then(() => {
                 this.loading = false
-                this.$router.push({path: this.redirect || '/', query: this.otherQuery})
+                this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
               })
               .then(() => {
                 this.$store.dispatch('user/getInfo')
@@ -104,9 +112,7 @@ export default {
                 this.loading = false
               })
           }, 2000)
-
         } else {
-          // this.$message.error("！")
           return false
         }
       })

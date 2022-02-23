@@ -242,7 +242,7 @@ export default {
     },
     //  添加表情e
     addEmoji(e) {
-      // 没有输入内容时候出现null
+      // 处理没有输入内容时候出现null
       if (this.commentUser.content === null) {
         this.commentUser.content = e.data
       } else {

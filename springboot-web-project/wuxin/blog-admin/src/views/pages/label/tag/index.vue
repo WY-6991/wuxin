@@ -23,11 +23,12 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="dialogStatus === 'create' ? '添加分类' :'修改分类'" :visible.sync="dialogFormVisible" width="30%"
-    >
-      <el-form :model="temp" :rules="LabelRules" label-position="left" label-width="50px" size="small" ref="labelForm">
-        <el-form-item label="名称" class="m-input-width-80pre" prop="name">
-          <el-input v-model="temp.name" @input="dataChange()" />
+    <el-dialog width="30%"
+      :title="dialogStatus === 'create' ? '添加分类' :'修改分类'"
+      :visible.sync="dialogFormVisible">
+      <el-form :model="temp" :rules="rules" label-position="left" label-width="50px" size="small" ref="labelForm">
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="temp.name" class="m-input-width-80pre" />
         </el-form-item>
         <el-form-item label="颜色" prop="color">
           <el-select v-model="temp.color" placeholder="请选择" class="m-input-width-80pre">
@@ -50,17 +51,28 @@
 </template>
 
 <script>
-import {updateTag, delTag, updateTagColor, createTag, getTagList} from "@/api/tag";
-import {minix} from "@/views/pages/label/minix";
+import { updateTag, delTag, updateTagColor, createTag, getTagList } from "@/api/tag"
+import { minix } from '@/views/pages/label/minix'
 
 export default {
-  name: "TagTableList",
+  name: 'Tag',
   mixins: [minix],
+  data() {
+    return {
+      rules: {
+        name: [
+          { required: true, message: '名称不能为空！', trigger: 'blur' }
+        ],
+        color: [
+          { required: true, message: '颜色不能为空！', trigger: 'blur' }
+        ]
+      }
+    }
+  },
   mounted() {
     this.getList()
   },
   methods: {
-    //获取标签列表
     getList() {
       this.listLoading = true;
       getTagList(this.query).then(res => {
@@ -107,12 +119,9 @@ export default {
           this.restTemp()
         }
       })
-
     },
-
-    //删除操作
     deleteData(obj) {
-      const {data, index} = obj
+      const { data, index } = obj
       if (!this.isRoot) {
         this.$message.error('操作失败！无权限执行该操作！')
         return

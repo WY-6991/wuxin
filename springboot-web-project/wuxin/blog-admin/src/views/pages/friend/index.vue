@@ -6,14 +6,12 @@
     >
 
       <el-switch
+        v-model="message.commentEnabled"
         class="m-margin-left-small"
-        v-model="commentEnabled"
-        @change.prevent="updateComment"
-        disabled
         active-text="开启评论"
         inactive-text="关闭评论"
-      >
-      </el-switch>
+        @change="updateMessage"
+      />
 
     </MySearchHeader>
 
@@ -22,21 +20,18 @@
       :key="tableKey"
       v-loading="listLoading"
       :data="friendList"
-      fix
+      fit
       max-height="350"
       highlight-current-row
-      @cell-click="moustEnter"
       style="width: 100%;"
-      size="mini"
-
+      size="small"
+      @cell-click="moustEnter"
     >
       <el-table-column
         label="序号"
         prop="id"
         align="center"
         width="100"
-        fixed
-
       >
         <template slot-scope="{ row,$index }">
           <span>{{ $index + 1 }}</span>
@@ -61,11 +56,17 @@
           </el-tooltip>
         </template>
       </el-table-column>
-      <el-table-column label="简介" width="300" align="center">
+      <el-table-column label="简介" align="center">
         <template slot-scope="{ row }">
           <el-tooltip :content="row.introduction">
             <span class=" m-message" @click="handleUpdate(row)">{{ row.introduction }}</span>
           </el-tooltip>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="是否显示" width="100" align="center">
+        <template slot-scope="{ row }">
+          <el-switch v-model="row.status" @change="updateStatus(row)" />
         </template>
       </el-table-column>
 
@@ -74,15 +75,8 @@
           <span>{{ row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" width="250" fixed="right" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="200">
         <template slot-scope="{ row, $index }">
-          <el-button
-            size="mini"
-            :type="row.status?'info':'success'"
-            :icon="row.status? 'el-icon-bell':'el-icon-close-notification'"
-            @click.native.prevent="updateStatus(row)"
-          >{{ row.status ? '显示' : '隐藏' }}
-          </el-button>
           <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-button>
           <el-button type="danger" size="mini" icon="el-icon-delete" @click="handleDelete(row.friendId, $index)">删除
           </el-button>
@@ -116,65 +110,74 @@
       />
     </div>
 
-    <el-row>
-      <el-col :span="6"></el-col>
-      <el-col :span="6" style="margin-top: 59px; margin-left: 100px; margin-right: -20px;">
-        <el-row>
-          <pan-thumb :image="ruleForm.avatar" />
-        </el-row>
-        <el-row style="margin-top: 30px;">
-          <el-button type="primary" icon="el-icon-upload" @click="imageCropperShow=true">点击可自定义头像</el-button>
-        </el-row>
-      </el-col>
-      <el-col :span="12">
-        <el-form :model="ruleForm" :rules="rules" ref="dataForm" label-width="50px" class="demo-ruleForm">
-          <el-form-item label="昵称" prop="username">
-            <el-input
-              prefix-icon="el-icon-user"
-              v-model="ruleForm.username"
-              clearable
-              maxlength="20"
-              show-word-limit
-              style="width: 400px" />
-          </el-form-item>
-          <el-form-item label="头像">
-            <el-select
-              v-model="ruleForm.avatar"
-              placeholder="请选择图片" style="width: 400px!important;">
-              <el-option v-for="(img,index) in imgList"
-                         :label="img" :key="index"
-                         :value="img"
+    <el-button size="small" type="primary" icon="el-icon-edit" class="m-margin-tb-small" @click="updateMessage">修改
+    </el-button>
+    <div id="vditor-content-friend-message" />
+
+    <el-dialog title="添加标签" :visible.sync="dialogFormVisible">
+      <el-row>
+        <el-col :span="8" style="margin-left: 44px;" :xs="24">
+          <el-row>
+            <pan-thumb :image="ruleForm.avatar" />
+          </el-row>
+          <el-row style="margin-top: 30px;">
+            <el-button type="primary" icon="el-icon-upload" @click="imageCropperShow=true">点击可自定义头像</el-button>
+          </el-row>
+        </el-col>
+        <el-col :span="14" :xs="24">
+          <el-form ref="dataForm" :model="ruleForm" :rules="rules" label-width="50px" class="demo-ruleForm">
+            <el-form-item label="昵称" prop="username">
+              <el-input
+                v-model="ruleForm.username"
+                prefix-icon="el-icon-user"
+                clearable
+                maxlength="20"
+                show-word-limit
+                class="m-width-400"
               />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item label="网址" prop="url">
-            <el-input
-              prefix-icon="el-icon-s-promotion"
-              v-model="ruleForm.url"
-              clearable
-              style="width: 400px" />
-          </el-form-item>
-          <el-form-item label="简介" prop="introduction">
-            <el-input
-              v-model="ruleForm.introduction"
-              style="width: 400px"
-              maxlength="20"
-              prefix-icon="el-icon-edit"
-              show-word-limit
-              clearable
-            />
-
-          </el-form-item>
-          <el-form-item style="margin-left: 44px!important;">
-            <el-button type="primary" @click="status === 'create' ? createData() : updateData()">{{ textMap }}
-            </el-button>
-            <el-button @click="resetForm">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
-
+            </el-form-item>
+            <el-form-item label="头像">
+              <el-select
+                v-model="ruleForm.avatar"
+                placeholder="请选择图片"
+                class="m-width-400 m-message"
+              >
+                <el-option
+                  v-for="(img,index) in imgList"
+                  :key="index"
+                  class="m-message"
+                  :label="img"
+                  :value="img"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="网址" prop="url">
+              <el-input
+                v-model="ruleForm.url"
+                prefix-icon="el-icon-s-promotion"
+                clearable
+                class="m-width-400"
+              />
+            </el-form-item>
+            <el-form-item label="简介" prop="introduction">
+              <el-input
+                v-model="ruleForm.introduction"
+                class="m-width-400"
+                maxlength="20"
+                prefix-icon="el-icon-edit"
+                show-word-limit
+                clearable
+              />
+            </el-form-item>
+            <el-form-item style="margin-left: 44px!important;">
+              <el-button type="primary" @click="status === 'create' ? createData() : updateData()">{{ textMap }}
+              </el-button>
+              <el-button @click="resetForm">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 
 </template>
@@ -183,34 +186,43 @@
 
 import ImageCropper from '@/components/ImageCropper'
 import PanThumb from '@/components/PanThumb'
-import {validURL} from "@/utils/validate";
-import {createFriend, updateFriend, delFriend, getFriendList} from "@/api/friends";
-import MyImage from "@/components/MyComponents/MyImage";
-import {query} from "@/mixin/query";
-import {imgList} from "@/utils/color";
+import { validURL } from '@/utils/validate'
+import MyImage from '@/components/MyComponents/MyImage'
+import { query } from '@/mixin/query'
+import { imgList } from '@/utils/color'
+import { createVditor } from '@/plugins/CreateVditor'
+import {
+  createFriend,
+  updateFriend,
+  delFriend,
+  getFriendMessage,
+  updateFriendMessage,
+  getFriendList
+} from '@/api/friends'
+
 
 export default {
-  name: "Friend",
-  components: { MyImage, ImageCropper, PanThumb},
-  mixins:[query],
+  name: 'Friend',
+  components: {MyImage, ImageCropper, PanThumb},
+  mixins: [query],
   data() {
-    let validateUrl = (rule, value, callback) => {
+    const validateUrl = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入网址！'));
+        callback(new Error('请输入网址！'))
       }
       if (!validURL(value)) {
-        callback(new Error('网址格式不正确！'));
+        callback(new Error('网址格式不正确！'))
       }
       callback()
-    };
+    }
     return {
       // 表格key
       tableKey: 0,
+      contentVditor: null,
       friendList: [],
       total: 0, // 数据总数
       listLoading: false,
-      commentEnabled: true,
-
+      dialogFormVisible: false,
       imgList: imgList,
       uploadAvatarUrl: '/github/upload/user/avatar',
       headers: {'Content-Type': 'multipart/form-data'},
@@ -222,7 +234,7 @@ export default {
 
       ruleForm: {
         username: '',
-        avatar: 'https://cdn.jsdelivr.net/gh/WY-6991/wuxin/img/admin.jpg',
+        avatar: 'https://github.com/WY-6991/wuxin/img/202202/20220223234230.png',
         url: '',
         introduction: '',
         status: true
@@ -240,74 +252,82 @@ export default {
 
       },
       status: 'create',
-      textMap: '添加'
+      textMap: '添加',
+      message: {
+        id: 0,
+        content: '',
+        commentEnabled: true
+      }
 
-    };
+    }
   },
   mounted() {
-
     this.getList()
+
+    this.initVditor()
   },
   methods: {
-    getData(query){
-      this.listLoading = true;
+    getData(query) {
+      this.listLoading = true
       getFriendList(query).then(res => {
-        this.friendList = res.result.records
-        this.total = res.result.total
-        this.listLoading = false
+        if (res.code === 200) {
+          const { records, total} = res.result
+          this.friendList = records
+          this.total = total
+        }
+      }).catch(() => {
+        setTimeout(() => {
+          this.listLoading = false
+        }, 10000)
       })
     },
-
     restTemp() {
       this.ruleForm = {
         username: '',
-        avatar: 'https://cdn.jsdelivr.net/gh/WY-6991/wuxin/img/admin.jpg',
+        avatar: 'https://github.com/WY-6991/wuxin/img/202202/20220223234230.png',
         url: '',
         introduction: '',
-        status: true,
+        status: true
       }
     },
 
     updateStatus(friend) {
-      friend.status = !friend.status
       if (!this.isRoot) {
         this.$message.error('操作失败，无权限执行该操作！')
-        return;
+        return
       }
       updateFriend(friend).then(res => {
         if (res.code === 200) {
           if (friend.status) {
-            this.$notify.success("显示成功")
+            this.$message.success('显示成功')
           } else {
-            this.$notify.success("隐藏成功")
+            this.$message.success('隐藏成功')
           }
-
         }
       })
     },
 
     toBottom() {
       // 滚动内容的坐标位置0,50000：
-      window.scrollTo(0, 20000);
+      window.scrollTo(0, 20000)
     },
-
 
     /* 添加 */
     handleCreate() {
       this.toBottom()
       this.status = 'create'
       this.textMap = '添加'
+      this.dialogFormVisible = true
       this.restTemp()
     },
 
     // 修改操作
     handleUpdate(row) {
-
+      this.dialogFormVisible = true
       this.toBottom()
       this.status = 'update'
       this.ruleForm = row
       this.textMap = '修改'
-
     },
     resize() {
       console.log('resize')
@@ -315,9 +335,6 @@ export default {
 
     // 删除操作
     handleDelete(friendId, index) {
-      // this.delBlog(blogId).then(res => {
-      //   this.blogList.splice(index, 1);
-      // })
       this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -325,51 +342,50 @@ export default {
       }).then(() => {
         if (!this.isRoot) {
           this.$message.error('操作失败，无权限执行该操作！')
-          return;
+          return
         }
-        this.friendList.splice(index, 1)
-        this.$message({
-          type: 'success',
-          message: '删除成功!'
-        });
+        delFriend(friendId).then(res => {
+          if (res.code === 200) {
+            this.friendList.splice(index, 1)
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+          }
+        })
       }).catch(() => {
         this.$message({
           type: 'info',
           message: '已取消删除'
-        });
-      });
-
-      // delFriend(friendId).then(res=>{
-      //   this.friendList.splice(index,1)
-      // })
+        })
+      })
     },
 
     // 获取blogList
     getList() {
-     this.getData(this.query)
+      this.getData(this.query)
     },
     createData(formName) {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           if (!this.isRoot) {
             this.$message.error('操作失败，无权限执行该操作！')
-            return;
+            return
           }
           createFriend(this.ruleForm).then(res => {
-            if (res.code !== 200) return false;
-            this.$notify.success("添加成功！")
-            this.$refs['dataForm'].resetFields();
+            if (res.code !== 200) return false
+            this.$notify.success('添加成功！')
+            this.$refs['dataForm'].resetFields()
             this.getList()
           })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
 
-
-    updateComment(){
+    updateComment() {
       this.$message.warning('该功能还没上线01！')
     },
 
@@ -378,26 +394,26 @@ export default {
         if (valid) {
           if (!this.isRoot) {
             this.$message.error('操作失败，无权限执行该操作！')
-            return;
+            return
           }
           updateFriend(this.ruleForm).then(res => {
-            if (res.code !== 200) return false;
-            this.$notify.success("修改成功！")
-            this.$refs['dataForm'].resetFields();
+            if (res.code !== 200) return false
+            this.$notify.success('修改成功！')
+            this.$refs['dataForm'].resetFields()
             this.getList()
           })
         } else {
-          console.log('error submit!!');
-          return false;
+          console.log('error submit!!')
+          return false
         }
-      });
+      })
     },
     resetForm() {
-      this.$refs['dataForm'].resetFields();
+      this.$refs['dataForm'].resetFields()
     },
     // 上传图片地址
     cropSuccess(resData) {
-      console.log("res====>" + resData)
+      console.log('res====>' + resData)
       this.ruleForm.avatar = resData
       // this.$store.dispatch('user/updateUser', this.user).then(res => {
       //   // this.user.avatar = resData // 获取用户头像地址
@@ -411,20 +427,48 @@ export default {
     },
 
     moustEnter(row, column, cell, event) {
-      console.log(row);
-    }
+      console.log(row)
+    },
+    getMessage() {
+      getFriendMessage().then(res => {
+        if (res.code === 200) {
+          console.log(res)
+          this.message = res.result
+          this.message.content = this.contentVditor.html2md(this.message.content)
+          this.contentVditor.setValue(this.message.content)
+        }
+      })
+    },
+
+    // 描述
+    initVditor() {
+      this.contentVditor = createVditor('vditor-content-friend-message', 400, false)
+      this.$nextTick(()=>{
+        this.getMessage()
+      })
+    },
+
+    updateMessage() {
+      if (!this.isRoot) {
+        this.$message.error('操作失败，无权限执行该操作！')
+        return
+      }
+      this.message.content = this.contentVditor.getHTML()
+      updateFriendMessage(this.message).then(res => {
+        if (res.code === 200) {
+          this.$message.success('修改成功！')
+        }
+      })
+    },
+
   }
-};
+}
 </script>
 
 <style>
-/*.el-form {*/
-/*  margin-top: 55px !important;*/
-/*}*/
-
-/*.el-form > .el-form-item > button {*/
-/*  padding-left: 20px !important;*/
-/*}*/
-
+.m-width-400 {
+  max-width: 400px !important;
+  width: 90% !important;
+}
 
 </style>

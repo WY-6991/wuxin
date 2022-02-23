@@ -1,17 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from '@/layout'
-
-
 import userRouter from '@/router/modules/user'
-import pageRouter from "@/router/modules/page";
-import logRouter from "@/router/modules/log";
-import systemRouter from "@/router/modules/system";
-import countRouter from "@/router/modules/count";
+import pageRouter from '@/router/modules/page'
+import logRouter from '@/router/modules/log'
+import systemRouter from '@/router/modules/system'
+import countRouter from '@/router/modules/count'
 
 Vue.use(Router)
-
-
 
 export const constantRoutes = [
   {
@@ -30,7 +26,7 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true,
     meta: {
-      title:'登录'
+      title: '登录'
     }
   },
 
@@ -45,8 +41,6 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
-
-
   {
     path: '/',
     component: Layout,
@@ -69,11 +63,8 @@ export const constantRoutes = [
     path: '*',
     component: () => import('@/views/error-page/404'),
     hidden: true
-  },
-
-
+  }
 ]
-
 
 /**
  * 设置权限路由
@@ -89,7 +80,7 @@ export const asyncRoutes = [
     meta: {
       title: '权限',
       icon: 'lock',
-      roles: ['user','admin', 'root']
+      roles: ['user', 'admin', 'root']
     },
     children: [
       {
@@ -98,7 +89,7 @@ export const asyncRoutes = [
         name: 'PagePermission',
         meta: {
           title: '页面指令',
-          roles: ['admin','root']
+          roles: ['admin', 'root']
         }
       },
       {
@@ -107,7 +98,7 @@ export const asyncRoutes = [
         name: 'DirectivePermission',
         meta: {
           title: '指令许可',
-          roles: ['admin','root']
+          roles: ['admin', 'root']
         }
       },
       {
@@ -137,13 +128,12 @@ export const asyncRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
-
 window.sessionStorage.setItem('constantRoutes',JSON.stringify(constantRoutes))
 // console.log('window.sessionStorage.getItem(\'constantRoutes\')========>',JSON.parse(window.sessionStorage.getItem('constantRoutes')))
 const createRouter = () => new Router({
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes,
-  mode:'history'
+  mode: 'history'
 })
 
 const router = createRouter()
@@ -152,6 +142,5 @@ export function resetRouter() {
   const newRouter = createRouter()
   router.matcher = newRouter.matcher
 }
-
 
 export default router

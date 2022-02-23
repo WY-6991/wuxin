@@ -1,14 +1,11 @@
-import {colors} from "@/utils/color";
-
-import LabelTableList from "@/views/pages/label/compontent/LabelTableList";
-
+import { colors } from '@/utils/color'
+import LabelTableList from '@/views/pages/label/compontent/LabelTableList'
 export const minix = {
-  components: {LabelTableList},
+  components: { LabelTableList },
   data() {
-
     return {
       colors: colors,
-      temp: {name: '', color: 'teal'},
+      temp: { name: '', color: 'teal' },
       query: {
         current: 1,
         limit: 10,
@@ -19,12 +16,12 @@ export const minix = {
       listLoading: false,
       dialogFormVisible: false,
       dialogStatus: '',
-      LabelRules: {
+      labelRules: {
         name: [
-          {required: true, message: '名称不能为空！', trigger: 'blur'}
+          { required: true, message: '名称不能为空！', trigger: 'blur' }
         ],
         color: [
-          {required: true, message: '颜色不能为空！', trigger: 'blur'}
+          { required: true, message: '颜色不能为空！', trigger: 'blur' }
         ]
       }
     }
@@ -41,7 +38,7 @@ export const minix = {
     },
     // 重置
     restTemp() {
-      this.temp = {name: '', color: 'teal'}
+      this.temp = { name: '', color: 'teal' }
     },
     // 查看标签分类blog
     selectTagName(tagName) {
@@ -61,14 +58,14 @@ export const minix = {
     },
 
     handleCreate() {
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
     },
 
     handleUpdate(obj) {
-      this.dialogStatus = "update";
-      this.dialogFormVisible = true;
-      this.temp = obj;
-    },
-  },
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.temp = obj
+    }
+  }
 }

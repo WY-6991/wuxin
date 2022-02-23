@@ -1,93 +1,92 @@
 <template>
   <div class="app-container">
-    <div class="visit-echarts-count" style="width: 100%; height: 400px"></div>
+    <div class="visit-echarts-count" style="width: 100%; height: 400px" />
   </div>
 </template>
 <script>
-import { getAccessLoginCount } from "@/api/dashboard";
+import { getAccessLoginCount } from '@/api/dashboard'
 export default {
-  name: "VisitorMap",
+  name: 'VisitorCount',
   data() {
     return {
       list: [],
       dateList: [],
       accessList: [],
-      loginList: [],
-    };
+      loginList: []
+    }
+  },
+  mounted() {
+    this.getData()
   },
   methods: {
     initData() {
-      let chartDom = document.querySelector(".visit-echarts-count");
-      let myChart = this.$echarts.init(chartDom);
-      const _this = this;
+      const chartDom = document.querySelector('.visit-echarts-count')
+      const myChart = this.$echarts.init(chartDom)
+      const _this = this
       const option = {
         title: {
-          text: "访问统计",
+          text: '访问统计'
         },
         tooltip: {
-          trigger: "axis",
+          trigger: 'axis'
         },
         legend: {
-          data: ["Email", "Union Ads", "Video Ads", "Direct", "Search Engine"],
+          data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine']
         },
         grid: {
-          left: "3%",
-          right: "4%",
-          bottom: "3%",
-          containLabel: true,
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
         },
         toolbox: {
           feature: {
-            saveAsImage: {},
-          },
+            saveAsImage: {}
+          }
         },
         xAxis: {
-          type: "category",
+          type: 'category',
           boundaryGap: false,
-          data: _this.dateList,
+          data: _this.dateList
         },
         yAxis: {
-          type: "value",
+          type: 'value'
         },
         series: [
           {
-            name: "访问",
-            type: "line",
-            stack: "Total",
-            data: _this.accessList,
+            name: '访问',
+            type: 'line',
+            stack: 'Total',
+            data: _this.accessList
           },
           {
-            name: "登录",
-            type: "line",
-            stack: "Total",
-            data: _this.loginList,
-          },
-        ],
-      };
-      myChart.setOption(option);
+            name: '登录',
+            type: 'line',
+            stack: 'Total',
+            data: _this.loginList
+          }
+        ]
+      }
+      myChart.setOption(option)
     },
 
     getData() {
       getAccessLoginCount().then((res) => {
         if (res.code === 200) {
-          this.list = res.result;
+          this.list = res.result
           this.list.forEach((map) => {
-            this.dateList.push(map["date"]);
-            this.accessList.push(map["access"]);
-            this.loginList.push(map["login"]);
-          });
-          console.log(this.dateList, this.accessList, this.loginList);
+            this.dateList.push(map['date'])
+            this.accessList.push(map['access'])
+            this.loginList.push(map['login'])
+          })
           this.$nextTick(() => {
-            this.initData();
-          });
+            this.initData()
+          })
         }
-      });
-    },
-  },
-  mounted() {
-    this.getData();
-  },
-};
+      })
+    }
+  }
+}
 </script>
 <style scoped>
 .app-container {

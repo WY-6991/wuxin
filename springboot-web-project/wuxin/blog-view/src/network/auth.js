@@ -49,7 +49,7 @@ export function getBlogPassword(key) {
  * @param {密码} value 
  * @returns 
  */
-export function setBlogPassword(key,value) {
+export function setBlogPassword(key, value) {
     return localStorage.setItem(key, value)
 }
 
@@ -58,15 +58,14 @@ export function setBlogPassword(key,value) {
  * 评论用户
  * @param {设置评论用户 user：username，email} user 
  */
- export function setUser(user) {
-    // console.log('添加用户到localstore中 :>> ', JSON.stringify(user));
-    window.localStorage.setItem(TokenKey,JSON.stringify(user))
+export function setUser(user) {
+    localStorage.setItem(TokenKey, JSON.stringify(user))
 }
 
 /**
-* 获取评论用户信息
-* @returns user
-*/
+ * 获取评论用户信息
+ * @returns user
+ */
 export function getUser() {
-   return JSON.parse(window.localStorage.getItem(TokenKey))
+    return JSON.parse(localStorage.getItem(TokenKey))
 }

@@ -1,73 +1,72 @@
 <template>
   <div
-    class="category-echarts-count m-margin-tb-large m-echarts-container"
-  ></div>
+    ref="category"
+    class=" m-margin-tb-large m-echarts-container"
+  />
 </template>
 <script>
-import { getDashboardCategory } from "@/api/dashboard";
+import { getDashboardCategory } from '@/api/dashboard'
 
 export default {
-  name: "CategoryMap",
+  name: 'CategoryMap',
   data() {
     return {
       categoryList: [],
-    };
+      mychart: null
+    }
+  },
+  mounted() {
+    this.getData()
   },
   methods: {
     initData() {
-      let myChart = this.$echarts.init(
-        document.querySelector(".category-echarts-count")
-      );
-      console.log("category json", JSON.stringify(this.categoryList));
-      let option = {
+      this.mychart = this.$echarts.init(this.$refs.category)
+      const option = {
         title: {
-          text: "分类下的文章",
-          subtext: "category",
-          left: "center",
+          text: '分类下的文章',
+          subtext: 'category',
+          left: 'center'
         },
         tooltip: {
-          trigger: "item",
+          trigger: 'item'
         },
         legend: {
-          bottom: "bottom",
+          bottom: 'bottom'
         },
         toolbox: {
           feature: {
-            saveAsImage: {},
-          },
+            saveAsImage: {}
+          }
         },
         series: [
           {
-            name: "分类",
-            type: "pie",
-            radius: "50%",
+            name: '分类',
+            type: 'pie',
+            radius: '50%',
             data: this.categoryList,
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,
                 shadowOffsetX: 0,
-                shadowColor: "rgba(0, 0, 0, 0.5)",
-              },
-            },
-          },
-        ],
-      };
-      myChart.setOption(option);
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }
+        ]
+      }
+      this.mychart.setOption(option)
     },
 
     getData() {
       getDashboardCategory().then((res) => {
         if (res.code === 200) {
-          this.categoryList = res.result;
+          this.categoryList = res.result
           this.$nextTick(() => {
-            this.initData();
-          });
+            this.initData()
+          })
         }
-      });
-    },
-  },
-  mounted() {
-    this.getData();
-  },
-};
+      })
+    }
+  }
+}
 </script>
