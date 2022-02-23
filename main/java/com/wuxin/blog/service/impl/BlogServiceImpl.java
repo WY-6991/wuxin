@@ -223,11 +223,10 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public IPage<Blog> findBlogPage(Integer current, Integer limit, String keywords, String start, String end, Long cid) {
-        Page<Blog> blogPage = MapperUtils.lambdaQueryWrapper(blogMapper).eq(StringUtils.longIsNotNull(cid), Blog::getCid, cid)
-                .like(StringUtils.isNotEmpty(keywords), Blog::getTitle, keywords)
-                // 大于开始时间
+        Page<Blog> blogPage = MapperUtils.lambdaQueryWrapper(blogMapper)
+                .eq(StringUtils.isNotNull(cid), Blog::getCid, cid)
+                .like(StringUtils.isNotEmpty(keywords),Blog::getTitle, keywords)
                 .ge(StringUtils.isNotEmpty(start), Blog::getCreateTime, start)
-                // 小于结束时间
                 .le(StringUtils.isNotEmpty(end), Blog::getCreateTime, end)
                 .page(new Page<>(current, limit));
         blogPage.getRecords().forEach(this::getBlogInfo);

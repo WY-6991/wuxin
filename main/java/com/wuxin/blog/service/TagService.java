@@ -1,5 +1,6 @@
 package com.wuxin.blog.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wuxin.blog.pojo.blog.Blog;
 import com.wuxin.blog.pojo.blog.Tag;
 import com.wuxin.blog.mode.Base.PageService;
@@ -59,7 +60,7 @@ public interface TagService extends PageService<Tag> {
      * @param tagName 标签名
      * @return page
      */
-    List<Blog> findBlogByTagName(Integer current, Integer size, String tagName);
+    IPage<Blog> findBlogByTagName(Integer current, Integer size, String tagName);
 
 
     /**

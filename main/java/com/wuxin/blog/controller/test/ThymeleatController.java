@@ -17,11 +17,10 @@ import java.util.Map;
 public class ThymeleatController {
 
 
-
     @GetMapping("/test/mine")
     public String test1(Model mode){
         mode.addAttribute("date", "2022年1月22日");
-        mode.addAttribute("title", "hello 树先生");
+        mode.addAttribute("title", "springboot项目打包！");
         mode.addAttribute("url", "https://www.baidu.com");
         mode.addAttribute("adminUrl", "https://www.baidu.com");
         mode.addAttribute("username", "wuxin001root");

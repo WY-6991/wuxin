@@ -134,7 +134,6 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public void addBlogTag(Long blogId, List<Long> tagIds) {
-
         tagIds.forEach(tagId -> {
             BlogTag blogTag = new BlogTag();
             blogTag.setBlogId(blogId);
@@ -153,10 +152,9 @@ public class TagServiceImpl implements TagService {
             ids.add(blogTag.getTagId());
         });
         // 如果相等就不修改
-        if(!ListUtil.listEqual(ids,tagIds)){
+        if (!ListUtil.listEqual(ids, tagIds)) {
             delBlogTagByBlogId(blogId);
-            // 添加
-            addBlogTag(blogId,tagIds);
+            addBlogTag(blogId, tagIds);
         }
 
     }
@@ -170,39 +168,44 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public List<Blog> findBlogByTagName(Integer current, Integer size, String tagName) {
-
-        List<Blog> blogList = new ArrayList<>();
-        // 获取对应tagId
-        LambdaQueryChainWrapper<Tag> tagLambdaQueryChainWrapper = new LambdaQueryChainWrapper<>(tagMapper);
-        Long tagId = tagLambdaQueryChainWrapper.eq(Tag::getName, tagName).one().getTagId();
-        LambdaQueryChainWrapper<BlogTag> blogTagLambdaQueryChainWrapper = new LambdaQueryChainWrapper<>(blogTagMapper);
-
-        // 获取blogList
-        Page<BlogTag> blogTagPage = new Page<>(current, size);
-        List<BlogTag> list = blogTagLambdaQueryChainWrapper.eq(BlogTag::getTagId, tagId).page(blogTagPage).getRecords();
-        // 判断标签中是否含有内容
-        if (list.size() == 0) {
-            throw new CustomException("该文章没有任何标签！");
+    public IPage<Blog> findBlogByTagName(Integer current, Integer size, String tagName) {
+        Page<Blog> blogPage = new Page<>();
+        // tag
+        Tag tag = MapperUtils.lambdaQueryWrapper(tagMapper).eq(Tag::getName, tagName).one();
+        if (tag == null) {
+            return blogPage;
         }
-        list.forEach(blogTag -> {
-            // 获取blog
-            Blog blogInfo = getBlogInfo(blogMapper.selectById(blogTag.getBlogId()));
-            blogList.add(blogInfo);
+        // tagList
+        IPage<BlogTag> blogTagIPage = MapperUtils.lambdaQueryWrapper(blogTagMapper).eq(BlogTag::getTagId, tag.getTagId()).page(new Page<>(current, size));
+        if (blogTagIPage.getRecords().size() == 0) {
+            return blogPage;
+        }
+        List<Blog> blogList = new ArrayList<>();
+        // 获取文章基本信息
+        blogTagIPage.getRecords().forEach(blogTag -> {
+            Blog blog = MapperUtils.lambdaQueryWrapper(blogMapper).eq(Blog::getBlogId, blogTag.getBlogId()).eq(Blog::isPublish, 1)
+                    .select(
+                            Blog::getBlogId, Blog::getCreateTime, Blog::getCid, Blog::getDescription, Blog::getTop, Blog::getTitle,
+                            Blog::getViews
+                    ).one();
+            // 获取其他信息 文章标签 分类
+            Blog info = getBlogInfo(blog);
+            blogList.add(info);
         });
-
-        return blogList;
+        blogPage.setCurrent(blogTagIPage.getCurrent());
+        blogPage.setSize(blogTagIPage.getSize());
+        blogPage.setTotal(blogTagIPage.getTotal());
+        blogPage.setRecords(blogList);
+        blogPage.setPages(blogTagIPage.getPages());
+        return blogPage;
     }
-
 
 
     @Override
     public List<Object> blogCountByTagName() {
         List<Tag> list = list();
-        // 得到tagList
         List<Object> arrayList = new ArrayList<>();
         list.forEach(tag -> {
-            // 从blogTag中查找符合 blogTag.getTagId() == tag.getTagId()的文章数量
             Integer count = MapperUtils.lambdaQueryWrapper(blogTagMapper).eq(BlogTag::getTagId, tag.getTagId()).count();
             Map<String, Object> map = new HashMap<>();
             map.put("name", tag.getName());
@@ -213,21 +216,19 @@ public class TagServiceImpl implements TagService {
     }
 
     public Blog getBlogInfo(Blog blog) {
-
-        blog.setUsername(userMapper.selectById(blog.getUserId()).getNickname());
-        // 获取分类
-        blog.setCategory(categoryMapper.selectById(blog.getCid()));
-        // 返回所有标签
-        LambdaQueryChainWrapper<BlogTag> bt = new LambdaQueryChainWrapper<>(blogTagMapper);
-        List<BlogTag> list = bt.eq(BlogTag::getBlogId, blog.getBlogId()).list();
-        List<Tag> tags = new ArrayList<>();
-        for (BlogTag blogTag : list) {
-            // 获取标签名
-            Tag tag = tagMapper.selectById(blogTag.getTagId());
-            ThrowUtils.isNull(tag, "该标签不存在！");
-            tags.add(tag);
+        if (blog.getCid() != null) {
+            blog.setCategory(categoryMapper.selectById(blog.getCid()));
         }
+        List<Tag> tags = new ArrayList<>();
+        List<BlogTag> list = MapperUtils.lambdaQueryWrapper(blogTagMapper).eq(BlogTag::getBlogId, blog.getBlogId()).list();
         //添加标签名
+        if (list.size() == 0) {
+            return blog;
+        }
+        list.forEach(blogTag -> {
+            Tag tag = tagMapper.selectById(blogTag.getTagId());
+            tags.add(tag);
+        });
         blog.setTags(tags);
         return blog;
     }

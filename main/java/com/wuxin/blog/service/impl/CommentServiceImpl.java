@@ -120,6 +120,7 @@ public class CommentServiceImpl implements CommentService {
 
         }
         Page<Comment> page = new LambdaQueryChainWrapper<Comment>(commentMapper)
+                .orderByDesc(Comment::getTop)
                 .eq(StringUtils.isNotNull(blogId), Comment::getBlogId, blogId)
                 .eq(StringUtils.isNotNull(type), Comment::getType, type)
                 .orderByDesc(Comment::getCreateTime)
@@ -209,7 +210,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public IPage<Comment> findBlogCommentByPage(Integer current, Integer limit, Integer type, String keywords, Long blogId, String start, String end) {
         LambdaQueryChainWrapper<Comment> queryChainWrapper = new LambdaQueryChainWrapper<>(commentMapper);
-        queryChainWrapper.orderByDesc(Comment::getCreateTime);
+        queryChainWrapper.orderByDesc(Comment::getTop).orderByDesc(Comment::getCreateTime);
         Page<Comment> commentPage = new Page<>(current, limit);
         Page<Comment> page = queryChainWrapper
                 .like(StringUtils.isNotEmpty(keywords), Comment::getContent, keywords)
@@ -230,9 +231,6 @@ public class CommentServiceImpl implements CommentService {
             if (comment.getType().equals(Comment.FRIEND_COMMENT)) {
                 comment.setTitle("友情链接");
             }
-
-
-            // 获取评论用户名
             User commentUser = userMapper.selectById(comment.getCommentUserId());
             comment.setUsername(commentUser.getUsername());
             comment.setAvatar(commentUser.getAvatar());
@@ -284,6 +282,7 @@ public class CommentServiceImpl implements CommentService {
     public void getReplyList(Comment blogComment) {
         List<CommentReply> replyList = new LambdaQueryChainWrapper<>(blogCommentReplyMapper)
                 .orderByDesc(CommentReply::getCreateTime)
+                .orderByDesc(CommentReply::getTop)
                 .eq(CommentReply::getBlogId, blogComment.getBlogId())
                 .eq(CommentReply::getCommentId, blogComment.getCommentId())
                 .list();

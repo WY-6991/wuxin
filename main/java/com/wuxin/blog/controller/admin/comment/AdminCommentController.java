@@ -28,7 +28,6 @@ public class AdminCommentController {
 
     /**
      * 评论分页 附带搜索
-     *
      * @param pageVo pagevo
      * @return ok
      */
@@ -55,6 +54,21 @@ public class AdminCommentController {
     }
 
 
+    /**
+     * 评论删除
+     */
+    @OperationLogger(value = "删除评论",type = BusinessType.DELETE)
+    @RequiresRoles("root")
+    @DeleteMapping("/del")
+    public Result delComment(@RequestParam("id") Long id) {
+        // 删除所有该评论下的回复
+        commentService.delCommentReplyByCommentId(id);
+        // 删除该评论
+        commentService.delComment(id);
+        return Result.ok("评论删除成功！");
+    }
+
+
 
     /**
      * 隐藏或者显示评论
@@ -64,7 +78,7 @@ public class AdminCommentController {
      */
     @OperationLogger(value = "隐藏评论权限",type = BusinessType.UPDATE)
     @RequiresRoles("root")
-    @PutMapping("/update/reply")
+    @PutMapping("/reply/update")
     public Result findBlogCommentByPage(@RequestBody CommentReply reply) {
         commentService.updateComment(reply);
         return Result.ok("操作成功");
@@ -82,20 +96,6 @@ public class AdminCommentController {
         return Result.ok(commentService.findBlogCommentReplyPage(pageVo.getCurrent(), pageVo.getLimit(), pageVo.getKeywords()));
     }
 
-    /**
-     * 评论删除
-     */
-    @OperationLogger(value = "删除评论",type = BusinessType.DELETE)
-    @RequiresRoles("root")
-    @DeleteMapping("/del")
-    public Result delComment(@RequestParam("id") Long id) {
-        // 删除所有该评论下的回复
-        commentService.delCommentReplyByCommentId(id);
-        // 删除该评论
-        commentService.delComment(id);
-        return Result.ok("评论删除成功！");
-    }
-
 
     /**
      * 删除评论
@@ -107,6 +107,11 @@ public class AdminCommentController {
         commentService.delReply(replyId);
         return Result.ok("回复删除成功！");
     }
+
+
+
+
+
 
 
 

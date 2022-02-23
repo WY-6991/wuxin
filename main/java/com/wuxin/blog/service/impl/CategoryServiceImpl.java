@@ -107,20 +107,18 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public IPage<Blog> findBlogByCategoryName(Integer current, Integer size, String categoryName) {
         Long cid = MapperUtils.lambdaQueryWrapper(categoryMapper).eq(Category::getName, categoryName).one().getCid();
-        ThrowUtils.isNull(cid);
-        if (cid == 0) {
-            throw new NotFoundException("不存在该分类标签");
-        }
-        Page<Blog> blogPage = new Page<>(current, size);
-        Page<Blog> ipage = MapperUtils.lambdaQueryWrapper(blogMapper).eq(Blog::getCid, cid).orderByDesc(Blog::getTop).orderByDesc(Blog::getCreateTime).page(blogPage);
-        ipage.getRecords().forEach(this::getBlogInfo);
-        return ipage;
+        ThrowUtils.isNull(cid, "分类不存在!");
+        Page<Blog> blogPage = MapperUtils.lambdaQueryWrapper(blogMapper).eq(Blog::getCid, cid).orderByDesc(Blog::getTop).orderByDesc(Blog::getCreateTime).eq(Blog::isPublish, 1)
+                .select(Blog::getBlogId, Blog::getCid, Blog::getTop, Blog::isPublish, Blog::getCreateTime, Blog::getTitle)
+                .page(new Page<>(current, size));
+        blogPage.getRecords().forEach(this::getBlogInfo);
+        return blogPage;
 
     }
 
     @Override
     public Category find(Long id) {
-        return null;
+        return categoryMapper.selectById(id);
     }
 
     @Override
@@ -131,22 +129,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     public Blog getBlogInfo(Blog blog) {
-        String nickname = userMapper.selectById(blog.getUserId()).getNickname();
-        ThrowUtils.isNull(nickname, "用户名不存在！");
-        blog.setUsername(nickname);
-        Category category = categoryMapper.selectById(blog.getCid());
-        ThrowUtils.isNull(category, "用户名不存在！");
-        blog.setCategory(category);
-        LambdaQueryChainWrapper<BlogTag> bt = new LambdaQueryChainWrapper<>(blogTagMapper);
-        List<BlogTag> list = bt.eq(BlogTag::getBlogId, blog.getBlogId()).list();
+        blog.setCategory(categoryMapper.selectById(blog.getCid()));
+        List<BlogTag> list = MapperUtils.lambdaQueryWrapper(blogTagMapper).eq(BlogTag::getBlogId, blog.getBlogId()).list();
         List<Tag> tags = new ArrayList<>();
-        for (BlogTag blogTag : list) {
-            // 获取标签名
+        list.forEach(blogTag -> {
             if (blogTag.getTagId() != null) {
                 tags.add(tagMapper.selectById(blogTag.getTagId()));
             }
-
-        }
+        });
         //添加标签名
         blog.setTags(tags);
         return blog;

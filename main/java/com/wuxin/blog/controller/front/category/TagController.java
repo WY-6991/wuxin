@@ -5,6 +5,7 @@ import com.wuxin.blog.annotation.VisitLogger;
 import com.wuxin.blog.mode.PageVo;
 import com.wuxin.blog.service.TagService;
 import com.wuxin.blog.utils.result.Result;
+import com.wuxin.blog.utils.string.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,30 +26,21 @@ public class TagController {
     private TagService tagService;
 
 
-
     @GetMapping("/list")
     public Result findTag() {
-        log.info("当前正在执行查看 tagList操作 ；");
         return Result.ok(tagService.list());
     }
 
 
-
-    /**
-     * 安装blog tag分类
-     * @param pageVo
-     * @return
-     */
     @AccessLimit(seconds = 120, limitCount = 10, msg = "操作频率过高！两分钟之后再试！")
-    @VisitLogger(value = "根据文章标签名获取文章列表",name = "标签页")
+    @VisitLogger(value = "根据文章标签名获取文章列表", name = "标签页")
     @PostMapping("/blog/list")
     public Result findBlogByTagName(@RequestBody PageVo pageVo) {
-        log.info("当前正在执行查看 博客根据tagName={} ；",pageVo.getKeywords());
+        if (StringUtils.isEmpty(pageVo.getKeywords())) {
+            return Result.error("名称不能为空！");
+        }
         return Result.ok(tagService.findBlogByTagName(pageVo.getCurrent(), pageVo.getLimit(), pageVo.getKeywords()));
     }
-
-
-
 
 
 }
