@@ -68,6 +68,17 @@ public class AdminCommentController {
         return Result.ok("评论删除成功！");
     }
 
+    /**
+     * 评论删除
+     */
+    @OperationLogger(value = "删除全部评论",type = BusinessType.DELETE)
+    @RequiresRoles("root")
+    @DeleteMapping("/del/all")
+    public Result delCommentAll() {
+        commentService.delCommentAll();
+        return Result.ok("评论删除成功！");
+    }
+
 
 
     /**

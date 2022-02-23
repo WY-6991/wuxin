@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wuxin.blog.mapper.FriendMapper;
 import com.wuxin.blog.pojo.blog.Friend;
+import com.wuxin.blog.pojo.blog.FriendMessage;
 import com.wuxin.blog.redis.RedisKey;
 import com.wuxin.blog.redis.RedisService;
 import com.wuxin.blog.service.FriendService;
@@ -120,4 +121,18 @@ public class FriendServiceImpl implements FriendService {
     }
 
 
+    @Override
+    public FriendMessage findFriendMessage(Long id) {
+        return friendMapper.selectFriendMessage(id);
+    }
+
+    @Override
+    public void updateFriendMessage(FriendMessage friendMessage) {
+        friendMessage.setId(FriendMessage.FRIEND_MESSAGE_ID);
+        if(findFriendMessage(friendMessage.getId())==null){
+            friendMapper.addFriendMessage(friendMessage);
+            return;
+        }
+        friendMapper.updateFriendMessage(friendMessage);
+    }
 }

@@ -67,6 +67,19 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public void delCommentAll() {
+        commentMapper.delete(null);
+        delReplyAll();
+        // 删除评论全部缓存
+        // redisService.hdel(COMMENT_LIST);
+    }
+
+    @Override
+    public void delReplyAll() {
+        blogCommentReplyMapper.delete(null);
+    }
+
+    @Override
     public Comment findCommentByCommentId(Long commentId) {
         return commentMapper.selectById(commentId);
     }
@@ -333,7 +346,6 @@ public class CommentServiceImpl implements CommentService {
      * 删除缓存内容
      */
     void deleteCommentCache(Long blogId, Integer type) {
-
         int commentCount = onlyCommentCount(blogId, type);
         int size = 10;
         int totalPage = commentCount / size + 1;

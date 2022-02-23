@@ -21,6 +21,6 @@ public interface AccessLogMapper extends BaseMapper<AccessLog> {
      * @param end   当前时间
      * @return 次数
      */
-    @Select("select count(distinct by_create) from wuxin_db.wx_access_log where  create_time>= #{start} and create_time<= #{end}")
+    @Select("select count(distinct by_create ) from wx_access_log where  create_time>=#{start} and create_time<=#{end} ")
     Integer todayAccessCount(@Param("start") String start, @Param("end") String end);
 }

@@ -156,4 +156,16 @@ public interface CommentService {
      * @return 评论数
      */
     Integer commentCount();
+
+
+    /**
+     * 删除全部评论
+     */
+    void delCommentAll();
+
+
+    /**
+     * 删除全部回复
+     */
+    void delReplyAll();
 }

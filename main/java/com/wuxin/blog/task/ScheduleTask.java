@@ -63,6 +63,9 @@ public class ScheduleTask {
     }
 
 
+    /**
+     * 获取访问量统计
+     */
     public List<Map<String, Object>> getAccessLoginCount() {
         List<Map<String, Object>> list;
         boolean b = redisService.hasKey(RedisKey.ACCESS_LOGIN_COUNT);

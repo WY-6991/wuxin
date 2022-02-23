@@ -3,6 +3,7 @@ package com.wuxin.blog.controller.front.friend;
 import com.wuxin.blog.annotation.AccessLimit;
 import com.wuxin.blog.annotation.OperationLogger;
 import com.wuxin.blog.annotation.VisitLogger;
+import com.wuxin.blog.pojo.blog.FriendMessage;
 import com.wuxin.blog.service.FriendService;
 import com.wuxin.blog.utils.result.Result;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +32,9 @@ public class FriendController {
     @VisitLogger(value = "访问了友情连接",name = "友情连接")
     @GetMapping("list")
     public Result findAllFriendList(){
-        return Result.ok(friendService.list());
+        return Result.ok().put("page",friendService.list()).put("message",friendService.findFriendMessage(FriendMessage.FRIEND_MESSAGE_ID));
     }
+
 
 
 }

@@ -51,6 +51,10 @@ class DemoApplicationTests {
     private CommentService commentService;
 
 
+    @Autowired
+    private FriendService friendService;
+
+
     @Test
     void test5() {
         // 测试redis
@@ -67,6 +71,7 @@ class DemoApplicationTests {
         //     System.out.println(record);
         // }
         // System.out.println(blogIPage);
+        System.out.println(friendService.findFriendMessage(FriendMessage.FRIEND_MESSAGE_ID));
 
 
     }

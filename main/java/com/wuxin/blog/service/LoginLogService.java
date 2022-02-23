@@ -15,7 +15,7 @@ public interface LoginLogService extends LogService<LoginLog> {
      * 统计今日访客
      * @return int
      */
-    public Integer selectTodayLoginLog();
+     Integer selectTodayLoginLog();
 
 
 
