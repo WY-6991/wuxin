@@ -5,23 +5,26 @@
     :list-loading="listLoading"
     :list="list"
     @getList="getList"
-    @delComment="delComment"
-    @delReply="delReply"
-
+    @handleSearch="handleFilter"
   />
 </template>
 
 <script>
-
-import {minix} from "@/views/pages/comment/minix";
-
+import { minix } from '@/views/pages/comment/minix'
+import { validNumber } from '@/utils/validate'
 
 export default {
-  name: "BlogComment",
+  name: 'BlogComment',
   mixins: [minix],
   mounted() {
-    this.query.id = this.$route.params.blogId
+    const blogId = this.$route.params.blogId
+    if (!validNumber(blogId)) {
+      this.$message.error('id格式不合法')
+      return
+    } else {
+      this.query.id = blogId
+      this.getList()
+    }
   }
-
-};
+}
 </script>

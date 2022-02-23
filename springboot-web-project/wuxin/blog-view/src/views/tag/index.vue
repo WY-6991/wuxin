@@ -1,73 +1,56 @@
 <template>
-<div >
-    <BlogList :getList="getBlogList" :blogList="blogList" :totalPage="totalPage" />
-</div>
+  <div>
+    <BlogList :getList="getList" :blogList="blogList" :totalPage="totalPage" />
+  </div>
 </template>
 
 <script>
 import BlogList from "@/components/blog/BlogList";
-import Title from '@/components/common/Title'
-import {
-    getBlogListByTagName
-} from "@/api/tag";
-import {
-    setTotalPage
-} from '@/utils/validate.js'
+import { getBlogListByTagName } from "@/api/tag";
 
 export default {
-    data() {
-        return {
-            blogList: '',
-            getBlogList: () => {},
-            getBlogListFinish: false,
-            // 页面参数
-            current: 1,
-            totalPage: 1,
-            name: 'vue'
+  data() {
+    return {
+      blogList: [],
+      totalPage: 0,
+      query: {
+        current: 1,
+        limit: 5,
+        keywords: "",
+      },
+    };
+  },
+  components: {
+    BlogList,
+  },
+
+  methods: {
+    getList(current) {
+      this.query.current = current;
+      this.query.keywords = this.$router.params.name;
+      getBlogListByTagName(this.query).then((res) => {
+        if (res.code == 200) {
+          const { records, pages } = res.result;
+          this.blogList = records;
+          this.totalPage = pages;
         }
+        this.$nextTick(() => {
+          this.$primsjs.highlightAll();
+        });
+      });
     },
-    components: {
-        BlogList,
-        Title
-    },
+  },
 
-    methods: {
-        // 获取基本blog参数
-        getList(current) {
-            getBlogListByTagName({
-                'current': current,
-                'limit': 5,
-                'keywords': this.name
-            }).then(res => {
-                this.blogList = res.result
-                if (res.result) {
-                    this.totalPage = setTotalPage(res.result.length, 5)
-                }
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      vm.getList(vm.query.current);
+    });
+  },
 
-                this.$nextTick(() => {
-                    this.$primsjs.highlightAll()
-                })
-            })
-        },
-
-    },
-
-    beforeRouteEnter(to, from, next) {
-        next(vm => {
-            vm.name = to.params.name
-            vm.getList(vm.current)
-        })
-    },
-
-    beforeRouteUpdate(to, from, next) {
-        this.name = to.params.name
-        this.getList(this.current)
-        next()
-    },
-    beforeRouteLeave(to, from, next) {
-        next()
-    }
-
-}
+  beforeRouteUpdate(to, from, next) {
+    this.getList(this.query.current);
+    next();
+  },
+};
 </script>
 

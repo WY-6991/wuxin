@@ -6,63 +6,52 @@
 
 <script>
 import BlogList from "@/components/blog/BlogList";
-import Title from "@/components/common/Title";
-
-import {
-  getBlogByCategoryName
-} from "@/api/tag";
-import {
-  setTotalPage
-} from '@/utils/validate'
+import { getBlogByCategoryName } from "@/api/tag";
 
 export default {
   data() {
     return {
       blogList: [],
-      getBlogListFinish: false,
-      // 页面参数
-      current: 1,
-      totalPage: 2,
-      categoryName: '随笔'
-    }
+      totalPage: 0,
+      query: {
+        current: 1,
+        limit: 5,
+        keywords: "",
+      },
+    };
   },
   components: {
     BlogList,
-    Title
   },
 
   methods: {
-    // 获取基本blog参数
-    getList(current) {
-      getBlogByCategoryName({
-        'current': current,
-        'limit': 5,
-        'keywords': this.categoryName
-      }).then(res => {
-        this.blogList = res.result.records
-        this.totalPage = setTotalPage(res.result.total, res.result.size)
-        // this.totalPage = setTotalPage(res.)
-        this.$nextTick(() => {
-          this.$primsjs.highlightAll()
-        })
-      })
-    },
 
+    getList(current) {
+      this.query.current = current;
+      this.query.keywords = this.$router.params.name;
+      getBlogByCategoryName(this.query).then((res) => {
+        if (res.code === 200) {
+          const { pages, records } = res.result;
+          this.blogList = records;
+          this.totalPage = pages;
+        }
+        this.$nextTick(() => {
+          this.$primsjs.highlightAll();
+        });
+      });
+    },
   },
 
   beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.categoryName = to.params.name
-      vm.getList(vm.current)
-    })
+    next((vm) => {
+      vm.getList(vm.current);
+    });
   },
 
   beforeRouteUpdate(to, from, next) {
-    // this.getData(this.$route.params.blogId
-    this.categoryName = to.params.name
-    this.getList(this.current)
-    next()
-  }
-}
+    this.getList(this.current);
+    next();
+  },
+};
 </script>
 

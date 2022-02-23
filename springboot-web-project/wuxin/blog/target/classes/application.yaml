@@ -14,8 +14,8 @@ spring:
     password: 123456
 
 #    url: jdbc:mysql://localhost:3306/wuxin_db?useSSL=false&serverTimezone=GMT%2b8&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
-#      username: wuxin_db
-#      password: 562at6d45acyadw2
+#    username: wuxin_db
+#    password: 562at6d45acyadw2
     # 支持表情包输入
     hikari:
       connection-init-sql: SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci
@@ -25,7 +25,7 @@ spring:
     database: 5
     port: 6379
     password:
-#    password: 123456
+    #    password: 123456
     jedis:
       pool:
         max-active: 50

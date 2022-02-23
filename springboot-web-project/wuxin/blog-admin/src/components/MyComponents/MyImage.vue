@@ -44,7 +44,6 @@
         </svg>
       </div>
     </el-tooltip>
-
   </el-image>
 </template>
 <script>

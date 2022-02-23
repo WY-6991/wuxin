@@ -3,7 +3,9 @@
     <LoginBackground @isShow="showChange()"></LoginBackground>
     <transition enter-active-class="m-fade-in" leave-active-class="m-fade-out">
       <div class="login-container" v-show="isShow">
-        <h2 style="text-align: center;color: #fff;letter-spacing: 1px;">{{ componentName==='Register'?'注册':'登录' }}</h2>
+        <h2 style="text-align: center;color: #fff;letter-spacing: 1px;">{{
+            componentName === 'Register' ? '注册' : '登录'
+          }}</h2>
         <component :is="componentName" @showName="showName"></component>
       </div>
     </transition>
@@ -11,13 +13,13 @@
 </template>
 
 <script>
-import Pass from "@/views/login/components/Pass";
-import Email from "@/views/login/components/Email";
-import Register from "@/views/login/components/Register";
-import LoginBackground from "@/views/login/components/LoginBackground";
+import Pass from '@/views/login/components/Pass'
+import Email from '@/views/login/components/Email'
+import Register from '@/views/login/components/Register'
+import LoginBackground from '@/views/login/components/LoginBackground'
 
 export default {
-  components: {LoginBackground, Email, Pass, Register},
+  components: { LoginBackground, Email, Pass, Register },
   data() {
     return {
       isShow: true,
@@ -31,7 +33,7 @@ export default {
     showName(name) {
       this.componentName = name
     }
-  },
+  }
 
 }
 </script>
@@ -47,7 +49,6 @@ $custom-color: #eee;
     color: $cursor;
   }
 }
-
 
 div.login-main-container {
   position: fixed;
@@ -86,8 +87,6 @@ div.login-main-container {
       transform: translate3d(0, 0, 0px);
     }
   }
-
-
   @keyframes fadeOut {
     from {
       opacity: 1;
@@ -99,7 +98,6 @@ div.login-main-container {
     }
   }
 
-
   .login-container {
     position: relative;
     width: 30%;
@@ -109,7 +107,6 @@ div.login-main-container {
     background-attachment: fixed;
     z-index: 10;
     border-radius: 2%;
-
 
     .login-form {
       position: relative;
@@ -124,16 +121,8 @@ div.login-main-container {
           color: white !important;
         }
       }
-
-
     }
-
-
   }
-
-
 }
-
-
 </style>
 

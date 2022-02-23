@@ -19,8 +19,7 @@ const routes = [
         path: '/',
         component: Layout,
         redirect: '/welcome',
-        children: [
-            {
+        children: [{
                 path: "index",
                 component: () => import("@/views/home/index.vue"),
                 name: 'Index',
@@ -81,8 +80,8 @@ const routes = [
                 },
             },
             {
-                path: "time",
-                name: 'Time',
+                path: "update",
+                name: 'Update',
                 component: () => import("@/views/timeline/index.vue"),
                 meta: {
                     title: "通知",
@@ -124,7 +123,6 @@ const router = new VueRouter({
 });
 
 
-// 挂载路由守卫
 router.beforeEach((to, from, next) => {
     document.title = to.meta.title
     next()

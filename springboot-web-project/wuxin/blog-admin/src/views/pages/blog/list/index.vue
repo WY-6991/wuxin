@@ -76,6 +76,7 @@
             <el-icon
               style="font-size: 24px; cursor: pointer"
               name="chat-dot-round"
+              :aria-disabled="true"
               @click.native.prevent="handleComment(row)"
             />
           </el-badge>
@@ -171,7 +172,7 @@
       </div>
     </el-dialog>
     <!--    归档-->
-    <el-dialog title="归档" :visible.sync="dialogFormArchive">
+    <el-dialog title="归档" :visible.sync="dialogFormArchive" width="40%">
       <AddArchive
         :archive="archive"
         @addArchive="addArchive"
@@ -182,7 +183,7 @@
 </template>
 
 <script>
-import list from "@/views/pages/blog/list/blog";
+import list from '@/views/pages/blog/list/blog'
 
-export default list;
+export default list
 </script>

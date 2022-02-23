@@ -1,89 +1,129 @@
 <template>
   <div class="ui container">
-    <div ref="nav" class="ui stackable menu small fixed  "
-         :class="{ 'transparent': $route.name === 'Index' && clientSize.clientWidth > 768, 'inverted':inverted}">
-      <div class="ui container ">
+    <div
+      ref="nav"
+      class="ui stackable menu small fixed"
+      :class="{
+        transparent: $route.name === 'Index' && clientSize.clientWidth > 768,
+        inverted: inverted,
+      }"
+    >
+      <div class="ui container">
         <router-link to="/welcome">
-          <h3 class="ui header item m-blue">{{ webName !== '' ? webName : 'wuxin001' }}`blog</h3>
+          <h3 class="ui header item m-blue">
+            {{ webName !== "" ? webName : "wuxin001" }}`blog
+          </h3>
         </router-link>
-        <router-link to="/index" class="item "
-                     :class="` ${showMobile()}  ${isActive('Index')} ${color}`">
+        <router-link
+          to="/index"
+          class="item"
+          :class="` ${showMobile()}  ${isActive('Index')} ${color}`"
+        >
           <i class="home icon"></i>首页
         </router-link>
 
         <el-dropdown trigger="click" @command="categoryRoute">
-            <span class="el-dropdown-link item"
-                  :class="` ${showMobile()} ${isActive('Category')} ${color}`">
-                <i class="idea icon"></i>分类<i class="caret down icon"></i>
-            </span>
-          <el-dropdown-menu slot="dropdown" :class="{'inverted':inverted}">
-            <el-dropdown-item :command="category.name" v-for="(category, index) in categoryList"
-                              :key="`categoryName${index}`">
+          <span
+            class="el-dropdown-link item"
+            :class="` ${showMobile()} ${isActive('Category')} ${color}`"
+          >
+            <i class="idea icon"></i>分类<i class="caret down icon"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown" :class="{ inverted: inverted }">
+            <el-dropdown-item
+              :command="category.name"
+              v-for="(category, index) in categoryList"
+              :key="`categoryName${index}`"
+            >
               {{ category.name }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <router-link to="/archive" class="item"
-                     :class="` ${showMobile()}  ${isActive('Archive')} ${color}`">
-          <i class="archive  icon"></i>收藏
+        <router-link
+          to="/archive"
+          class="item"
+          :class="` ${showMobile()}  ${isActive('Archive')} ${color}`"
+        >
+          <i class="archive icon"></i>收藏
         </router-link>
 
-        <router-link to="/moments" class=" item "
-                     :class="`  ${showMobile()} ${isActive('Moment')} ${color}`">
+        <router-link
+          to="/moments"
+          class="item"
+          :class="`  ${showMobile()} ${isActive('Moment')} ${color}`"
+        >
           <i class="hotjar icon"></i>动态
         </router-link>
-        <router-link to="/about" class=" item "
-                     :class="`  ${showMobile()} ${isActive('About')} ${color}`">
+        <router-link
+          to="/about"
+          class="item"
+          :class="`  ${showMobile()} ${isActive('About')} ${color}`"
+        >
           <i class="info icon"></i>关于
         </router-link>
-        <router-link to="/friends" class="item "
-                     :class="` ${showMobile()}  ${isActive('Friend')} ${color}`">
+        <router-link
+          to="/friends"
+          class="item"
+          :class="` ${showMobile()}  ${isActive('Friend')} ${color}`"
+        >
           <i class="users icon"></i>友接
         </router-link>
 
-        <router-link to="/time" class="item "
-                     :class="` ${showMobile()}  ${isActive('Time')} ${color}`">
-          <i class="leaf circle icon"></i>时间线
+        <router-link
+          to="/update"
+          class="item"
+          :class="` ${showMobile()}  ${isActive('Time')} ${color}`"
+        >
+          <i class="leaf circle icon"></i>更新
         </router-link>
-
 
         <!--右侧登录注册-->
         <div class="right menu">
-          <a class="item m-mobile-hide" href="javaScript:void(0)"
-             :class="` ${showMobile()}  ${color}`" @click.prevent="search">
+          <a
+            class="item m-mobile-hide"
+            href="javaScript:void(0)"
+            :class="` ${showMobile()}  ${color}`"
+            @click.prevent="search"
+          >
             <i class="ui search icon"></i>搜索
           </a>
 
-          <a :href="loginUrl" class="item m-mobile-hide"
-             target="_blank"
-             :class="` ${showMobile()}  ${isActive('Login')} ${color}`">
+          <a
+            :href="loginUrl"
+            class="item m-mobile-hide"
+            target="_blank"
+            :class="` ${showMobile()}  ${isActive('Login')} ${color}`"
+          >
             <i class="user icon"></i>登录
           </a>
-
         </div>
 
         <!--      当屏幕缩小时候显示菜单显示按钮-->
-        <div class="ui menu black icon button m-right-top m-mobile-show"
-             :class="{'inverted':$store.state.setting.inverted}" @click="toggle">
+        <div
+          class="ui menu black icon button m-right-top m-mobile-show"
+          :class="{ inverted: $store.state.setting.inverted }"
+          @click="toggle"
+        >
           <i class="sidebar icon"></i>
         </div>
-
       </div>
     </div>
-    <Search :open="open" @changeSearch="changeSearch" :tagList="tagList" :category-list="categoryList"></Search>
+    <Search
+      :open="open"
+      @changeSearch="changeSearch"
+      :tagList="tagList"
+      :category-list="categoryList"
+    ></Search>
   </div>
 </template>
 
 <script>
-import {
-  mapGetters
-} from "vuex";
+import { mapGetters } from "vuex";
 import Search from "@/layout/components/Search";
-
 
 export default {
   name: "MyNav",
-  components: {Search},
+  components: { Search },
   props: {
     webName: {
       type: String,
@@ -91,16 +131,16 @@ export default {
     },
     categoryList: {
       type: Array,
-      default: []
+      default: [],
     },
     tagList: {
       type: Array,
-      default: []
+      default: [],
     },
     loginUrl: {
       type: String,
-      default: 'http://localhost:2768/login'
-    }
+      default: "http://localhost:2768/login",
+    },
   },
   data() {
     return {
@@ -108,21 +148,18 @@ export default {
       queryString: "",
       queryResult: [],
       timer: null,
-      open: false
+      open: false,
     };
   },
   computed: {
-
-    ...mapGetters(['clientSize', 'settingState']),
+    ...mapGetters(["clientSize", "settingState"]),
 
     color() {
-      return this.settingState.menuColor
+      return this.settingState.menuColor;
     },
     inverted() {
-      return this.settingState.inverted
-    }
-
-
+      return this.settingState.inverted;
+    },
   },
   watch: {
     "clientSize.clientWidth"() {
@@ -161,19 +198,18 @@ export default {
         this.mobileHide = true;
       }
       // 终止冒泡事件
-      e.stopPropagation()
+      e.stopPropagation();
     });
   },
   methods: {
-
     toggle() {
       this.mobileHide = !this.mobileHide;
     },
     showMobile() {
-      return this.mobileHide ? 'm-mobile-hide' : 'm-mobile-show'
+      return this.mobileHide ? "m-mobile-hide" : "m-mobile-show";
     },
     isActive(name) {
-      return this.$route.name === name ? 'active' : ''
+      return this.$route.name === name ? "active" : "";
     },
     categoryRoute(name) {
       this.$router.push(`/category/${name}`);
@@ -182,15 +218,14 @@ export default {
     search() {
       // todo 这里有个bug，打开搜索窗口之后如果点击其他地方关闭，再次点击打开，会发现 搜索窗口打不开，因为直接关闭窗口，没有触发changeSearch 事件
       // todo 因此此处现赋值为false，然后再赋值为ture 虽然这种方案可行，但是一点都美观，......
-      this.open = false
-      this.open = true
+      this.open = false;
+      this.open = true;
     },
     changeSearch() {
-      this.open = !this.open
-    }
-  }
-}
-
+      this.open = !this.open;
+    },
+  },
+};
 </script>
 
 <style lang="css" scoped>

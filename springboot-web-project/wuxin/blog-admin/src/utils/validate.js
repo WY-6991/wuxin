@@ -8,6 +8,16 @@ export function isExternal(path) {
 }
 
 /**
+ * @param {string} path
+ * @returns {Boolean}
+ */
+export function validNumber(n) {
+  const reg = /^\d+$/
+  return reg.test(n)
+}
+
+
+/**
  * @param {string} str
  * @returns {Boolean}
  */
@@ -69,7 +79,6 @@ export function validPhone(phone) {
   const reg = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/
   return reg.test(phone)
 }
-
 
 /**
  * @param {string} str
