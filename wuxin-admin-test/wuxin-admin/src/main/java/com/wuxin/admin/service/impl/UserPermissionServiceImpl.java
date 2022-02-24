@@ -40,7 +40,7 @@ public class UserPermissionServiceImpl extends ServiceImpl<UserPermissionMapper,
     public UserPermissionVo selectUserPermissionVo(Long userId) {
         // 设置用户权限信息
         UserPermissionVo userPermissionVo = new UserPermissionVo();
-        userPermissionVo.setUserid(userId);
+        userPermissionVo.setUserId(userId);
 
         // 获取用户权限列表
         List<UserPermission> userPermissions = selectUserPermissionsByUserId(userId);

@@ -16,6 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserPermissionVo {
-    private Long userid;
+    private Long userId;
     private List<String> permissionList;
 }
