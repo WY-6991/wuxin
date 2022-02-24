@@ -13,5 +13,6 @@ public class ApplicationStart {
 
     public static void main(String[] args) {
         SpringApplication.run(ApplicationStart.class);
+        System.out.println("=========================项目启动完毕==============");
     }
 }

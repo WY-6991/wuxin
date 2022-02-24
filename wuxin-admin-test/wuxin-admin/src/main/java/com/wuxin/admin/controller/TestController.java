@@ -14,13 +14,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test")
 public class TestController {
 
+
     @GetMapping("/hello")
-    public String test01(){
+    public String test01() {
         return "test 01";
     }
 
     @GetMapping("/hello1")
-    public Result test2(){
-        return Result.ok().put("hello","content");
+    public Result test2() {
+        return Result.ok().put("hello", "content");
+    }
+
+    @GetMapping("/redis")
+    public Result test03() {
+        return Result.ok();
     }
 }
