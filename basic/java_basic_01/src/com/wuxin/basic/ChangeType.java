@@ -8,12 +8,15 @@ package com.wuxin.basic;
 public class ChangeType {
 
     public static void main(String[] args) {
-        String a = "100a";
-        Integer b = Integer.parseInt(a);
-        System.out.println(b);
 
         String c = "100";
         Integer d = Integer.parseInt(c);
         System.out.println(d);
+
+        int i = 1;
+        char j = 'c';
+        System.out.println(i);
+        System.out.println(j);
+        System.out.println((int)j); //99
     }
 }
