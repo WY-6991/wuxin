@@ -15,7 +15,7 @@
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar" alt="">
+          <img :src="avatar||require('@/assets/avatar/default.png')" class="user-avatar" alt="">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -42,7 +42,6 @@ import {mapGetters} from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
-import Search from '@/components/HeaderSearch'
 
 export default {
   components: {
@@ -69,7 +68,7 @@ export default {
       this.$router.push('/user/profile')
     },
     async toGithub() {
-      window.open('https://github.com/WY-6991/wuxin/tree/main/springboot-web-project/wuxin','_blank')
+      window.open('https://github.com/wuxin0011/wuxin/tree/main/springboot-web-project/wuxin','_blank')
     },
     async toGitee() {
       window.open('https://gitee.com/wuxin0011','_blank')

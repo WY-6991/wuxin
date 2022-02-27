@@ -7,7 +7,7 @@
         <li>或者你可以去:</li>
         <li class="link-type"><router-link to="/dashboard">回首页</router-link></li>
         <li class="link-type"><router-link to="/dashboard">回首页</router-link></li>
-        <li class="link-type"><router-link to="/login">去登录</router-link></li>
+        <li class="link-type"><router-link to="/login">登录</router-link></li>
       </ul>
     </div>
 

@@ -2,10 +2,14 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from '@/layout'
 import userRouter from '@/router/modules/user'
+import blogRouter from '@/router/modules/blog'
 import pageRouter from '@/router/modules/page'
 import logRouter from '@/router/modules/log'
 import systemRouter from '@/router/modules/system'
 import countRouter from '@/router/modules/count'
+import repoRouter from '@/router/modules/repo'
+import store from '@/store/index'
+import { MessageBox } from 'element-ui'
 
 Vue.use(Router)
 
@@ -54,10 +58,12 @@ export const constantRoutes = [
       }
     ]
   },
+  blogRouter,
   pageRouter,
   userRouter,
   logRouter,
   systemRouter,
+  repoRouter,
   countRouter,
   {
     path: '*',
@@ -66,81 +72,39 @@ export const constantRoutes = [
   }
 ]
 
-/**
- * 设置权限路由
- * @type {any}
- */
-export const asyncRoutes = [
-  {
-    path: '/permission',
-    component: Layout,
-    redirect: '/permission/page',
-    alwaysShow: true,
-    name: 'Permission',
-    meta: {
-      title: '权限',
-      icon: 'lock',
-      roles: ['user', 'admin', 'root']
-    },
-    children: [
-      {
-        path: 'page',
-        component: () => import('@/views/permission/page'),
-        name: 'PagePermission',
-        meta: {
-          title: '页面指令',
-          roles: ['admin', 'root']
-        }
-      },
-      {
-        path: 'directive',
-        component: () => import('@/views/permission/directive'),
-        name: 'DirectivePermission',
-        meta: {
-          title: '指令许可',
-          roles: ['admin', 'root']
-        }
-      },
-      {
-        path: 'role',
-        component: () => import('@/views/permission/role'),
-        name: 'RolePermission',
-        meta: {
-          title: '角色权限',
-          roles: ['root']
-        }
-      }
-    ]
-  },
-
-  {
-    path: '/icon',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/icons/index'),
-        name: 'Icons',
-        meta: { title: '图标', icon: 'icon', noCache: true }
-      }
-    ]
-  },
-  { path: '*', redirect: '/404', hidden: true }
-]
-
-window.sessionStorage.setItem('constantRoutes',JSON.stringify(constantRoutes))
-// console.log('window.sessionStorage.getItem(\'constantRoutes\')========>',JSON.parse(window.sessionStorage.getItem('constantRoutes')))
-const createRouter = () => new Router({
+window.sessionStorage.setItem('constantRoutes', JSON.stringify(constantRoutes))
+// const router = new Router({
+//   scrollBehavior: () => ({ y: 0 }),
+//   routes: constantRoutes,
+//   mode: 'history'
+// })
+const router = new Router({
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes,
   mode: 'history'
 })
 
-const router = createRouter()
-
-export function resetRouter() {
-  const newRouter = createRouter()
-  router.matcher = newRouter.matcher
-}
+// 挂载路由守卫
+router.beforeEach((to, from, next) => {
+  if (to.path !== '/login') {
+    // 获取token
+    const token = store.getters.token ? store.getters.token : ''
+    if (!token) {
+      MessageBox.confirm('获取不到用户令牌', '是否重新登录？', {
+        distinguishCancelAndClose: true,
+        type: 'warning',
+        confirmButtonText: '确认',
+        showCancelButton: false
+      })
+        .then(() => {
+          return next('/login')
+        })
+        .catch(() => {
+          return next('/login')
+        })
+    }
+  }
+  next()
+})
 
 export default router

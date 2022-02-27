@@ -1,5 +1,5 @@
-export function setSetStore(key,value) {
-  sessionStorage.setItem(key,JSON.stringify(value))
+export function setSetStore(key, value) {
+  sessionStorage.setItem(key, JSON.stringify(value))
 }
 
 export function getStore(key) {
@@ -12,4 +12,17 @@ export function removeStore(key) {
 
 export function clearStore() {
   sessionStorage.clear()
+}
+
+
+export function setLocalStore(key, value) {
+  window.localStorage.setItem(key, JSON.stringify(value))
+}
+
+export function getLocalStore(key) {
+  return JSON.parse(window.localStorage.getItem(key))
+}
+
+export function cleanLocalStore(key) {
+  window.localStorage.clear(key)
 }

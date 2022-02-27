@@ -1,6 +1,5 @@
 import {getEmailCode, getInfo, login, loginToEmail, logout,} from '@/api/user'
 import {getRoles, getToken, removeToken, setRoles, setToken,} from '@/utils/auth'
-import router, {resetRouter} from '@/router'
 
 import {
   SET_AVATAR,
@@ -12,9 +11,8 @@ import {
   SET_USER_ID,
 } from '../mutations-type'
 
-
 const state = {
-  token: getToken() || null,
+  token: getToken() ? getToken():null,
   name: '',
   nickname: '',
   avatar: '',
@@ -23,12 +21,10 @@ const state = {
   roles: getRoles() || [],
 }
 
-
 const mutations = {
   [SET_TOKEN]: (state, token) => {
     state.token = token
   },
-
   [SET_USER_ID]: (state, userId) => {
     state.userId = userId
   },
@@ -48,13 +44,9 @@ const mutations = {
   [SET_ROLES]: (state, roles) => {
     state.roles = roles
   },
-
-
 }
 
 const actions = {
-
-
   /**
    * 普通方式登录 通过用户名和密码方式登录
    * @param commit
@@ -97,15 +89,6 @@ const actions = {
         commit(SET_NAME, decodeURIComponent(name))
         commit(SET_AVATAR, avatar)
         commit(SET_INTRODUCTION, introduction)
-        // window.sessionStorage.setItem('UserInfo', JSON.stringify({
-        //   'roles': roles,
-        //   'name': name,
-        //   'userId': userId,
-        //   'avatar': avatar,
-        //   'introduction': introduction,
-        //   'user': user,
-        //   'nickname': nickname
-        // }))
         setRoles(roles)
         resolve(res)
 
@@ -115,13 +98,10 @@ const actions = {
     })
   },
 
-
-
   /**
    * 通过邮箱获取验证码
    */
   getEmailCode({commit}, email) {
-    console.log("通过邮箱方式登录 获取验证码",email)
     return new Promise((resolve, reject) => {
       getEmailCode(email).then(res => {
         resolve(res)
@@ -137,7 +117,6 @@ const actions = {
    * 通过邮箱和验证码方式登录
    */
   loginToEmail({commit}, userInfo) {
-    console.log("通过邮箱方式登录！...",userInfo)
     return new Promise((resolve, reject) => {
       loginToEmail(userInfo).then(res => {
         const {result} = res
@@ -152,13 +131,11 @@ const actions = {
   },
 
   logout({commit, state, dispatch}) {
-    console.log("执行退出登录操作....")
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         commit(SET_TOKEN, '')
         commit(SET_ROLES, [])
         removeToken()
-        resetRouter()
         dispatch('tagsView/delAllViews', null, {root: true})
         resolve()
       }).catch(error => {
@@ -184,15 +161,14 @@ const actions = {
     const token = role + '-token'
     commit(SET_TOKEN, token)
     setToken(token)
-    const {roles} = await dispatch('getInfo')
-    resetRouter()
-    const accessRoutes = await dispatch('permission/generateRoutes', roles, {root: true})
-    router.addRoutes(accessRoutes)
     dispatch('tagsView/delAllViews', null, {root: true})
   },
 
 
 }
+
+
+
 
 export default {
   namespaced: true,

@@ -1,8 +1,6 @@
 <template>
   <div :class="{'has-logo':showLogo}">
-    <!-- 是否显示logo-->
     <logo v-if="showLogo" :collapse="isCollapse" />
-    <!--   侧边栏-->
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :default-active="activeMenu"
@@ -14,8 +12,8 @@
         :collapse-transition="false"
         mode="vertical"
       >
-        <!--                <sidebar-item v-for="route in permission_routes" :key="route.path" :item="route" :base-path="route.path" />-->
-        <sidebar-item v-for="route in routers" :key="route.path" :item="route" :base-path="route.path" />
+<!--        路由列表-->
+        <sidebar-item v-for="(route,index) in routers" :key="index" :item="route" :base-path="route.path" />
       </el-menu>
     </el-scrollbar>
   </div>
@@ -28,16 +26,12 @@ import SidebarItem from './SidebarItem'
 import variables from '@/styles/variables.scss'
 
 export default {
-  components: {SidebarItem, Logo},
+  components: { SidebarItem, Logo },
   computed: {
-    ...mapGetters([
-      'permission_routes',
-      'sidebar'
-    ]),
+    ...mapGetters(['sidebar']),
     activeMenu() {
       const route = this.$route
-      const {meta, path} = route
-      // if set path, the sidebar will highlight the path you set
+      const { meta, path } = route
       if (meta.activeMenu) {
         return meta.activeMenu
       }
@@ -51,14 +45,11 @@ export default {
     },
     isCollapse() {
       return !this.sidebar.opened
-    }
-  },
-
-  data() {
-    return {
-      // localStore中获取路由
-      routers: JSON.parse(window.sessionStorage.getItem('constantRoutes'))
+    },
+    routers() {
+      return JSON.parse(window.sessionStorage.getItem('constantRoutes'))
     }
   }
+
 }
 </script>

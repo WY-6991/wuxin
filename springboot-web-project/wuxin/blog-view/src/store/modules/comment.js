@@ -17,18 +17,9 @@ const state = {
     commentUser: {
         username: getUser() && getUser().username ? getUser().username : '',
         email: getUser() && getUser().email ? getUser().email : '',
-        content: null,
+        content: '',
         subscription: getUser() && getUser().subscription ? getUser().subscription : true,
     },
-
-    loading: false,
-    parentCommentId: -1,
-    totalPage: 0,
-    current: 1,
-    commentCount: 0,
-    commentList: []
-
-
 }
 
 
@@ -47,10 +38,9 @@ const mutations = {
         });
     },
 
-    // 设置评论用户
+    // 清空用户输入内容
     [SET_CLEAN_CONTENT]: (state) => {
-        // 将存储到cookie中
-        state.commentUser.content = null
+        state.commentUser.content = ''
     },
 
 }
@@ -73,9 +63,6 @@ const actions = {
     }, user) {
         commit(SET_COMMENT_USER, user)
     },
-
-
-
 
 
 }

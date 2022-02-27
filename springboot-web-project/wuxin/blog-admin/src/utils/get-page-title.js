@@ -1,6 +1,6 @@
 import defaultSettings from '@/settings'
 
-const title = defaultSettings.title || 'WuXinAdmin'
+const title = defaultSettings.title || 'wuxin-admin'
 
 export default function getPageTitle(pageTitle) {
   if (pageTitle) {

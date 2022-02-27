@@ -6,7 +6,6 @@ Vue.use(Vuex)
 
 const modulesFiles = require.context('./modules', true, /\.js$/)
 
-
 // 自动注册modules文件下的的所有js文件
 const modules = modulesFiles.keys().reduce((modules, modulePath) => {
   // set './app.js' => 'app'
