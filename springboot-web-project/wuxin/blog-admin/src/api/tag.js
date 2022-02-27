@@ -30,8 +30,11 @@ export function getTagList(data) {
  */
 export function delTag(tagId) {
   return request({
-    url:`/admin/tag/del/${tagId}`,
-    method: 'get',
+    url: `/admin/tag/del`,
+    method: 'delete',
+    params: {
+      tagId
+    }
   })
 }
 
