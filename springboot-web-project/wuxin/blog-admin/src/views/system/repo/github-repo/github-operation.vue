@@ -94,10 +94,6 @@ export default {
   },
   methods: {
     getData() {
-      if (!this.isRoot) {
-        this.$message.error('获取失败！无权限获取仓库信息')
-        return
-      }
       this.loadingButton = true
       setTimeout(() => {
         this.loadingButton = false
@@ -113,10 +109,6 @@ export default {
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
-            if (!this.isRoot) {
-              this.$message.error('操作失败！无权限执行该操作！')
-              return
-            }
             deleteGithubRecords(this.github).then(res => {
               if (res.code === 200) {
                 this.$message.success('' + JSON.stringify(res.result))

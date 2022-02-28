@@ -40,20 +40,12 @@ export default {
     },
 
     removeData(id, index) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，不具备该权限！')
-        return
-      }
       delExceptionLog(id).then(res => {
         this.$SuccessMessage(res, '删除成功', this.list, index)
       })
     },
 
     delAll() {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，不具备该权限！')
-        return
-      }
       delAllExceptionLog().then(res => {
         if (res.code === 200) {
           this.$notify.success('删除成功！')

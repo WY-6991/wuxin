@@ -8,18 +8,14 @@
 </template>
 <script>
 
-import {minix} from "@/views/blog/label/minix";
-import {createTag} from "@/api/tag";
+import { minix } from '@/views/blog/label/minix'
+import { createTag } from '@/api/tag'
 
 export default {
-  name: "AddTag",
+  name: 'AddTag',
   mixins: [minix],
   methods: {
     createTag() {
-      if(!this.isRoot){
-        this.$message.error('添加失败，无权限执行该操作！')
-        return
-      }
       createTag(this.temp).then(res => {
         if (res.code === 200) {
           // 添加成功之后重新加载list
@@ -30,15 +26,10 @@ export default {
           this.restTemp()
           this.$message.success('添加成功！')
         }
-
       })
-
-
-    },
-  },
-
-
-};
+    }
+  }
+}
 </script>
 <style scoped>
 .el-tag {

@@ -153,10 +153,6 @@ export default {
     },
 
     delComment(cid, index) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-        return
-      }
       delComment(cid).then(res => {
         if (res.code === 200) {
           this.$message.success('删除成功！')
@@ -166,10 +162,6 @@ export default {
     },
 
     delReply(id, index) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-        return
-      }
       delReply(id).then(res => {
         if (res.code === 200) {
           this.$message.success('删除成功')
@@ -178,10 +170,6 @@ export default {
     },
 
     updateReply(reply) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-        return
-      }
       updateReply(reply).then(res => {
         if (res.code === 200) {
           this.$message.success('修改成功！')
@@ -196,10 +184,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        if (!this.isRoot) {
-          this.$message.error('操作失败，无权限执行该操作！')
-          return
-        }
         delCommentAll().then(res => {
           if (res.code === 200) {
             this.$message({
@@ -217,18 +201,10 @@ export default {
     },
 
     delPartComment(ids) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-        return
-      }
       this.$emit('delPartComment', ids)
     },
 
     updateComment(comment) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-        return
-      }
       updateComment(comment).then(res => {
         if (res.code === 200) {
           this.$message.success('修改成功！')

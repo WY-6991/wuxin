@@ -199,8 +199,6 @@ import {
   updateFriendMessage,
   getFriendList
 } from '@/api/friends'
-
-
 export default {
   name: 'Friend',
   components: {MyImage, ImageCropper, PanThumb},
@@ -241,7 +239,7 @@ export default {
       },
       rules: {
         url: [
-          {validator: validateUrl, trigger: 'blur'}
+          { validator: validateUrl, trigger: 'blur'}
         ],
         username: [{
           required: true, message: '请输入用户名', trigger: 'blur'
@@ -263,7 +261,6 @@ export default {
   },
   mounted() {
     this.getList()
-
     this.initVditor()
   },
   methods: {
@@ -292,10 +289,6 @@ export default {
     },
 
     updateStatus(friend) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-        return
-      }
       updateFriend(friend).then(res => {
         if (res.code === 200) {
           if (friend.status) {
@@ -340,10 +333,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        if (!this.isRoot) {
-          this.$message.error('操作失败，无权限执行该操作！')
-          return
-        }
         delFriend(friendId).then(res => {
           if (res.code === 200) {
             this.friendList.splice(index, 1)
@@ -368,10 +357,6 @@ export default {
     createData(formName) {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          if (!this.isRoot) {
-            this.$message.error('操作失败，无权限执行该操作！')
-            return
-          }
           createFriend(this.ruleForm).then(res => {
             if (res.code !== 200) return false
             this.$notify.success('添加成功！')
@@ -392,10 +377,6 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          if (!this.isRoot) {
-            this.$message.error('操作失败，无权限执行该操作！')
-            return
-          }
           updateFriend(this.ruleForm).then(res => {
             if (res.code !== 200) return false
             this.$notify.success('修改成功！')
@@ -449,10 +430,6 @@ export default {
     },
 
     updateMessage() {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-        return
-      }
       this.message.content = this.contentVditor.getHTML()
       updateFriendMessage(this.message).then(res => {
         if (res.code === 200) {

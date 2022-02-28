@@ -59,10 +59,6 @@ export default {
   props: ['row', 'content'],
   methods: {
     deleteReply(id) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-        return;
-      }
       this.$emit('deleteReply', id)
     },
     NotOnline() {

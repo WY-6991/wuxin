@@ -16,11 +16,6 @@ export default {
 
   methods: {
     createItem() {
-      if (!this.isRoot) {
-        this.$message.error('操作失败！无权限执行该操作！')
-        return
-      }
-
       const temp = {
         'id': this.footerLabel.length + 1,
         'typeName': '',
@@ -46,10 +41,6 @@ export default {
     },
 
     deleteItem(id) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败！无权限执行该操作！')
-        return
-      }
       delWebFooterLabel(id).then(res => {
         if (res.code === 200) {
           this.$notify.success('删除成功')

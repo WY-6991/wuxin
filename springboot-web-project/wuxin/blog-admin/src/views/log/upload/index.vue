@@ -2,7 +2,7 @@
   <div class="app-container">
     <MySearchHeader :show-search-input="false" @handleSearch="handleFilter" :show-search-button="false" :show-create-button="false">
       <el-button  class="m-margin-left-mini" :type="compontentName === 'UploadImageTable'?'info':'success'" size="mini"
-                 @click="compontentName === 'UploadImageTable' ?changeName('UploadImageList'):changeName('UploadImageTable')">
+                  @click="compontentName === 'UploadImageTable' ?changeName('UploadImageList'):changeName('UploadImageTable')">
         {{ compontentName === 'UploadImageTable' ? '图片形式' : '表格形式' }}
       </el-button>
     </MySearchHeader>
@@ -32,13 +32,11 @@ export default {
       compontentName: 'UploadImageTable',
       visiableDialog: false,
       log: {},
-
     }
   },
   computed: {
 
     filterList() {
-
       const list = this.list
       // 判断是否是root用户
       if (this.isRoot) {
@@ -54,10 +52,7 @@ export default {
         }
         return arr;
       }
-
     },
-
-
   },
   methods: {
     getList() {
@@ -74,7 +69,7 @@ export default {
     },
     changeName(name) {
       this.compontentName = name
-    },
+    }
   },
   mounted() {
     this.getList()

@@ -134,10 +134,6 @@ export default {
       // 第一次验证
       this.$refs['updateDataForm'].validate(valid => {
         if (valid) {
-          if (!this.isRoot) {
-            this.$message.error('操作失败，没有权限执行该操作！')
-            return
-          }
           this.blog.description = this.descriptionVditor.getHTML()
           this.blog.content = this.contentVditor.getHTML()
           // 去重处理

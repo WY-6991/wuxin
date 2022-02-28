@@ -82,17 +82,9 @@ export const minix = {
     },
 
     addCategory() {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-        return
-      }
       this.addCategoryDialogFormVisible = true
     },
     addTag() {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-        return
-      }
       this.addTagDialogFormVisible = true
     },
 

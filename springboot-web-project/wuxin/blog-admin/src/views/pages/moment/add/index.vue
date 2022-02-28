@@ -53,10 +53,6 @@ export default {
         this.$message.error('发布失败，不能发布一个空动态哦!')
       }
       createMoment(this.moment).then(res => {
-        if (!this.isRoot) {
-          this.$message.error('操作失败！权限执行该操作！')
-          return
-        }
         if (res.code === 200) {
           this.$notify.success('发布成功！')
         }

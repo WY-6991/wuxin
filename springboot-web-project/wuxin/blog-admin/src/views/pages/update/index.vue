@@ -134,13 +134,9 @@ export default {
     this.getList()
   },
   methods: {
-
-
     restTemp() {
       this.row = {color: 'rgba(19, 206, 102, 0.8)', content: ''}
     },
-
-
     // 获取blogList
     getList() {
       this.listLoading = false;
@@ -151,12 +147,7 @@ export default {
       })
     },
 
-
     removeData(id, index) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败！没有权限执行该操作！')
-        return;
-      }
       delQuestion(id).then(res => {
         if (res.code !== 200) return false
         this.$message.success("删除成功！")
@@ -178,10 +169,6 @@ export default {
     },
 
     updateColor(question) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败！没有权限执行该操作！')
-        return;
-      }
       updateQuestion(question).then(res => {
         if (res.code === 200) {
           this.$notify.success("修改成功！")
@@ -192,10 +179,6 @@ export default {
     create() {
       this.$refs.dataForm.validate(valid => {
         if (valid) {
-          if (!this.isRoot) {
-            this.$message.error('操作失败！没有权限执行该操作！')
-            return;
-          }
           createQuestion(this.row).then(res => {
             if (res.code === 200) {
               this.$notify.success("发布成功")

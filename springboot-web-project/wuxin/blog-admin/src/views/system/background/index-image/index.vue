@@ -30,10 +30,6 @@ export default {
       })
     },
     deleteData(id) {
-      if (!this.isRoot) {
-        this.$message.error('删除失败,无权限执行该操作！')
-        return
-      }
       delBackgroundMap(id).then(res => {
         if (res.code === 200) {
           this.$message.success('删除成功')

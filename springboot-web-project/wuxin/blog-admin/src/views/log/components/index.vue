@@ -208,23 +208,14 @@ export default {
     },
 
     delLogById(id, index) {
-      if (!this.isRoot) {
-        return this.$message.error('操作失败，无权限执行该操作！')
-      }
       this.$emit('delLogById', { 'id': id, 'index': index })
     },
 
     delLogByIds() {
-      if (!this.isRoot) {
-        return this.$message.error('操作失败，无权限执行该操作！')
-      }
       this.$message.warning('该功能暂实现哦')
     },
 
     deleteAll() {
-      if (!this.isRoot) {
-        return this.$message.error('操作失败，无权限执行该操作！')
-      }
       this.$emit('delAllLog')
     },
 

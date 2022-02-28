@@ -151,10 +151,6 @@ export default {
 
     //修改用户信息
     updateRole(user) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败！没有权限执行该操作！')
-        return;
-      }
       updateUserRole(user).then(res => {
         if (res.code === 200) {
           this.$message.success('修改成功！')

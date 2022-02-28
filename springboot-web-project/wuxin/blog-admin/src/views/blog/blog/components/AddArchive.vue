@@ -35,10 +35,6 @@ export default {
   props: ['archive'],
   methods: {
     addArchive() {
-      if(!this.isRoot){
-        this.$message.error('添加失败，无权限执行该操作！')
-        return
-      }
       this.$emit('addArchive', this.archive)
     },
     cancelArchive() {

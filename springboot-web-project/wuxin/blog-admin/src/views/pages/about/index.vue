@@ -64,10 +64,6 @@ export default {
 
     // 添加数据
     updateData() {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，不具备操作权限！')
-        return
-      }
       this.about.content = this.contentVditor.getHTML()
       updateAbout(this.about).then(res => {
         if (res.code === 200) {

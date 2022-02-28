@@ -128,10 +128,6 @@ export default {
       this.$router.push('add')
     },
     deleteData(momentId, index) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，不具备该操作！')
-        return;
-      }
       delMoment(momentId).then(res => {
         this.list.splice(index, 1)
         this.$message.success("删除成功!")

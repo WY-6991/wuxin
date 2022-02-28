@@ -15,11 +15,7 @@ export default {
   mixins: [minix],
   methods: {
     createCategory() {
-      if(!this.isRoot){
-        this.$message.error('添加失败，无权限执行该操作！')
-        return
-      }
-       createCategory(this.temp).then(res => {
+      createCategory(this.temp).then(res => {
         if (res.code === 200) {
           // 添加成功之后重新加载list
           this.$emit('getList')
@@ -29,14 +25,9 @@ export default {
           this.restTemp()
         }
       })
-
-
-    },
-
-  },
-
-
-};
+    }
+  }
+}
 </script>
 
 

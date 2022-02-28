@@ -232,9 +232,6 @@ export default {
 
     // 删除操作
     handleDelete(id, index) {
-      if (!this.isRoot) {
-        this.$message.error('操作失败，无权限执行该操作！')
-      }
       delArchive(id).then(res => {
         if (res.code === 200) {
           this.list.splice(index, 1)
@@ -245,15 +242,11 @@ export default {
     createData() {
       this.$refs.archiveFrom.validate(valid => {
         if (valid) {
-
           if (this.archive.type === 2 && (!this.archive.url)) {
             this.$message.error('操作失败，转载地址不能为空！')
           }
           if (this.archive.type === 1 && (!this.archive.blogId)) {
             this.$message.error('添加失败，获取不到原创文章id')
-          }
-          if (!this.isRoot) {
-            this.$message.error('操作失败，无权限执行该操作！')
           }
           addArchive(this.archive).then(res => {
             if (res.code === 200) {
@@ -266,10 +259,7 @@ export default {
           })
         }
       })
-
     },
-
-
     updateData() {
       this.$refs.archiveFrom.validate(valid => {
         if (valid) {
