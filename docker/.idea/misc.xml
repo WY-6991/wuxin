@@ -4,6 +4,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/docker-hello-demo/pom.xml" />
+        <option value="$PROJECT_DIR$/redis-demo-01/pom.xml" />
       </list>
     </option>
   </component>
