@@ -28,31 +28,32 @@
       :visible.sync="dialogFormVisible"
       width="30%"
     >
-      <el-form :model="temp" :rules="labelRules" label-position="left" label-width="50px" size="small" ref="labelForm">
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="temp.name" class="m-input-width-80pre" />
-        </el-form-item>
-        <el-form-item label="颜色" prop="color">
-          <el-select v-model="temp.color" placeholder="请选择" class="m-input-width-80pre">
-            <el-option v-for="(item) in colors" :key="item" :label="item" :value="item" @change="dataChange">
-              <span style="float:left;"><el-tag :color="item" class="m-input-width-100" /></span>
-              <span style="float:right;">{{ item }}</span>
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
+<!--      <el-form :model="temp" :rules="labelRules" label-position="left" label-width="50px" size="small" ref="labelForm">-->
+<!--        <el-form-item label="名称" prop="name">-->
+<!--          <el-input v-model="temp.name" class="m-input-width-80pre" />-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="颜色" prop="color">-->
+<!--          <el-select v-model="temp.color" placeholder="请选择" class="m-input-width-80pre">-->
+<!--            <el-option v-for="(item) in colors" :key="item" :label="item" :value="item" @change="dataChange">-->
+<!--              <span style="float:left;"><el-tag :color="item" class="m-input-width-100" /></span>-->
+<!--              <span style="float:right;">{{ item }}</span>-->
+<!--            </el-option>-->
+<!--          </el-select>-->
+<!--        </el-form-item>-->
+<!--      </el-form>-->
 
-      <div slot="footer">
-        <el-button type="info" size="small" @click="cancel">取 消</el-button>
-        <el-button type="primary" size="small" @click="dialogStatus === 'create' ? createData(temp) :updateData(temp)">确 定</el-button>
-      </div>
+<!--      <div slot="footer">-->
+<!--        <el-button type="info" size="small" @click="cancel">取 消</el-button>-->
+<!--        <el-button type="primary" size="small" @click="dialogStatus === 'create' ? createData(temp) :updateData(temp)">确 定</el-button>-->
+<!--      </div>-->
+      <CustomLabel :dialog-status="dialogStatus" @addCategorySuccess="getList" @cancel="cancel"/>
     </el-dialog>
   </div>
 </template>
 
 <script>
 
-import { getCategoryListPage, updateCategory, createCategory, updateCategoryColor, delCategory } from '@/api/category'
+import { getCategoryListPage, updateCategoryColor, delCategory } from '@/api/category'
 import { minix } from '../minix'
 
 export default {
@@ -76,37 +77,6 @@ export default {
         this.listLoading = false
       })
     },
-
-    createData(data) {
-      this.$refs.labelForm.validate(valid => {
-        if (valid) {
-          createCategory(data).then(res => {
-            if (res.code === 200) {
-              this.$message.success('添加成功！')
-            }
-            this.dialogFormVisible = false
-            this.restTemp()
-            this.getList()
-          })
-        }
-      })
-    },
-
-    // 修改颜色和名称
-    updateData(obj) {
-      this.$refs.labelForm.validate(valid => {
-        if (valid) {
-          updateCategory(obj).then(res => {
-            if (res.code === 200) {
-              this.$message.success('修改成功')
-            }
-            this.restTemp()
-            this.dialogFormVisible = false
-          })
-        }
-      })
-    },
-
     // 只修改颜色
     updateColor(category) {
       updateCategoryColor(category).then(res => {

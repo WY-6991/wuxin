@@ -1,11 +1,11 @@
 <template>
   <div>
     <el-form
+      ref="labelForm"
       :model="temp"
       label-position="left"
       label-width="50px"
       size="small"
-      ref="labelForm"
     >
       <el-form-item
         label="名称"
@@ -29,58 +29,56 @@
         >
           <el-option
             v-for="item in colors"
-            :key="item"
             :id="item"
+            :key="item"
             :value="item"
             @change="dataChange"
           >
-            <span style="float: left"
-              ><el-tag :color="item" class="m-input-width-100"
-            /></span>
+            <span style="float: left"><el-tag :color="item" class="m-input-width-100" /></span>
             <span style="float: right">{{ item }}</span>
           </el-option>
         </el-select>
       </el-form-item>
-      <slot></slot>
+      <slot />
     </el-form>
   </div>
 </template>
 <script>
-import { colors } from "@/utils/color";
+import { colors } from '@/utils/color'
 
 export default {
-  name: "MyLabel",
+  name: 'MyLabel',
   props: {
     temp: {
       type: Object,
       default: () => {
-        return { name: "", color: "teal" };
-      },
+        return { name: '', color: 'teal' }
+      }
     },
     dialogStatus: {
       type: String,
-      default: "create",
-    },
+      default: 'create'
+    }
   },
   data() {
     return {
       colors: colors,
       rules: {
-        name: [{ required: true, message: "名称不能为空！", trigger: "blur" }],
-        color: [{ required: true, message: "颜色不能为空！", trigger: "blur" }],
-      },
-    };
+        name: [{ required: true, message: '名称不能为空！', trigger: 'blur' }],
+        color: [{ required: true, message: '颜色不能为空！', trigger: 'blur' }]
+      }
+    }
   },
   methods: {
     dataChange() {
       this.$refs.labelForm.validate((valid) => {
         if (valid) {
-          this.$emit("dataChange", this.temp);
+          this.$emit('dataChange', this.temp)
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 <style scoped>
 .m-input-width-100 {

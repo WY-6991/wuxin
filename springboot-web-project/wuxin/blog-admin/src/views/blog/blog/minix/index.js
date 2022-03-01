@@ -1,12 +1,10 @@
 import { getCategoryList } from '@/api/category'
 import { getAllTagList } from '@/api/tag'
 import { createVditor } from '@/plugins/CreateVditor'
-import AddTag from '../components/AddTag'
-import AddCategory from '../components/AddCategory'
 import ElDragSelect from '@/components/DragSelect'
 
 export const minix = {
-  components: { AddCategory, AddTag, ElDragSelect },
+  components: { ElDragSelect },
   data() {
     const validateDesc = (rule, value, callback) => {
       if (this.descriptionVditor.getValue().length === 1) {
@@ -61,7 +59,6 @@ export const minix = {
         category: [{ required: true, message: '分类不能为空！', trigger: 'blur' }],
         password: [{ validator: validatePass, trigger: 'blur' }]
       }
-
     }
   },
 

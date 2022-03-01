@@ -89,11 +89,11 @@
       </div>
     </el-dialog>
     <el-dialog title="添加分类" :visible.sync="addCategoryDialogFormVisible" width="30%">
-      <AddCategory @closeAddLabel="closeAddLabel" @getList="getLabelList" />
+      <CustomLabel @cancel="addCategoryDialogFormVisible=false" @addCategorySuccess="getLabelList"/>
     </el-dialog>
 
     <el-dialog title="添加标签" :visible.sync="addTagDialogFormVisible" width="30%">
-      <AddTag @closeAddLabel="closeAddLabel" @getList="getLabelList" />
+      <CustomLabel label-name="tag" @cancel="addTagDialogFormVisible=false" @addTagSuccess="getLabelList" />
     </el-dialog>
 
   </div>
@@ -102,9 +102,10 @@
 <script>
 import { createBlog } from '@/api/blog'
 import { minix } from '../minix'
-
+import CustomLabel from '@/components/MyComponents/CustomLabel'
 export default {
   name: 'BlogAdd',
+  components: { CustomLabel },
   mixins: [minix],
   data() {
     return {

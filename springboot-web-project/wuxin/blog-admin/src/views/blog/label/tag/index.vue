@@ -23,39 +23,21 @@
       @pagination="getList"
     />
 
-    <el-dialog width="30%"
-      :title="dialogStatus === 'create' ? '添加分类' :'修改分类'"
-      :visible.sync="dialogFormVisible">
-      <el-form :model="temp" :rules="labelRules" label-position="left" label-width="50px" size="small" ref="labelForm">
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="temp.name" class="m-input-width-80pre" />
-        </el-form-item>
-        <el-form-item label="颜色" prop="color">
-          <el-select v-model="temp.color" placeholder="请选择" class="m-input-width-80pre">
-            <el-option v-for="(item) in colors" :key="item" :id="item" :value="item" @change="dataChange">
-              <span style="float:left;"><el-tag :color="item" class="m-input-width-100" /></span>
-              <span style="float:right;">{{ item }}</span>
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <div slot="footer">
-        <el-button type="info" size="small" @click="cancel">取 消</el-button>
-        <el-button type="primary" size="small" @click="dialogStatus === 'create' ? createData(temp) :updateData(temp)">确 定
-        </el-button>
-      </div>
+    <el-dialog width="30%" :title="dialogStatus === 'create' ? '添加分类' :'修改分类'" :visible.sync="dialogFormVisible">
+      <CustomLabel :dialog-status="dialogStatus" @addTagSuccess="getList" label-name="tag" :temp="temp" @cancel="cancel" />
     </el-dialog>
 
   </div>
 </template>
 
 <script>
-import { updateTag, delTag, updateTagColor, createTag, getTagList } from '@/api/tag'
+import { delTag, updateTagColor, getTagList } from '@/api/tag'
 import { minix } from '../minix'
-import {delCategory} from "@/api/category";
+import CustomLabel from '@/components/MyComponents/CustomLabel'
 
 export default {
   name: 'Tag',
+  components: { CustomLabel },
   mixins: [minix],
 
   mounted() {
@@ -63,35 +45,13 @@ export default {
   },
   methods: {
     getList() {
-      this.listLoading = true;
+      this.listLoading = true
       getTagList(this.query).then(res => {
         this.list = res.result.records
         this.total = res.result.total
       })
-      this.listLoading = false;
+      this.listLoading = false
     },
-    // 添加
-    createData(data) {
-      createTag(data).then(res => {
-        if (res.code === 200) {
-          this.$message.success('添加成功！')
-          this.dialogFormVisible = false;
-          this.getList()
-          this.restTemp()
-        }
-      })
-    },
-    // 修改颜色和名称
-    updateData(data) {
-      updateTag(data).then(res => {
-        if(res.code === 200) {
-          this.$message.success('修改成功！')
-        }
-        this.dialogFormVisible = false
-        this.restTemp()
-      })
-    },
-
     // 只修改颜色
     updateColor(tag) {
       updateTagColor(tag).then(res => {
