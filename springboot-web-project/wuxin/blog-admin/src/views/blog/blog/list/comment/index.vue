@@ -1,30 +1,13 @@
 <template>
-  <CommentList
-    :total="total"
-    :query="query"
-    :list-loading="listLoading"
-    :list="list"
-    @getList="getList"
-    @handleSearch="handleFilter"
-  />
+  <Comment :is-blog-comment="true" />
 </template>
-
 <script>
-import { minix } from '@/views/blog/comment/minix'
-import { validNumber } from '@/utils/validate'
-
+import Comment from '@/views/blog/comment/index'
 export default {
   name: 'BlogComment',
-  mixins: [minix],
-  mounted() {
-    const blogId = this.$route.params.blogId
-    if (!validNumber(blogId)) {
-      this.$message.error('id格式不合法')
-      return
-    } else {
-      this.query.id = blogId
-      this.getList()
-    }
+  components: {
+    Comment
   }
 }
 </script>
+

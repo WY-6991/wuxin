@@ -1,5 +1,5 @@
 
-const ws = window.sessionStorage
+const ws = window.localStorage
 
 export function setSetStore(key, value) {
   ws.setItem(key, JSON.stringify(value))

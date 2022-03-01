@@ -33,6 +33,8 @@ export const SET_ABOUT = 'SET_ABOUT'
 
 
 
+
+
 /* =============================system===================== */
 
 export const SET_MY_SYSTEM = 'SET_MY_SYSTEM'
@@ -45,3 +47,15 @@ export const SAVE_SETTING= 'save_setting'
 export const GET_SETTING= 'get_setting'
 export const UPDATE_NIGTH_MODE= 'update_night_mode'
 export const UPDATE_INVERTED= 'update_inverted'
+
+
+/*==================================repo================================*/
+export const TOKEN_KEY_TYPE= 'token_type'
+export const TOKEN_USER_INFO= 'user_token_info'
+export const SET_TOKEN_TYPE= 'set_token_type'
+
+/*====================================gitee==================================*/
+export const TOKEN_GITEE_KEY= 'gitee_token'
+
+/*====================================github==================================*/
+export const TOKEN_GITHUB_KEY= 'github_token'

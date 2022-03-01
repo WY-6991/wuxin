@@ -2,10 +2,20 @@ import {
     GET_SETTING, SAVE_SETTING,
     SET_NAV_COLOR,
     UPDATE_INVERTED,
-    UPDATE_NIGTH_MODE
-} from "@/store/mutations-type";
+    UPDATE_NIGTH_MODE,
+    TOKEN_GITEE_KEY,
+    TOKEN_GITHUB_KEY,
+    SET_TOKEN_TYPE,
+    TOKEN_KEY_TYPE,
+    TOKEN_USER_INFO
+} from "../mutations-type";
 import {defaultSetting} from "@/utils/setting";
 
+import {
+    getGiteeUserInfo,
+} from "@/api/gitee";
+
+import {setSetStore, getStore, removeStore} from "@/utils/session";
 export const state = {
     // 将配置信息全部保存为一个对象
     // setting:JSON.parse(window.localStorage.getItem(SAVE_SETTING))||defaultSetting
@@ -41,7 +51,15 @@ export const state = {
     // 默认页面窗口大小
     clientSize: {
         clientWidth: 768
-    }
+    },
+    
+    user:{
+        username:'',
+        token:'',
+        url:'',
+        avatar:'',
+    },
+    tokenType:'github'
 
 }
 
@@ -64,8 +82,19 @@ const mutations = {
 
     // 获取页面配置
     [GET_SETTING]: (state) => {
-        // state = state
-        state.setting = JSON.parse(window.localStorage.getItem(SAVE_SETTING)) || defaultSetting
+        state.setting = getStore(SAVE_SETTING) || defaultSetting
+    },
+
+    // 保存token类型
+    [TOKEN_KEY_TYPE]: (state,tokenType) => {
+        state.tokenType = tokenType
+        setSetStore(TOKEN_KEY_TYPE,tokenType)
+    },
+
+    // 保存token配置
+    [TOKEN_USER_INFO]: (state,user) => {
+        state.user = user
+        setSetStore(TOKEN_USER_INFO,user)
     }
 
 }
@@ -103,14 +132,18 @@ const actions = {
 }
 
 const getters = {
-
     inverted: (state) => {
         return state.inverted
     },
     state: (state) => {
         return state
     },
-
+    user:state=>{
+        return state.user
+    },
+    tokenType:state=>{
+        return state.tokenType
+    }
 }
 
 export default {

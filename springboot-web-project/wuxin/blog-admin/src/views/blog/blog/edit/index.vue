@@ -72,23 +72,11 @@
       </el-row>
       <el-col :span="24">
         <el-form-item prop="title" label="标题">
-          <el-input
-            v-model="blog.title"
-            :maxlength="30"
-            show-word-limit
-            clearable
-            style=" width:300px;min-width: 300px;"
-          />
-
+          <el-input v-model="blog.title" :maxlength="30" show-word-limit clearable style=" width:300px;min-width: 300px;" />
         </el-form-item>
 
         <el-form-item prop="title" label="封面图片">
-          <el-input
-            show-word-limit
-            clearable
-            style=" width:300px"
-          />
-
+          <el-input show-word-limit clearable style=" width:300px" />
         </el-form-item>
 
         <el-form-item prop="desc" width="100%">
@@ -101,21 +89,23 @@
       </el-col>
     </el-form>
     <el-dialog title="添加分类" :visible.sync="addCategoryDialogFormVisible" width="30%">
-      <AddCategory @closeAddLabel="closeAddLabel" @getList="getLabelList" />
+      <CustomLabel @cancel="addCategoryDialogFormVisible=false" @addCategorySuccess="getLabelList"/>
     </el-dialog>
 
     <el-dialog title="添加标签" :visible.sync="addTagDialogFormVisible" width="30%">
-      <AddTag @closeAddLabel="closeAddLabel" @getList="getLabelList" />
+      <CustomLabel label-name="tag" @cancel="addTagDialogFormVisible=false" @addTagSuccess="getLabelList" />
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { blogDetail, updateBlog } from '@/api/blog'
-import {minix} from "../minix";
+import { minix } from '../minix'
+import CustomLabel from '@/components/MyComponents/CustomLabel'
 
 export default {
   name: 'BlogEdit',
+  components: { CustomLabel },
   mixins: [minix],
   data() {
     return {

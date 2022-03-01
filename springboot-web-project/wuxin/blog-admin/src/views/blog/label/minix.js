@@ -1,7 +1,9 @@
 import { colors } from '@/utils/color'
 import LabelTableList from './compontent/LabelTableList'
+import CustomLabel from '@/components/MyComponents/CustomLabel';
+
 export const minix = {
-  components: { LabelTableList },
+  components: { LabelTableList,CustomLabel },
   data() {
     return {
       colors: colors,
@@ -66,6 +68,7 @@ export const minix = {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.temp = obj
+      console.log('update',obj)
     }
   }
 }

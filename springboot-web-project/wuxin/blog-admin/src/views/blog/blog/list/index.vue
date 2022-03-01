@@ -39,17 +39,13 @@
 
       <el-table-column label="作者" align="center" width="100">
         <template slot-scope="{ row }">
-          <el-link :underline="false" icon="el-icon-user">{{
-            row.username
-          }}</el-link>
+          <el-link :underline="false" icon="el-icon-user">{{ row.username }}</el-link>
         </template>
       </el-table-column>
       <el-table-column label="标题" align="center" width="auto">
         <template slot-scope="{ row }">
           <el-tooltip placement="bottom" trigger="hover" :content="row.title">
-            <span class="m-message" @click="handleUpdate(row.blogId)">{{
-              row.title
-            }}</span>
+            <span class="m-message" @click="handleUpdate(row.blogId)">{{ row.title }}</span>
           </el-tooltip>
         </template>
       </el-table-column>
@@ -105,20 +101,8 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="200" fixed="right">
         <template slot-scope="{ row, $index }">
-          <el-button
-            type="primary"
-            size="mini"
-            icon="el-icon-edit"
-            @click="handleUpdate(row.blogId)"
-          >
-            编辑
-          </el-button>
-          <el-button
-            size="mini"
-            type="danger"
-            icon="el-icon-delete"
-            @click="handleDelete(row.blogId, $index)"
-            >删除
+          <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleUpdate(row.blogId)">编辑</el-button>
+          <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(row.blogId, $index)">删除
           </el-button>
         </template>
       </el-table-column>
@@ -153,31 +137,15 @@
           <el-input v-if="blog.secrecy" v-model="blog.password" />
         </el-form-item>
       </el-form>
-      <div slot="footer" label-width="200px">
-        <el-button
-          size="mini"
-          type="info"
-          @click.native.prevent="dialogBlogVisible = false"
-          >取消</el-button
-        >
-        <el-button
-          size="mini"
-          type="primary"
-          @click.native.prevent="update(blog)"
-          >保存</el-button
-        >
-        <el-button size="mini" plain @click="handleArchive(blog)"
-          >归档</el-button
-        >
+      <div slot="footer" >
+        <el-button size="mini" type="info" @click.native.prevent="dialogBlogVisible = false">取消</el-button>
+        <el-button size="mini" type="primary" @click.native.prevent="update(blog)">保存</el-button>
+        <el-button size="mini" plain @click="handleArchive(blog)">归档</el-button>
       </div>
     </el-dialog>
     <!--    归档-->
     <el-dialog title="归档" :visible.sync="dialogFormArchive" width="40%">
-      <AddArchive
-        :archive="archive"
-        @addArchive="addArchive"
-        @cancelArchive="cancelArchive"
-      />
+      <AddArchive :archive="archive" @addArchive="addArchive" @cancelArchive="dialogFormArchive=false" />
     </el-dialog>
   </div>
 </template>
